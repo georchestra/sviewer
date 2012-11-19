@@ -8,7 +8,7 @@ $Date: 2012-11-08 20:32:54 +0000 (jeu. 08 nov. 2012) $
 $Author: fabrice.phung $
     -->
     <head>
-        <title>visualiseur simple GeoBretagne</title>
+        <title>Visualiseur simple GeoBretagne</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
         <meta name="apple-mobile-web-app-capable" content="yes">
@@ -27,38 +27,83 @@ $Author: fabrice.phung $
  */
 
 // libraries configuration
-OpenLayers.DOTS_PER_INCH = 90.71428571428572;
-OpenLayers.Util.onImageLoadErrorColor = 'transparent';
-OpenLayers.ProxyHost = '/proxy/?url=';
+var Ol = OpenLayers;
+Ol.DOTS_PER_INCH = 90.71428571428572;
+Ol.Util.onImageLoadErrorColor = 'transparent';
+Ol.ProxyHost = '/proxy/?url=';
 Proj4js.defs["EPSG:900913"] = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs";
 Proj4js.defs["EPSG:2154"] = "+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs";
 Proj4js.defs["EPSG:4326"] = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
 
 
+// rough xml escape
+if (!String.prototype.encodeHTML) {
+    String.prototype.encodeHTML = function () {
+        return this.replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+  };
+}
+
+// string reverse
+String.prototype.reverse = function() {
+  var s="";
+  for (var i=this.length-1;i>=0;i-=1) {
+    s += this.charAt(i);
+  }
+  return s;
+}
+
+// DOM manipulation - appends a node
+function domAddNode(parentNode,tag,text,className) {
+    if (text!=""&&tag!="") {
+        var node = document.createElement(tag);
+        node.className = className;
+        node.appendChild(document.createTextNode(text));
+        parentNode.appendChild(node);
+        return node;
+    }
+    else if (tag!="") {
+        var node = document.createElement(tag);
+        node.className = className;
+        parentNode.appendChild(node);
+        return node;
+    }
+    else if (text!="") {
+        parentNode.appendChild(document.createTextNode(text));
+        return parent;
+    };
+}
+
+
 // application hardcoded configuration
 var hardConfig = {
     // viewer title, may be overriden with &title=text
-    title: "visualiseur simple GeoBretagne",
+    title: "Visualiseur simple GeoBretagne",
 
     // default wms onlineResource for &layers=layernames
     wms: "http://geobretagne.fr/geoserver/ows",
+    geoserver: "http://geobretagne.fr/geoserver",
+
 
     // initial extent and zoom, may be overriden with &x=lon&y=lat&z=zoom
-    initialExtent: new OpenLayers.Bounds(145518, 6726671, 372058, 6868691),
+    initialExtent: new Ol.Bounds(145518, 6726671, 372058, 6868691),
     zinit: 8,
 
     // must match the TMS grid&scale if any
-    maxExtent: new OpenLayers.Bounds(-357823.2365, 6037008.6939, 2146865.3059, 8541697.2363),
+    maxExtent: new Ol.Bounds(-357823.2365, 6037008.6939, 2146865.3059, 8541697.2363),
     maxResolution: 156543.0339,
+    numZoomLevels: 21,
 
     // map center restricted in this extent
-    restrictedExtent: new OpenLayers.Bounds(45518, 6626671, 472058, 6968691),
+    restrictedExtent: new Ol.Bounds(45518, 6626671, 472058, 6968691),
 
     // map projection
-    projMap: new OpenLayers.Projection('EPSG:2154'),
+    projMap: new Ol.Projection('EPSG:2154'),
 
     // permalink and kml projection
-    projDisplay: new OpenLayers.Projection('EPSG:4326'),
+    projDisplay: new Ol.Projection('EPSG:4326'),
 
     // maximum features retrieved on getFeatureInfo
     maxFeatures: 3,
@@ -66,49 +111,46 @@ var hardConfig = {
     // string matching empty gfi response, set your templates !
     nodata: '<!--nodatadetect-->\n<!--nodatadetect-->',
 
+    // geocoder    
+    //apiKey: "x1uy9hv7ojndca8335mhgv38", // dev-geobretagne.fr
+    //apiKey: "01gwgg3by2fpaxwxrfgvynqw", // geobretagne.fr
+    //apiKey: "xsjb3kmbejbpxp04tysclyrc", // test.geobretagne.fr  
+    apiKey: "tyujsdxmzox31ituc2uw0qwl", // geoportail
+    openLSGeocodeUrl: "http://gpp3-wxs.ign.fr/KEY/geoportail/ols?",
+    openLSMaxResponses: 1,
+
     // array of background map layers. Only one shall be visible on startup.
     // The user can switch layers using a button.
     layersBackground: [
-        new OpenLayers.Layer.WMS(
+        new Ol.Layer.WMS(
             "Plan OpenStreetMap",
             "http://osm.geobretagne.fr/gwc01/service/wms",
             { layers: 'imposm:default', format: 'image/png', transparent: false },
             {
-                attribution: "OpenStreetMap CC-by-SA",
+                attribution: "Fond cartographique : OpenStreetMap CC-by-SA",
                 isBaseLayer: false,
-                tileSize: new OpenLayers.Size(256,256),
-                transitionEffect: 'resize',
+                tileSize: new Ol.Size(256,256),
                 visibility: true
             }
         ),
-        new OpenLayers.Layer.WMS(
+        new Ol.Layer.WMS(
             "Photographie aérienne",
             "http://tile.geobretagne.fr/gwc02/service/wms",
             { layers: 'satellite', format: 'image/jpeg', transparent: false },
             {
-                attribution: "partenaires GéoBretagne, IGN RGE BD ORTHO, PlanetObserver",
+                attribution: "<br />Photographie aérienne : partenaires GéoBretagne - IGN RGE BD ORTHO - PlanetObserver",
                 isBaseLayer: false,
-                tileSize: new OpenLayers.Size(256,256),
-                transitionEffect: 'resize',
+                tileSize: new Ol.Size(256,256),
                 visibility: false
             }
         )
     ],
 
     // array of overlay layers. They are always visible.
-    layersOverlay: [
-        //~ new OpenLayers.Layer.WMS(
-            //~ "départements",
-            //~ "http://geobretagne.fr/geoserver/geob_loc/wms",
-            //~ { layers: 'geob_loc:DEPARTEMENT', format: 'image/png', transparent: true },
-            //~ {
-                //~ attribution: "IGN BDCARTO",
-                //~ isBaseLayer: false,
-                //~ tileSize: new OpenLayers.Size(512,512),
-                //~ transitionEffect: 'resize'
-            //~ }
-        //~ )
-    ]
+    layersOverlay: [],
+
+    // CQL filter applied to the overlay layers
+    CQL_FILTER: null
 }
 
 
@@ -124,22 +166,24 @@ function init(){
 
     // defaultConfig may be overriden with querystring
     var defaultConfig = {
-        title: hardConfig.title
+        title: hardConfig.title,
+        CQL_FILTER: hardConfig.CQL_FILTER
     }
 
+    // defaultConfig + querystring = config
     var config = {};
 
     /**
      * Fetching parameters from url hash or querystring
      */
-    OpenLayers.Util.applyDefaults(config, OpenLayers.Util.getParameters("?"+window.location.hash.substr(1)));
-    OpenLayers.Util.applyDefaults(config, OpenLayers.Util.getParameters(window.location.href));
-    OpenLayers.Util.applyDefaults(config, defaultConfig);
+    Ol.Util.applyDefaults(config, Ol.Util.getParameters("?"+window.location.hash.substr(1)));
+    Ol.Util.applyDefaults(config, Ol.Util.getParameters(window.location.href));
+    Ol.Util.applyDefaults(config, defaultConfig);
 
     // document title handling
     document.title = config.title;
-    var domTitle = OpenLayers.Util.getElement("title");
-    domTitle.appendChild(document.createTextNode(config.title));
+    var domTitle = Ol.Util.getElement("title");
+    domAddNode(domTitle,"",config.title,"");
 
 
     /**
@@ -151,41 +195,42 @@ function init(){
         maxExtent: hardConfig.maxExtent,
         restrictedExtent: hardConfig.restrictedExtent,
         maxResolution: hardConfig.maxResolution,
+        numZoomLevels: hardConfig.numZoomLevels,
         units: "m",
         controls: [
-            new OpenLayers.Control.KeyboardDefaults(),
-            new OpenLayers.Control.Navigation({
+            new Ol.Control.KeyboardDefaults(),
+            new Ol.Control.Navigation({
                 mouseWheelOptions: {
                     cumulative: false,
-                    interval: 20
+                    interval: 100
                 },
                 dragPanOptions: {
                     enableKinetic: {
                         deceleration: 0.02
                 }
             }}),
-            new OpenLayers.Control.ZoomBox(),
-            new OpenLayers.Control.Attribution({div:OpenLayers.Util.getElement("attribution")}),
-            new OpenLayers.Control.LoadingPanel()
+            new Ol.Control.ZoomBox(),
+            new Ol.Control.Attribution({div:Ol.Util.getElement("baseAttributions")}),
+            new Ol.Control.LoadingPanel()
         ],
-        layers: [new OpenLayers.Layer("fake", {isBaseLayer: true, displayInLayerSwitcher: false})]
+        layers: [new Ol.Layer("fake", {isBaseLayer: true, displayInLayerSwitcher: false})]
     };
-    map = new OpenLayers.Map('map', mapOptions );
+    map = new Ol.Map('map', mapOptions );
 
     // "previous extent" control
-    var navHistory = new OpenLayers.Control.NavigationHistory({
+    var navHistory = new Ol.Control.NavigationHistory({
         previousOptions: { title: "retour" }
     });
     map.addControl(navHistory);
 
     // toolbar on the map
-    var panel = new OpenLayers.Control.Panel({ autoActivate: true });
+    var panel = new Ol.Control.Panel({ autoActivate: true });
     map.addControl(panel);
     panel.addControls([
-        new OpenLayers.Control.ZoomToMaxExtent({title: "vue initiale"}),
+        new Ol.Control.ZoomToMaxExtent({title: "vue initiale"}),
         navHistory.previous,
-        new OpenLayers.Control.ZoomIn({title: "zoom avant"}),
-        new OpenLayers.Control.ZoomOut({title: "zoom arri&egrave;re"})
+        new Ol.Control.ZoomIn({title: "zoom avant"}),
+        new Ol.Control.ZoomOut({title: "zoom arri&egrave;re"}),
     ]);
 
 
@@ -197,7 +242,7 @@ function init(){
     map.addLayers(hardConfig.layersBackground);
     // backgroundLayers switch button
     panel.addControls(
-        [new OpenLayers.Control.Button({
+        [new Ol.Control.Button({
             displayClass: "btLayerSwitch",
             trigger: function() {
                 var ll=hardConfig.layersBackground;
@@ -212,12 +257,13 @@ function init(){
         })]
     );
 
+
     /**
      * overlay layers
      */
-    if (hardConfig.hasOwnProperty("layersOverlay")) {
-        map.addLayers(hardConfig.layersOverlay)
-    }
+    //~ if (hardConfig.hasOwnProperty("layersOverlay")) {
+        //~ map.addLayers(hardConfig.layersOverlay)
+    //~ }
 
 
     /**
@@ -225,13 +271,14 @@ function init(){
      * Activated with &layers=layernames
      * This WMS layer must be queryable with info_format text/html
      */
+
     if (config.layers) {
         var popup, layer_wms, getFeatureInfo;
 
         // fake popup function
         var popup = { destroy: function() {} };
 
-        var layer_wms = new OpenLayers.Layer.WMS(
+        var layer_wms = new Ol.Layer.WMS(
             config.title,
             hardConfig.wms, {
                 layers: config.layers,
@@ -240,13 +287,19 @@ function init(){
             },{
                 isBaseLayer: false,
                 singleTile: true,
-                ratio: 1.2,
-                transitionEffect: 'resize'
+                ratio: 1.2
             }
         );
+        // non empty CQL filter in the URL
+        if (config.CQL_FILTER) {
+            layer_wms.mergeNewParams({
+                "CQL_FILTER": config.CQL_FILTER
+            });
+        }
         map.addLayer(layer_wms);
 
-        var getFeatureInfo = new OpenLayers.Control.WMSGetFeatureInfo({
+
+        var getFeatureInfo = new Ol.Control.WMSGetFeatureInfo({
             url: hardConfig.wms,
             title: 'Interroger la carte par clic',
             queryVisible: true,
@@ -261,10 +314,10 @@ function init(){
                 "getfeatureinfo": function(e) {
                     if (e.text.search(hardConfig.nodata)<0) {
                         popup.destroy();
-                        popup = new OpenLayers.Popup.FramedCloud(
+                        popup = new Ol.Popup.FramedCloud(
                             "wmsPopup",
                             map.getLonLatFromPixel(e.xy),
-                            new OpenLayers.Size(200,200),
+                            new Ol.Size(200,200),
                             e.text,
                             null,
                             true);
@@ -293,17 +346,17 @@ function init(){
                 "<span class='pdesc'>",f.attributes.description,"</span>","</p>"].join(' ');
             // no dynamic content allowed
             if (content.search("<script") != -1) { content = content.replace(/</g, "&lt;"); }
-            var popup = new OpenLayers.Popup.FramedCloud(
+            var popup = new Ol.Popup.FramedCloud(
                 "kmlPopup",
                 f.geometry.getBounds().getCenterLonLat(),
-                new OpenLayers.Size(100,100),
+                new Ol.Size(100,100),
                 content,
                 null,
                 true,
                 onPopupClose
             );
             popup.autoSize = true;
-            popup.maxSize = new OpenLayers.Size(300,200);
+            popup.maxSize = new Ol.Size(300,200);
             f.popup = popup;
             map.addPopup(popup);
         }
@@ -316,10 +369,10 @@ function init(){
             }
         }
 
-        var layer_kml = new OpenLayers.Layer.Vector(
+        var layer_kml = new Ol.Layer.Vector(
             config.title,
             {
-                strategies: [new OpenLayers.Strategy.Fixed()],
+                strategies: [new Ol.Strategy.Fixed()],
                 projection: hardConfig.projDisplay,
                 protocol: new OpenLayers.Protocol.HTTP({
                     url: config.kml,
@@ -343,23 +396,209 @@ function init(){
     }
 
 
+
+
+    /**
+     * info frames handling
+     */
+
+    // frame handling
+    helpFrame = Ol.Util.getElement("helpFrame");
+    aboutFrame = Ol.Util.getElement("aboutFrame");
+    permalinkFrame = Ol.Util.getElement("permalinkFrame");
+    helpLink = Ol.Util.getElement("helpLink");
+    aboutLink = Ol.Util.getElement("aboutLink");
+    permalinkLink = Ol.Util.getElement("permalinkLink");
+
+    // frame buttons
+    function helpFrameAction() {
+        helpFrame.style.display = (helpFrame.style.display==="block")?"none":"block";
+        helpLink.className = (helpFrame.style.display==="block")?"selected":"";
+        aboutFrame.style.display = "none";
+        aboutLink.className = "";
+        permalinkFrame.style.display = "none";
+        permalinkLink.className = "";
+        return false;
+    };
+    function aboutFrameAction() {
+        helpFrame.style.display = "none";
+        helpLink.className = "";
+        aboutFrame.style.display = (aboutFrame.style.display==="block")?"none":"block";
+        aboutLink.className = (aboutFrame.style.display==="block")?"selected":"";
+        permalinkFrame.style.display = "none";
+        permalinkLink.className = "";
+        return false;
+    };
+    function permalinkFrameAction() {
+        helpFrame.style.display = "none";
+        helpLink.className = "";
+        aboutFrame.style.display = "none";
+        aboutLink.className = "";
+        permalinkFrame.style.display = (permalinkFrame.style.display==="block")?"none":"block";
+        permalinkLink.className = (permalinkFrame.style.display==="block")?"selected":"";
+        setPermalink();
+        return false;
+    };
+    function setTab(list) {
+
+    }
+
+    Ol.Util.getElement("helpLink").onclick = helpFrameAction;
+    Ol.Util.getElement("helpClose").onclick = helpFrameAction;
+    Ol.Util.getElement("aboutLink").onclick = aboutFrameAction;
+    Ol.Util.getElement("aboutClose").onclick = aboutFrameAction;
+    Ol.Util.getElement("permalinkLink").onclick = permalinkFrameAction;
+    Ol.Util.getElement("permalinkClose").onclick = permalinkFrameAction;
+
+
+
+
+    /**
+     * geocodage form
+     */
+    var markGeoloc = new Ol.Layer.Markers("geocodage left");
+    map.addLayers([markGeoloc]);
+    var infogeocoder = null;
+    var addressInput = Ol.Util.getElement("addressInput");
+    addressInput.onfocus = function() {
+        addressInput.value = "";
+        return false;
+    }
+
+    // geocodage via IGN
+    function openLs(text) {
+        try {
+            var q = text.trim();
+            var qa = q.split(",");
+            if (q!="") {
+                var qxml = "";
+                var countryCode ="ALL";
+                var freeFormAddress ="";
+                if (qa.length>1) {
+                    // address and municipality separated by a comma
+                    var address = qa.slice(0,qa.length-1).join(" ").trim();
+                    var municipality = qa[qa.length-1].trim();
+                    countryCode="StreetAddress";
+                    freeFormAddress = address + " " + municipality;
+                    
+                } else {
+                    // municipality
+                    countryCode="PositionOfInterest";
+                    freeFormAddress = q;
+                }
+
+                Ol.Request.issue({
+                    method: 'POST',
+                    headers: { "Content-Type": "text/xml" },
+                    url: hardConfig.openLSGeocodeUrl.replace("KEY",hardConfig.apiKey),
+                    data:[
+                        '<?xml version="1.0" encoding="UTF-8"?>\n',
+                        '<XLS xmlns:xls="http://www.opengis.net/xls" ',
+                        'xmlns:gml="http://www.opengis.net/gml" ',
+                        'xmlns="http://www.opengis.net/xls" ',
+                        'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ',
+                        'version="1.2" ',
+                        'xsi:schemaLocation="http://www.opengis.net/xls http://schemas.opengis.net/ols/1.2/olsAll.xsd">\n',
+                        '<RequestHeader/>\n',
+                        '<Request maximumResponses="',
+                        hardConfig.openLSMaxResponses,
+                        '" requestID="1" version="1.2" methodName="LocationUtilityService">\n',
+                        '<GeocodeRequest returnFreeForm="false">\n',
+                        '<Address countryCode="',
+                        countryCode,
+                        '">\n',
+                        '<freeFormAddress>',
+                        freeFormAddress,
+                        '</freeFormAddress>\n',
+                        '</Address>\n',
+                        '</GeocodeRequest>\n',
+                        '</Request>\n',
+                        '</XLS>'].join(""),        
+                    failure: onOpenLSFailure,
+                    success: onOpenLSSuccess
+
+                });
+            }
+        }
+        catch(err) {
+            console.log(err.message);
+        }
+    };
+
+    var onOpenLSSuccess = function (response) {
+        try {
+            var doc = new Ol.Format.XML().read(response.responseText);
+            var nbresults = parseInt(doc.getElementsByTagName("GeocodeResponseList")[0].getAttribute("numberOfGeocodedAddresses"), 10);
+            if (nbresults > 0) {
+                var firstResult = doc.getElementsByTagName("GeocodedAddress")[0];
+                var position = firstResult.getElementsByTagName("pos")[0];
+                var loc = (position.textContent) ? position.textContent.split(" ") : position.nodeTypedValue.split(" ");
+                // zoom relies on result type
+                var zoom = 16;
+                var matchType = firstResult.getElementsByTagName("GeocodeMatchCode")[0].getAttribute("matchType");
+                switch (matchType) {
+                    case "City": zoom = 15; break;
+                    case "Street": zoom = 17; break;
+                    case "Street enhanced": zoom = 18; break;
+                    case "Street number": zoom = 18; break;
+                }
+                console.log(matchType);
+                var ptResult = new Ol.LonLat(loc[1], loc[0]).transform(new Ol.Projection("EPSG:4326"), new Ol.Projection("EPSG:2154"));
+                if (hardConfig.restrictedExtent.containsLonLat(ptResult)) {
+                    map.setCenter(ptResult, zoom);
+                    markGeoloc.addMarker(new Ol.Marker(ptResult));
+                }
+                else {
+                    alert("le lieu recherché est hors carte");
+                }
+
+            } else {
+                alert("Localisation IGN" +"\n" + "Aucun résultat trouvé");
+            }
+        } catch(err) {
+            if (doc.getElementsByTagName("Exception")[0].textContent) {
+                 alert("Localisation IGN" +"\n" + doc.getElementsByTagName("Exception")[0].textContent);
+            }
+            else {            
+            console.log(err.message);
+            }
+        }
+    };
+
+    var onOpenLSFailure = function (response) {
+      Ol.Console.log("Erreur Géocodage", response.responseText);
+    };
+
+    Ol.Util.getElement("addressForm").onsubmit = function() {
+        try {
+            markGeoloc.clearMarkers();
+            openLs(addressInput.value);
+            return false;
+        }
+        catch(err) {
+            console.log(err.message);
+            return false;
+        }
+    }
+
+
     /**
      * permalinks and helplink
      */
-    // qrcode element
-    //~ var qrcode = document.getElementById("qrcode");
 
     // reading map initial extent from permalink
     if (!map.getCenter()) {
         var center = hardConfig.initialExtent.getCenterLonLat();
         var zoom = hardConfig.zinit;
-        OpenLayers.Util.applyDefaults(config, {x:center.lon, y:center.lat, z:zoom});
-        map.setCenter(new OpenLayers.LonLat(config.x, config.y), config.z);
+        Ol.Util.applyDefaults(config, {x:center.lon, y:center.lat, z:zoom});
+        map.setCenter(new Ol.LonLat(config.x, config.y), config.z);
     }
 
     // keeping permalink synchronized with the map extent
-    var permalink = OpenLayers.Util.getElement("permalink");
-    function setPermalink() {
+    permalinkLink = Ol.Util.getElement("permalinkLink");
+    permalinkLink2 = Ol.Util.getElement("permalinkLink2");
+    permaqr =  Ol.Util.getElement("permaQR");
+    setPermalink = function() {
         var c = map.getCenter();
         var linkParams = {};
         linkParams.x = encodeURIComponent(Math.round(c.lon));
@@ -368,208 +607,365 @@ function init(){
         if (config.kml) { linkParams.kml = config.kml; }
         if (config.layers) { linkParams.layers = config.layers; }
         if (config.title) { linkParams.title = config.title; }
-        permalink.href = OpenLayers.Util.urlAppend(window.location.href.split('?')[0],
-            OpenLayers.Util.getParameterString(linkParams)
+        if (config.CQL_FILTER) { linkParams.CQL_FILTER = config.CQL_FILTER; }
+        var url = Ol.Util.urlAppend(
+            window.location.href.split('?')[0],
+            Ol.Util.getParameterString(linkParams)
         );
-        //~ qrcode.src="http://chart.apis.google.com/chart?cht=qr&chs=140x140&chl=" + encodeURIComponent(window.location);
+        permalinkLink.href = url;
+        permalinkLink2.href = url;
+        // QR code update only if frame is displayed
+        if (permalinkFrame.style.display==="block") {
+            permaqr.src="http://chart.apis.google.com/chart?cht=qr&chs=140x140&chl=" + encodeURIComponent(url);
+        }
     }
     map.events.register("moveend", map, setPermalink);
     setPermalink();
 
-    // help frame display toggle
-    var toggleHelp = function() {
-        var d = OpenLayers.Util.getElement("helpFrame")
-        d.style.display = d.style.display=="block"?"none":"block";
-        return false;
+    /**
+     * Capabilities and metadata
+     */
+    var format_WMS = new Ol.Format.WMSCapabilities;
+    var domAttribution = Ol.Util.getElement("attributions");
+    var layernames = [].concat(config.layers);
+    for (var i=0,l=layernames.length;i<l;i+=1) {
+        if (layernames[i]) {
+            var la = layernames[i].split(":",2);
+            var onlineResource = [hardConfig.geoserver,la[0],la[1],"wms"].join("/");
+            Ol.Request.GET({
+                url: onlineResource,
+                params: {
+                    SERVICE: "WMS",
+                    VERSION: "1.3.0",
+                    REQUEST: "GetCapabilities"
+                },
+                success: function(request) {
+                    var doc = request.responseXML;
+                    if (!doc || !doc.documentElement) {
+                        doc = request.responseText;
+                    }
+                    var capabilities = format_WMS.read(doc);
+                    var mdLayer = capabilities.capability.layers[0];
+                    var legendArgs = {
+                        "service" : "WMS",
+                        "version" : "1.3",
+                        "request" : "GetLegendGraphic",
+                        "width" : 30,
+                        "format" : "image/png",
+                        "layer": mdLayer.name
+                    }
+                    var p = domAddNode(domAttribution,"p","","");
+                    domAddNode(p,"span",mdLayer.title,"title");
+                    domAddNode(p,"br","","");
+                    domAddNode(p,"span",mdLayer.abstract,"abstract");
+                    domAddNode(p,"br","","");
+                    var l = domAddNode(p,"img","","legend");
+                    l.src = Ol.Util.urlAppend(capabilities.service.href, Ol.Util.getParameterString(legendArgs));
+                    domAddNode(p,"br","","");
+                    domAddNode(p,""," Source : ","");
+                    var a = domAddNode(p,'a',mdLayer.attribution.title,"attribution");
+                    a.href = mdLayer.attribution.href;
+                    domAddNode(p,"hr","","");
+                },
+                failure: function() {
+                    Ol.Console.error.apply(Ol.Console, arguments);
+                }
+            });
+        }
     }
-    OpenLayers.Util.getElement("helplink").onclick = toggleHelp;
-    OpenLayers.Util.getElement("helpclose").onclick = toggleHelp;
 }
     </script>
     <style type="text/css">
-html, body {
+html,body {
     margin: 0;
     padding: 0;
+    width: 100%;
     height: 100%;
-    font-family: verdana, geneva, arial, sans-serif;
+    font-family: Helvetica, arial, sans-serif;
+    font-size: 1em;
+    color: #333333;
+    background-color: #ffffff;
 }
+
+
+
+
+/**
+ * layout
+ */
+
 #banner {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
+    padding: 0;
     font-size: small;
-    color: #ffffff;
-    background-color: #333333;
-    box-shadow: 0 0 10px #ffffff;
+    text-shadow: 0 -1px 1px #000000;
+    border-top: 1px solid #333333;
+    border-bottom: 1px solid #333333;
     z-index: 3000;
+    color: #ffffff;
+    background-color: #3c3c3c;
+    background-image: -webkit-linear-gradient(#3c3c3c, #111111);
+    background-image: -moz-linear-gradient(#3c3c3c, #111111);
+    background-image: -ms-linear-gradient(#3c3c3c, #111111);
+    background-image: -o-linear-gradient(#3c3c3c, #111111);
+    background-image: linear-gradient(#3c3c3c, #111111);
 }
 #banner h1 {
     text-align: left;
-    font-size: small;
+    font-size: medium;
     margin: 0;
-    padding: 0.2em 0.5em 0.2em 0.5em;
-    text-shadow: 1px 1px 1.5px #000000;
+    padding: 0.4em;
+    white-space:nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #banner a {
     float: right;
-    margin-right: 0.5em;
-    padding: 1px;
+    padding: 0.4em;
     font-weight: bold;
-    color: #ffffff;
+    line-height: 2em;
     text-decoration: none;
-	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
-	border-radius: 4px;
-	-khtml-border-radius: 4px;
+    white-space:nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-left: 1px solid #000000;
+    color: #ffffff;
+    background-color: #444444;
+    background-image: -webkit-linear-gradient(#FFFFFF, #444444 3%, #2d2d2d);
+    background-image: -moz-linear-gradient(#FFFFFF, #444444 3%, #2d2d2d);
+    background-image: -ms-linear-gradient(#FFFFFF, #444444 3%, #2d2d2d);
+    background-image: -o-linear-gradient(#FFFFFF, #444444 3%, #2d2d2d);
+    background-image: linear-gradient(#FFFFFF, #444444 3%, #2d2d2d);
 }
-#banner a:hover {
+#banner img {
+    height: 2em;
+}
+#banner a:hover,a.selected {
+    color: #ffffff !important;
+    background-color: #ffffff !important;
+    background-image: -webkit-linear-gradient(#FFFFFF, #444444 3%, #FFFFFF) !important;
+    background-image: -moz-linear-gradient(#FFFFFF, #444444 3%, #FFFFFF) !important;
+    background-image: -ms-linear-gradient(#FFFFFF, #444444 3%, #FFFFFF) !important;
+    background-image: -o-linear-gradient(#FFFFFF, #444444 3%, #FFFFFF) !important;
+    background-image: linear-gradient(#FFFFFF, #444444 3%, #FFFFFF) !important;
+}
+#banner form {
+    float: right;
+    margin: 0px;
+    padding: 0.5em 1em 0.5em 1em;
+}
+#banner form input {
     color: #333333;
-    background-color: #ffffff;
+    margin: 0px
+    height: 1.2em;
+    font-size: small;
 }
-#attributionFrame {
+
+#logo {
     position: absolute;
-    bottom: 0;
-    right: 0;
-    padding: 0;
-    font-size: x-small;
-    color: #000000;
-    z-index: 1000;
+    top: 0;
+    left: 0;
+    height: 20px;
 }
-#helpFrame {
+
+/* pages incluses */
+
+.popupFrame {
     display: none;
     position: absolute;
-    top: 1em;
+    top: 2em;
     right: 0;
     margin-left: 80px;
-    padding: 1em;
+    max-width: 50em;
+    padding: 1.5em 1em 1em 1em;
+    font-size: 0.7em;
     color: #333333;
     background-color: #ffffff;
-    box-shadow: 0 0 10px #333333;
     z-index: 1000;
 }
-#helpFrame a {
+.popupFrame h2, .popupFrame h3 {
+    margin: 0;
+    margin-bottom: 0.2em;
+    padding: 0 0 0 0.5em;
+    color: #333333;
+}
+.popupFrame h3 {
+    border-bottom: 1px dotted #666666;
+}
+
+
+.popupFrame a.bt {
     padding: 0.2em 1em 0.2em 1em;
     font-weight: bold;
+    font-size: small;
+    text-decoration: none;
     color: #ffffff;
-    background-color: #333333;
-	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
-	border-radius: 4px;
-	-khtml-border-radius: 4px;
+    background-color: #444444;
+    background-image: -webkit-linear-gradient(#FFFFFF, #444444 3%, #2d2d2d);
+    background-image: -moz-linear-gradient(#FFFFFF, #444444 3%, #2d2d2d);
+    background-image: -ms-linear-gradient(#FFFFFF, #444444 3%, #2d2d2d);
+    background-image: -o-linear-gradient(#FFFFFF, #444444 3%, #2d2d2d);
+    background-image: linear-gradient(#FFFFFF, #444444 3%, #2d2d2d);
+    border: 1px solid #000000;
+    -webkit-border-radius: 1em;
+    -moz-border-radius: 1em;
+    border-radius: 1em;
+    -khtml-border-radius: 1em;
 }
-#helpFrame table {
+
+.popupFrame table {
     border-collapse:collapse;
 }
-#helpFrame table td {
-    padding: 0.3em;
+.popupFrame table td {
+    padding: 0.2em;
     border-bottom: 1px dotted #999999;
 }
-#helpFrame p {
-    text-align: right;
+.popupFrame p {
+    margin: 0;
+    padding: 0.5em 0 0.5em 0;
+    text-align: left;
+    text-align: justify;
 }
-#helpFrame .ico {
-    width: 20px;
-    height: 20px;
-	border: 2px solid #333333;
-	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
-	border-radius: 4px;
-	-khtml-border-radius: 4px;
+.popupFrame p.pcenter {
+    text-align: center;
 }
+.popupFrame .ico {
+    width: 1.2em;
+    height: 1.2em;
+    border: 2px solid #333333;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    -khtml-border-radius: 4px;
+}
+#attributions .title {
+    font-weight: bold;
+}
+#attributions .abstract {
+}
+#attributions .legend {
+    padding: 2px;
+    border: 1px outset #333333;
+}
+#attributions .logo {
+    width: 48px;
+}
+
 #map {
-    position: relative;
+    position: absolute;
+    top: 0px;
+    left: 0px;
     width: 100%;
     height: 100%;
 }
-
 
         </style>
     </head>
     <body>
         <noscript>cette page requiert l'activation de javascript</noscript>
         <div id="banner">
-            <a id="helplink" href="." title="aide">aide</a>
-            <a id="permalink" class="permalink" href="." title="lien permanent sur la vue actuelle">
-            lien permanent
+            <a id="permalinkLink" href="#permalinkFrame" title="lien permanent sur la vue actuelle">
+                Permalien
             </a>
+            <a id="aboutLink" href="#aboutFrame" title="&agrave; propos">A propos</a>
+            <a id="helpLink" href="#helpFrame" title="Aide">Aide</a>
+            <form id="addressForm" method="get" target="#">
+                <input id="addressInput" type="text"  value="ex: rue Martenot, Rennes" title="ex: rue Martenot, Rennes" value="10 rue maurice fabre, rennes" />
+                <input type="submit" value="trouver" />
+            </form>
             <h1 id="title"></h1>
         </div>
-        <div id="attributionFrame">
-            cr&eacute;dits : partenaires G&eacute;oBretagne,
-            <span id="attribution"></span>
-        </div>
-        <div id="helpFrame">
+
+        <!-- help -->
+        <div id="helpFrame" class="popupFrame">
+            <h2>Comment utiliser cette carte</h2>
             <table>
                 <tbody>
                     <tr>
                         <td><img class="ico" src="img/home.png" title="bouton &eacute;tendue globale" /></td>
                         <td>
-                            positionne la carte sur l'&eacute;tendue globale.
+                            Positionne la carte sur l'&eacute;tendue globale.
                         </td>
                     </tr>
                     <tr>
                         <td><img class="ico" src="img/back.png" title="bouton annuler dernier d&eacute;placement" /></td>
                         <td>
-                            annule le dernier d&eacute;placement de carte.
+                            Annule le dernier d&eacute;placement de carte.
                         </td>
                     </tr>
                     <tr>
                         <td><img class="ico" src="img/plus.png" title="bouton zoom avant" /></td>
                         <td>
                             Effectue un zoom avant.
-                            Alternative: touche [+] du clavier.
+                            Alternative: touche [+] du clavier, double-clic
                         </td>
                     </tr>
                     <tr>
                         <td><img class="ico" src="img/minus.png" title="bouton zoom arri&egrave;re" /></td>
                         <td>
-                            effectue un zoom arri&egrave;re.
+                            Effectue un zoom arri&egrave;re.
                             Alternative: touche [-] du clavier.
                         </td>
                     </tr>
                     <tr>
                         <td><img class="ico" src="img/layer.png" title="bouton fond de plan" /></td>
                         <td>
-                            change le fond de plan.
+                            Change le fond de plan.
                         </td>
                     </tr>
                     <tr>
-                        <td>clic</td>
-                        <td>Interroge sur la carte.</td>
-                    </tr>
-                    <tr>
-                        <td>&nbsp;</td>
+                        <td><strong>&eacute;crans tactiles</strong></td>
                         <td>
-                        Pour se d&eacute;placer sur la carte,
-                        maintenir le bouton souris et glisser sur la carte, ou touches fl&eacute;ch&eacute;es du clavier.
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>&nbsp;</td>
-                        <td>
-                        Pour recadrer la carte,
-                        maintenir la touche MAJ du clavier et tracer un rectangle avec la souris, bouton maintenu.
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>lien permanent</td>
-                        <td>
-                        Pour partager la carte, cliquer sur "lien permanent" dans la barre de titre.
-                        Utilisez ce lien pour envoyer la carte &agrave; vos contacts.</td>
-                    </tr>
-                    <tr>
-                        <td>&eacute;crans tactiles</td>
-                        <td>Glisser sur l'&eacute;cran pour se d&eacute;placer sur la carte.
+                        Toucher la carte pour afficher les informations.
+                        Glisser sur l'&eacute;cran pour se d&eacute;placer sur la carte.
                         Pincer l'&eacute;cran pour effectuer un zoom avant/arri&egrave;re.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>clavier<br />souris</strong></td>
+                        <td>
+                        Cliquer sur la carte pour afficher les informations.
+                        Pour Se d&eacute;placer,
+                        maintenir le bouton souris et glisser sur la carte, ou touches fl&eacute;ch&eacute;es du clavier.
+                        Pour recadrer,
+                        maintenir la touche MAJ du clavier et tracer un rectangle avec la souris, bouton maintenu.
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <p>
-                <a id="helpclose" href="" title="fermer l'aide">fermer</a>
+            <p class="pcenter">
+                <a id="helpClose" class="bt" href="#" title="fermer l'aide">fermer</a>
             </p>
         </div>
+
+        <!-- about -->
+        <div id="aboutFrame" class="popupFrame">
+            <div id="attributions"></div>
+            <div id="baseAttributions"></div>
+            <p class="pcenter">
+                <a id="aboutClose" href="#" class="bt" title="fermer">fermer</a>
+            </p>
+        </div>
+
+
+        <!-- permalink -->
+        <div id="permalinkFrame" class="popupFrame">
+            <h2>Lien permanent</h2>
+            <p>
+                <a id="permalinkLink2" href="#" title="lien permanent vers la carte">lien vers la carte</a>
+                <br />
+                <br />
+                <img id="permaQR" src="img/loading.gif" title="QR code vers la carte"/>
+            </p>
+            <p class="pcenter">
+                <a id="permalinkClose" class="bt" href="#">fermer</a>
+            </p>
+        </div>
+
+        <!-- map -->
         <div id="map"></div>
         <script>init();</script>
     </body>
