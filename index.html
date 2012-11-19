@@ -111,12 +111,8 @@ var hardConfig = {
     // string matching empty gfi response, set your templates !
     nodata: '<!--nodatadetect-->\n<!--nodatadetect-->',
 
-    // geocoder    
-    //apiKey: "x1uy9hv7ojndca8335mhgv38", // dev-geobretagne.fr
-    //apiKey: "01gwgg3by2fpaxwxrfgvynqw", // geobretagne.fr
-    //apiKey: "xsjb3kmbejbpxp04tysclyrc", // test.geobretagne.fr  
-    apiKey: "tyujsdxmzox31ituc2uw0qwl", // geoportail
-    openLSGeocodeUrl: "http://gpp3-wxs.ign.fr/KEY/geoportail/ols?",
+    // geocoder
+    openLSGeocodeUrl: "http://gpp3-wxs.ign.fr/tyujsdxmzox31ituc2uw0qwl/geoportail/ols?",
     openLSMaxResponses: 1,
 
     // array of background map layers. Only one shall be visible on startup.
@@ -480,7 +476,7 @@ function init(){
                     var municipality = qa[qa.length-1].trim();
                     countryCode="StreetAddress";
                     freeFormAddress = address + " " + municipality;
-                    
+
                 } else {
                     // municipality
                     countryCode="PositionOfInterest";
@@ -489,8 +485,8 @@ function init(){
 
                 Ol.Request.issue({
                     method: 'POST',
-                    headers: { "Content-Type": "text/xml" },
-                    url: hardConfig.openLSGeocodeUrl.replace("KEY",hardConfig.apiKey),
+                    headers: { "Content-Type": "application/xml" },
+                    url: hardConfig.openLSGeocodeUrl,
                     data:[
                         '<?xml version="1.0" encoding="UTF-8"?>\n',
                         '<XLS xmlns:xls="http://www.opengis.net/xls" ',
@@ -513,7 +509,7 @@ function init(){
                         '</Address>\n',
                         '</GeocodeRequest>\n',
                         '</Request>\n',
-                        '</XLS>'].join(""),        
+                        '</XLS>'].join(""),
                     failure: onOpenLSFailure,
                     success: onOpenLSSuccess
 
@@ -528,45 +524,40 @@ function init(){
     var onOpenLSSuccess = function (response) {
         try {
             var doc = new Ol.Format.XML().read(response.responseText);
-            var nbresults = parseInt(doc.getElementsByTagName("GeocodeResponseList")[0].getAttribute("numberOfGeocodedAddresses"), 10);
-            if (nbresults > 0) {
-                var firstResult = doc.getElementsByTagName("GeocodedAddress")[0];
-                var position = firstResult.getElementsByTagName("pos")[0];
+            var results = doc.getElementsByTagName("GeocodedAddress");
+            if (results.length>0) {
+                var position = results[0].getElementsByTagNameNS("*","pos")[0];
+                console.log(results[0]);
                 var loc = (position.textContent) ? position.textContent.split(" ") : position.nodeTypedValue.split(" ");
-                // zoom relies on result type
-                var zoom = 16;
-                var matchType = firstResult.getElementsByTagName("GeocodeMatchCode")[0].getAttribute("matchType");
+                var ptResult = new Ol.LonLat(loc[1], loc[0]).transform(new Ol.Projection("EPSG:4326"), new Ol.Projection("EPSG:2154"));
+                var matchType = results[0].getElementsByTagName("GeocodeMatchCode")[0].getAttribute("matchType");
                 switch (matchType) {
                     case "City": zoom = 15; break;
                     case "Street": zoom = 17; break;
                     case "Street enhanced": zoom = 18; break;
                     case "Street number": zoom = 18; break;
                 }
-                console.log(matchType);
-                var ptResult = new Ol.LonLat(loc[1], loc[0]).transform(new Ol.Projection("EPSG:4326"), new Ol.Projection("EPSG:2154"));
+
+                // map move and zoom
                 if (hardConfig.restrictedExtent.containsLonLat(ptResult)) {
                     map.setCenter(ptResult, zoom);
                     markGeoloc.addMarker(new Ol.Marker(ptResult));
                 }
                 else {
-                    alert("le lieu recherché est hors carte");
+                    alert("La géolocalisation a échoué :\nlieu recherché hors carte");
                 }
-
-            } else {
-                alert("Localisation IGN" +"\n" + "Aucun résultat trouvé");
+            }
+            else {
+                alert("La géolocalisation a échoué :\naucun résultat");
             }
         } catch(err) {
-            if (doc.getElementsByTagName("Exception")[0].textContent) {
-                 alert("Localisation IGN" +"\n" + doc.getElementsByTagName("Exception")[0].textContent);
-            }
-            else {            
-            console.log(err.message);
-            }
+            alert("la géolocalisation a échoué");
+            console.log(err);
         }
     };
 
     var onOpenLSFailure = function (response) {
-      Ol.Console.log("Erreur Géocodage", response.responseText);
+        alert("la géolocalisation a échoué");
     };
 
     Ol.Util.getElement("addressForm").onsubmit = function() {
