@@ -194,7 +194,6 @@ function init(){
         numZoomLevels: hardConfig.numZoomLevels,
         units: "m",
         controls: [
-            new Ol.Control.KeyboardDefaults(),
             new Ol.Control.Navigation({
                 mouseWheelOptions: {
                     cumulative: false,
@@ -228,6 +227,10 @@ function init(){
         new Ol.Control.ZoomIn({title: "zoom avant"}),
         new Ol.Control.ZoomOut({title: "zoom arri&egrave;re"}),
     ]);
+
+    // keyboard navigation
+    var keyboardNav = new OpenLayers.Control.KeyboardDefaults();
+    map.addControls([keyboardNav]);
 
 
 
@@ -458,8 +461,17 @@ function init(){
     var addressInput = Ol.Util.getElement("addressInput");
     addressInput.onfocus = function() {
         addressInput.value = "";
+        // navkeys are annoying
+        keyboardNav.deactivate();
+        console.log(keyboardNav.active);
         return false;
     }
+    addressInput.onblur = function() {
+        // navkeys are back
+        keyboardNav.activate();
+        return false;
+    }
+
 
     // geocodage via IGN
     function openLs(text) {
