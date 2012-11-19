@@ -3,8 +3,8 @@
     <!--
 GeoBretagne dual viewer
 
-$Rev: 74 $
-$Date: 2012-07-09 23:13:26 +0200 (lun. 09 juil. 2012) $
+$Rev: 77 $
+$Date: 2012-07-23 12:29:19 +0200 (lun. 23 juil. 2012) $
 $Author: fabrice.phung $
     -->
     <head>
@@ -26,6 +26,7 @@ $Author: fabrice.phung $
  */
 
 // libraries configuration
+var Ol = OpenLayers;
 OpenLayers.DOTS_PER_INCH = 90.71428571428572;
 OpenLayers.Util.onImageLoadErrorColor = 'transparent';
 OpenLayers.ProxyHost = '/proxy/?url=';
@@ -66,6 +67,20 @@ var hardConfig = {
     // map center restricted in this extent
     restrictedExtent: new OpenLayers.Bounds(80000,6670000,425000,6950000),
 
+    // real extent of interest (polygon)
+    coveredExtent: [
+        [209999,6810404],[226203,6809486],[237516,6806429],[249135,6811015],[282767,6798785],[297748,6803066],
+        [302335,6797562],[308755,6800314],[310590,6806123],[320680,6813767],[329852,6814684],[333827,6835781],
+        [325266,6836698],[316093,6848622],[328323,6859629],[346057,6860546],[349114,6850151],[367459,6849234],
+        [371434,6833029],[375714,6831195],[385498,6839144],[403537,6833641],[402620,6804900],[399868,6801537],
+        [403232,6770045],[393142,6768210],[383664,6746197],[369293,6751089],[357064,6746502],[349726,6740999],
+        [322514,6737024],[320068,6723571],[300194,6716539],[283378,6716539],[282767,6724183],[258613,6722043],
+        [255555,6716845],[263810,6707367],[259836,6704615],[246994,6708590],[244243,6701863],[224980,6705226],
+        [224980,6716539],[229872,6721431],[245466,6713482],[238128,6722960],[232930,6731521],[235376,6738247],
+        [224369,6747114],[219171,6739164],[207859,6745279],[212139,6752617],[206941,6768210],[211222,6774020],
+        [217031,6772797],[217031,6777994],[201438,6783498],[195629,6801843],[200826,6809181],[209999,6810404]
+    ],
+
     // map projection
     projMap: new OpenLayers.Projection('EPSG:2154'),
 
@@ -86,7 +101,7 @@ var hardConfig = {
     ),
 
     // geocoder
-    openLSGeocodeUrl: "http://wxs.ign.fr/geoportail/ols/OpenLSPOST?gppkey=8089244357447090313",
+    openLSGeocodeUrl: "http://gpp3-wxs.ign.fr/tyujsdxmzox31ituc2uw0qwl/geoportail/ols?",
     openLSMaxResponses: 1,
 
     // right compare layer
@@ -182,9 +197,6 @@ function init() {
         controls: []
     }
 
-    // marker
-    //~ icon = new OpenLayers.Icon('img/mapicons/marker.png', new OpenLayers.Size(21,25), new OpenLayers.Pixel(-10,-25));
-
 
     /**
      * Left map
@@ -199,7 +211,6 @@ function init() {
             }
         }),
         new OpenLayers.Control.ScaleLine(),
-        new OpenLayers.Control.KeyboardDefaults(),
         new OpenLayers.Control.LoadingPanel()
     ]);
 
@@ -218,6 +229,11 @@ function init() {
         new OpenLayers.Control.ZoomIn({title: "zoom avant"}),
         new OpenLayers.Control.ZoomOut({title: "zoom arri&egrave;re"})
     ]);
+
+    // keyboard navigation
+    var keyboardNav = new OpenLayers.Control.KeyboardDefaults();
+    mapLeft.addControls([keyboardNav]);
+
 
     // left map layers
     mapLeft.addLayer(hardConfig.leftCompareLayer);
@@ -358,12 +374,30 @@ function init() {
      * geocodage form
      */
 
-    var infogeocoder = null;
     var addressInput = OpenLayers.Util.getElement("addressInput");
     addressInput.onfocus = function() {
         addressInput.value = "";
+        // navkeys are annoying
+        keyboardNav.deactivate();
         return false;
     }
+    addressInput.onblur = function() {
+        // navkeys are back
+        keyboardNav.activate();
+        return false;
+    }
+
+
+    function arrayToPolygon(xyarray) {
+        var a = [];
+        for (var i=0,l=xyarray.length;i<l;i+=1) {
+            xy = xyarray[i];
+            a.push(new OpenLayers.Geometry.Point(xy[0],xy[1]));
+        };
+        return new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(a)]);
+    };
+    var openLsBounds = arrayToPolygon(hardConfig.coveredExtent);
+
 
     // geocodage via IGN
     function openLs(text) {
@@ -372,40 +406,48 @@ function init() {
             var qa = q.split(",");
             if (q!="") {
                 var qxml = "";
+                var countryCode ="ALL";
+                var freeFormAddress ="";
                 if (qa.length>1) {
                     // address and municipality separated by a comma
                     var address = qa.slice(0,qa.length-1).join(" ").trim();
                     var municipality = qa[qa.length-1].trim();
-                    qxml = [
-                        '<xls:StreetAddress><xls:Street>',
-                        address,
-                        '</xls:Street></xls:StreetAddress><xls:Place type="Municipality">',
-                        municipality,
-                        '</xls:Place><xls:PostalCode/>'
-                    ].join("");
+                    countryCode="StreetAddress";
+                    freeFormAddress = address + " " + municipality;
+
                 } else {
                     // municipality
-                    qxml = [
-                        '<xls:Place type="Municipality">',
-                        q,
-                        '</xls:Place>\n<xls:PostalCode />\n'
-                    ].join("");
+                    countryCode="PositionOfInterest";
+                    freeFormAddress = q;
                 }
 
                 OpenLayers.Request.issue({
                     method: 'POST',
-                    headers: { "Content-Type": "text/xml" },
+                    headers: { "Content-Type": "application/xml" },
                     url: hardConfig.openLSGeocodeUrl,
-                    data: [
-                        '<xls:XLS xmlns:xls="http://www.opengis.net/xls" version="1.0">\n',
-                        '<xls:RequestHeader sessionID=""/>\n',
-                        '<xls:Request methodName="GeocodeRequest" version="1.0" requestID="" maximumResponses="',
+                    data:[
+                        '<?xml version="1.0" encoding="UTF-8"?>\n',
+                        '<XLS xmlns:xls="http://www.opengis.net/xls" ',
+                        'xmlns:gml="http://www.opengis.net/gml" ',
+                        'xmlns="http://www.opengis.net/xls" ',
+                        'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ',
+                        'version="1.2" ',
+                        'xsi:schemaLocation="http://www.opengis.net/xls http://schemas.opengis.net/ols/1.2/olsAll.xsd">\n',
+                        '<RequestHeader/>\n',
+                        '<Request maximumResponses="',
                         hardConfig.openLSMaxResponses,
+                        '" requestID="1" version="1.2" methodName="LocationUtilityService">\n',
+                        '<GeocodeRequest returnFreeForm="false">\n',
+                        '<Address countryCode="',
+                        countryCode,
                         '">\n',
-                        '<xls:GeocodeRequest>\n<xls:Address countryCode="FR">\n',
-                        qxml,
-                        '</xls:Address>\n</xls:GeocodeRequest>\n</xls:Request>\n</xls:XLS>'
-                    ].join(""),
+                        '<freeFormAddress>',
+                        freeFormAddress,
+                        '</freeFormAddress>\n',
+                        '</Address>\n',
+                        '</GeocodeRequest>\n',
+                        '</Request>\n',
+                        '</XLS>'].join(""),
                     failure: onOpenLSFailure,
                     success: onOpenLSSuccess
 
@@ -420,41 +462,42 @@ function init() {
     var onOpenLSSuccess = function (response) {
         try {
             var doc = new OpenLayers.Format.XML().read(response.responseText);
-            var nbresults = parseInt(doc.getElementsByTagName("GeocodeResponseList")[0].getAttribute("numberOfGeocodedAddresses"), 10);
-            if (nbresults > 0) {
-                var firstResult = doc.getElementsByTagName("GeocodedAddress")[0];
-                var position = firstResult.getElementsByTagName("pos")[0];
+            var results = doc.getElementsByTagName("GeocodedAddress");
+            if (results.length>0) {
+                var position = results[0].getElementsByTagNameNS("*","pos")[0];
+                console.log(results[0]);
                 var loc = (position.textContent) ? position.textContent.split(" ") : position.nodeTypedValue.split(" ");
-                // zoom relies on result type
-                var zoom = 16;
-                var matchType = firstResult.getElementsByTagName("GeocodeMatchCode")[0].getAttribute("matchType");
+                var ptResult = new Ol.LonLat(loc[1], loc[0]).transform(new Ol.Projection("EPSG:4326"), new Ol.Projection("EPSG:2154"));
+                var matchType = results[0].getElementsByTagName("GeocodeMatchCode")[0].getAttribute("matchType");
                 switch (matchType) {
                     case "City": zoom = 15; break;
                     case "Street": zoom = 17; break;
                     case "Street enhanced": zoom = 18; break;
                     case "Street number": zoom = 18; break;
                 }
-                console.log(matchType);
-                var ptResult = new OpenLayers.LonLat(loc[1], loc[0]).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:2154"));
+
+                // map move and zoom
                 if (hardConfig.restrictedExtent.containsLonLat(ptResult)) {
                     mapLeft.setCenter(ptResult, zoom);
-                    markGeolocLeft.addMarker(new OpenLayers.Marker(ptResult));
-                    markGeolocRight.addMarker(new OpenLayers.Marker(ptResult));
+                    markGeolocLeft.addMarker(new Ol.Marker(ptResult));
+                    markGeolocRight.addMarker(new Ol.Marker(ptResult));
                 }
                 else {
-                    alert("le lieu recherché n'est pas couvert");
+                    alert("La géolocalisation a échoué :\nlieu recherché hors carte");
                 }
-
-            } else {
-                alert("Localisation IGN", "Aucun résultat trouvé");
+            }
+            else {
+                alert("La géolocalisation a échoué :\naucun résultat");
             }
         } catch(err) {
-            console.log(err.message);
+            alert("la géolocalisation a échoué");
+            console.log(err);
         }
     };
 
+
     var onOpenLSFailure = function (response) {
-      OpenLayers.Console.log("Erreur Géocodage", response.responseText);
+        alert("la géolocalisation a échoué");
     };
 
     OpenLayers.Util.getElement("addressForm").onsubmit = function() {
@@ -844,7 +887,7 @@ html,body {
                         g&eacute;olocalisation: <a href="http://api.ign.fr/geoportail/api/doc/fr/developpeur/search.html">IGN G&eacute;oportail API</a>
                     </li>
                     <li>r&eacute;alisation : <a href="http://geobretagne.fr/">G&eacute;oBretagne</a>, Pr&eacute;fecture de la r&eacute;gion Bretagne</li>
-                    <li>technologie : OpenLayers, geOrchestra - $Revision: 74 $ $Date: 2012-07-09 23:13:26 +0200 (lun. 09 juil. 2012) $</li>
+                    <li>technologie : OpenLayers, geOrchestra - $Revision: 77 $ $Date: 2012-07-23 12:29:19 +0200 (lun. 23 juil. 2012) $</li>
                 </ul>
                 <p class="pcenter">
                     <a id="aboutClose" class="bt" href="#">fermer</a>
