@@ -26,6 +26,7 @@ $Author: fabrice.phung $
  */
 
 // libraries configuration
+var Ol = OpenLayers;
 OpenLayers.DOTS_PER_INCH = 90.71428571428572;
 OpenLayers.Util.onImageLoadErrorColor = 'transparent';
 OpenLayers.ProxyHost = '/proxy/?url=';
@@ -100,7 +101,7 @@ var hardConfig = {
     ),
 
     // geocoder
-    openLSGeocodeUrl: "http://wxs.ign.fr/geoportail/ols/OpenLSPOST?gppkey=8089244357447090313",
+    openLSGeocodeUrl: "http://gpp3-wxs.ign.fr/tyujsdxmzox31ituc2uw0qwl/geoportail/ols?",
     openLSMaxResponses: 1,
 
     // right compare layer
@@ -195,9 +196,6 @@ function init() {
         restrictedExtent: hardConfig.restrictedExtent,
         controls: []
     }
-
-    // marker
-    //~ icon = new OpenLayers.Icon('img/mapicons/marker.png', new OpenLayers.Size(21,25), new OpenLayers.Pixel(-10,-25));
 
 
     /**
@@ -381,7 +379,6 @@ function init() {
         addressInput.value = "";
         // navkeys are annoying
         keyboardNav.deactivate();
-        console.log(keyboardNav.active);
         return false;
     }
     addressInput.onblur = function() {
@@ -400,7 +397,6 @@ function init() {
         return new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(a)]);
     };
     var openLsBounds = arrayToPolygon(hardConfig.coveredExtent);
-    console.log(openLsBounds.getArea());
 
 
     // geocodage via IGN
@@ -410,40 +406,48 @@ function init() {
             var qa = q.split(",");
             if (q!="") {
                 var qxml = "";
+                var countryCode ="ALL";
+                var freeFormAddress ="";
                 if (qa.length>1) {
                     // address and municipality separated by a comma
                     var address = qa.slice(0,qa.length-1).join(" ").trim();
                     var municipality = qa[qa.length-1].trim();
-                    qxml = [
-                        '<xls:StreetAddress><xls:Street>',
-                        address,
-                        '</xls:Street></xls:StreetAddress><xls:Place type="Municipality">',
-                        municipality,
-                        '</xls:Place><xls:PostalCode/>'
-                    ].join("");
+                    countryCode="StreetAddress";
+                    freeFormAddress = address + " " + municipality;
+
                 } else {
                     // municipality
-                    qxml = [
-                        '<xls:Place type="Municipality">',
-                        q,
-                        '</xls:Place>\n<xls:PostalCode />\n'
-                    ].join("");
+                    countryCode="PositionOfInterest";
+                    freeFormAddress = q;
                 }
 
                 OpenLayers.Request.issue({
                     method: 'POST',
-                    headers: { "Content-Type": "text/xml" },
+                    headers: { "Content-Type": "application/xml" },
                     url: hardConfig.openLSGeocodeUrl,
-                    data: [
-                        '<xls:XLS xmlns:xls="http://www.opengis.net/xls" version="1.0">\n',
-                        '<xls:RequestHeader sessionID=""/>\n',
-                        '<xls:Request methodName="GeocodeRequest" version="1.0" requestID="" maximumResponses="',
+                    data:[
+                        '<?xml version="1.0" encoding="UTF-8"?>\n',
+                        '<XLS xmlns:xls="http://www.opengis.net/xls" ',
+                        'xmlns:gml="http://www.opengis.net/gml" ',
+                        'xmlns="http://www.opengis.net/xls" ',
+                        'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ',
+                        'version="1.2" ',
+                        'xsi:schemaLocation="http://www.opengis.net/xls http://schemas.opengis.net/ols/1.2/olsAll.xsd">\n',
+                        '<RequestHeader/>\n',
+                        '<Request maximumResponses="',
                         hardConfig.openLSMaxResponses,
+                        '" requestID="1" version="1.2" methodName="LocationUtilityService">\n',
+                        '<GeocodeRequest returnFreeForm="false">\n',
+                        '<Address countryCode="',
+                        countryCode,
                         '">\n',
-                        '<xls:GeocodeRequest>\n<xls:Address countryCode="FR">\n',
-                        qxml,
-                        '</xls:Address>\n</xls:GeocodeRequest>\n</xls:Request>\n</xls:XLS>'
-                    ].join(""),
+                        '<freeFormAddress>',
+                        freeFormAddress,
+                        '</freeFormAddress>\n',
+                        '</Address>\n',
+                        '</GeocodeRequest>\n',
+                        '</Request>\n',
+                        '</XLS>'].join(""),
                     failure: onOpenLSFailure,
                     success: onOpenLSSuccess
 
@@ -456,45 +460,44 @@ function init() {
     };
 
     var onOpenLSSuccess = function (response) {
-        //~ try {
+        try {
             var doc = new OpenLayers.Format.XML().read(response.responseText);
-            var nbresults = parseInt(doc.getElementsByTagName("GeocodeResponseList")[0].getAttribute("numberOfGeocodedAddresses"), 10);
-            if (nbresults > 0) {
-                var firstResult = doc.getElementsByTagName("GeocodedAddress")[0];
-                var position = firstResult.getElementsByTagName("pos")[0];
+            var results = doc.getElementsByTagName("GeocodedAddress");
+            if (results.length>0) {
+                var position = results[0].getElementsByTagNameNS("*","pos")[0];
+                console.log(results[0]);
                 var loc = (position.textContent) ? position.textContent.split(" ") : position.nodeTypedValue.split(" ");
-                // zoom relies on result type
-                var zoom = 16;
-                var matchType = firstResult.getElementsByTagName("GeocodeMatchCode")[0].getAttribute("matchType");
+                var ptResult = new Ol.LonLat(loc[1], loc[0]).transform(new Ol.Projection("EPSG:4326"), new Ol.Projection("EPSG:2154"));
+                var matchType = results[0].getElementsByTagName("GeocodeMatchCode")[0].getAttribute("matchType");
                 switch (matchType) {
                     case "City": zoom = 15; break;
                     case "Street": zoom = 17; break;
                     case "Street enhanced": zoom = 18; break;
                     case "Street number": zoom = 18; break;
                 }
-                console.log(matchType);
-                var ptResult = new OpenLayers.LonLat(loc[1], loc[0]).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:2154"));
-                if (openLsBounds.intersects(ptResult)) {
+
+                // map move and zoom
+                if (hardConfig.restrictedExtent.containsLonLat(ptResult)) {
                     mapLeft.setCenter(ptResult, zoom);
-                    markGeolocLeft.addMarker(new OpenLayers.Marker(ptResult));
-                    markGeolocRight.addMarker(new OpenLayers.Marker(ptResult));
-                    // navkeys are back
-                    keyboardNav.activate();
+                    markGeolocLeft.addMarker(new Ol.Marker(ptResult));
+                    markGeolocRight.addMarker(new Ol.Marker(ptResult));
                 }
                 else {
-                    alert("le lieu recherché n'est pas couvert");
+                    alert("La géolocalisation a échoué :\nlieu recherché hors carte");
                 }
-
-            } else {
-                alert("Localisation IGN", "Aucun résultat trouvé");
             }
-        //~ } catch(err) {
-            //~ console.log(err.message);
-        //~ }
+            else {
+                alert("La géolocalisation a échoué :\naucun résultat");
+            }
+        } catch(err) {
+            alert("la géolocalisation a échoué");
+            console.log(err);
+        }
     };
 
+
     var onOpenLSFailure = function (response) {
-      OpenLayers.Console.log("Erreur Géocodage", response.responseText);
+        alert("la géolocalisation a échoué");
     };
 
     OpenLayers.Util.getElement("addressForm").onsubmit = function() {
