@@ -14,7 +14,7 @@ $Author: fabrice.phung $
         <meta name="apple-mobile-web-app-capable" content="yes">
 
         <!-- libraries -->
-        <script type="text/javascript" src="lib/OpenLayers/lib/OpenLayers.js"></script>
+        <script type="text/javascript" src="lib/openlayers/OpenLayers.js"></script>
         <script type="text/javascript" src="lib/proj4js/proj4js-compressed.js"></script>
         <script type="text/javascript" src="lib/LoadingPanel.js"></script>
 
@@ -112,7 +112,8 @@ var hardConfig = {
     nodata: '<!--nodatadetect-->\n<!--nodatadetect-->',
 
     // geocoder
-    openLSGeocodeUrl: "http://gpp3-wxs.ign.fr/tyujsdxmzox31ituc2uw0qwl/geoportail/ols?",
+    //~ openLSGeocodeUrl: "http://gpp3-wxs.ign.fr/tyujsdxmzox31ituc2uw0qwl/geoportail/ols?",
+    openLSGeocodeUrl: "http://gpp3-wxs.ign.fr/j6cfp9s95zkaw14dujqso24a/geoportail/ols?",
     openLSMaxResponses: 1,
 
     // array of background map layers. Only one shall be visible on startup.
@@ -463,7 +464,6 @@ function init(){
         addressInput.value = "";
         // navkeys are annoying
         keyboardNav.deactivate();
-        console.log(keyboardNav.active);
         return false;
     }
     addressInput.onblur = function() {
@@ -534,12 +534,12 @@ function init(){
     };
 
     var onOpenLSSuccess = function (response) {
-        try {
-            var doc = new Ol.Format.XML().read(response.responseText);
-            var results = doc.getElementsByTagName("GeocodedAddress");
+        //~ try {
+            var format = new Ol.Format.XML();
+            var doc = format.read(response.responseText);
+            var results = format.getElementsByTagNameNS(doc,"*","GeocodedAddress");
             if (results.length>0) {
-                var position = results[0].getElementsByTagNameNS("*","pos")[0];
-                console.log(results[0]);
+                var position = format.getElementsByTagNameNS(results[0],"*","pos")[0];
                 var loc = (position.textContent) ? position.textContent.split(" ") : position.nodeTypedValue.split(" ");
                 var ptResult = new Ol.LonLat(loc[1], loc[0]).transform(new Ol.Projection("EPSG:4326"), new Ol.Projection("EPSG:2154"));
                 var matchType = results[0].getElementsByTagName("GeocodeMatchCode")[0].getAttribute("matchType");
@@ -562,10 +562,10 @@ function init(){
             else {
                 alert("La géolocalisation a échoué :\naucun résultat");
             }
-        } catch(err) {
-            alert("la géolocalisation a échoué");
-            console.log(err);
-        }
+        //~ } catch(err) {
+            //~ alert("la géolocalisation a échoué");
+            //~ console.log(err);
+        //~ }
     };
 
     var onOpenLSFailure = function (response) {
