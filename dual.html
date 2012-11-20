@@ -648,59 +648,67 @@ html,body {
     width: 100%;
     padding: 0;
     font-size: small;
-    color: #ffffff;
-    background-color: #333333;
-    box-shadow: 0 0 4px #333333;
-    filter:progid:DXImageTransform.Microsoft.Shadow(color='#333333', Direction=180, Strength=3);
+    text-shadow: 0 -1px 1px #000000;
+    border-top: 1px solid #333333;
+    border-bottom: 1px solid #333333;
     z-index: 3000;
+    color: #ffffff;
+    background-color: #3c3c3c;
+    background-image: -webkit-linear-gradient(#3c3c3c, #111111);
+    background-image: -moz-linear-gradient(#3c3c3c, #111111);
+    background-image: -ms-linear-gradient(#3c3c3c, #111111);
+    background-image: -o-linear-gradient(#3c3c3c, #111111);
+    background-image: linear-gradient(#3c3c3c, #111111);
 }
 #banner h1 {
     text-align: left;
     font-size: medium;
     margin: 0;
-    padding: 0.2em 0.5em 0.2em 0.5em;
+    padding: 0.4em;
+    white-space:nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
-#banner a,form {
+#banner a {
     float: right;
-    padding: 0.5em;
-    margin: 2px 2px 0 0;
-    font-size: x-small;
+    padding: 0.4em;
     font-weight: bold;
     line-height: 2em;
-    color: #f0f0f0;
-    line-height: 2em;
-    background-color: #666666;
-    border: 1px solid #ffffff;
-    border-bottom: 0;
-    -webkit-border-top-left-radius: 4px;
-    -moz-border-radius-top-left: 4px;
-    border-top-left-radius: 4px;
-    -khtml-border-top-left-radius: 4px;
-    -khtml-border-top-left-radius: 4px;
-    -webkit-border-top-left-radius: 4px;
-    -moz-border-radius-top-right: 4px;
-    border-top-right-radius: 4px;
-    -khtml-border-top-right-radius: 4px;
-    -khtml-border-top-right-radius: 4px;
+    text-decoration: none;
+    white-space:nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-left: 1px solid #000000;
+    color: #ffffff;
+    background-color: #444444;
+    background-image: -webkit-linear-gradient(#FFFFFF, #444444 3%, #2d2d2d);
+    background-image: -moz-linear-gradient(#FFFFFF, #444444 3%, #2d2d2d);
+    background-image: -ms-linear-gradient(#FFFFFF, #444444 3%, #2d2d2d);
+    background-image: -o-linear-gradient(#FFFFFF, #444444 3%, #2d2d2d);
+    background-image: linear-gradient(#FFFFFF, #444444 3%, #2d2d2d);
 }
 #banner img {
     height: 2em;
 }
 #banner a:hover,a.selected {
-    color: #333333 !important;
-    background-color: #fff9e5 !important;
+    color: #ffffff !important;
+    background-color: #ffffff !important;
+    background-image: -webkit-linear-gradient(#FFFFFF, #444444 3%, #FFFFFF) !important;
+    background-image: -moz-linear-gradient(#FFFFFF, #444444 3%, #FFFFFF) !important;
+    background-image: -ms-linear-gradient(#FFFFFF, #444444 3%, #FFFFFF) !important;
+    background-image: -o-linear-gradient(#FFFFFF, #444444 3%, #FFFFFF) !important;
+    background-image: linear-gradient(#FFFFFF, #444444 3%, #FFFFFF) !important;
 }
 #banner form {
+    float: right;
+    margin: 0px;
+    padding: 0.5em 1em 0.5em 1em;
 }
-
 #banner form input {
     color: #333333;
     margin: 0px
-    height: 1em;
-    font-size: x-small;
-}
-#banner form input[type=image] {
-    height: 1.5em;
+    height: 1.2em;
+    font-size: small;
 }
 
 #logo {
@@ -838,10 +846,10 @@ html,body {
 
         <div id="banner">
             <a id="permalinkLink" href="#permalinkFrame" title="lien permanent sur la vue actuelle">
-                permalien
+                Permalien
             </a>
-            <a id="aboutLink" href="#aboutFrame" title="&agrave; propos">cr&eacute;dits</a>
-            <a id="helpLink" href="#helpFrame" title="aide">aide</a>
+            <a id="aboutLink" href="#aboutFrame" title="&agrave; propos">A propos</a>
+            <a id="helpLink" href="#helpFrame" title="aide">Aide</a>
             <form id="addressForm" method="get" target="#">
                 <input id="addressInput" type="text"  value="ex: rue Martenot, Rennes" title="ex: rue Martenot, Rennes" value="10 rue maurice fabre, rennes" />
                 <input type="submit" value="trouver" />
