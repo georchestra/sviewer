@@ -39,6 +39,7 @@ Proj4js.defs["EPSG:4326"] = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
 // rough xml escape
 if (!String.prototype.encodeHTML) {
     String.prototype.encodeHTML = function () {
+        "use strict";
         return this.replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
@@ -48,32 +49,35 @@ if (!String.prototype.encodeHTML) {
 
 // string reverse
 String.prototype.reverse = function() {
-  var s="";
-  for (var i=this.length-1;i>=0;i-=1) {
-    s += this.charAt(i);
+    "use strict";
+    var s="";
+    for (var i=this.length-1;i>=0;i-=1) {
+        s += this.charAt(i);
   }
   return s;
-}
+};
 
 // DOM manipulation - appends a node
 function domAddNode(parentNode,tag,text,className) {
-    if (text!=""&&tag!="") {
-        var node = document.createElement(tag);
+    "use strict";
+    var node;
+    if (text!==""&&tag!=="") {
+        node = document.createElement(tag);
         node.className = className;
         node.appendChild(document.createTextNode(text));
         parentNode.appendChild(node);
         return node;
     }
-    else if (tag!="") {
-        var node = document.createElement(tag);
+    else if (tag!=="") {
+        node = document.createElement(tag);
         node.className = className;
         parentNode.appendChild(node);
         return node;
     }
-    else if (text!="") {
+    else if (text!=="") {
         parentNode.appendChild(document.createTextNode(text));
         return parent;
-    };
+    }
 }
 
 
@@ -113,6 +117,7 @@ var hardConfig = {
 
     // geocoder
     openLSGeocodeUrl: function () {
+        "use strict";
         var url = "";
         switch (window.location.host) {
         case "dev.geobretagne.fr":
@@ -163,7 +168,7 @@ var hardConfig = {
 
     // CQL filter applied to the overlay layers
     CQL_FILTER: null
-}
+};
 
 
 /**
@@ -175,12 +180,12 @@ var hardConfig = {
 var map;
 
 function init(){
-
+    "use strict";
     // defaultConfig may be overriden with querystring
     var defaultConfig = {
         title: hardConfig.title,
         CQL_FILTER: hardConfig.CQL_FILTER
-    }
+    };
 
     // defaultConfig + querystring = config
     var config = {};
@@ -241,11 +246,11 @@ function init(){
         new Ol.Control.ZoomToMaxExtent({title: "vue initiale"}),
         navHistory.previous,
         new Ol.Control.ZoomIn({title: "zoom avant"}),
-        new Ol.Control.ZoomOut({title: "zoom arri&egrave;re"}),
+        new Ol.Control.ZoomOut({title: "zoom arri&egrave;re"})
     ]);
 
     // keyboard navigation
-    var keyboardNav = new OpenLayers.Control.KeyboardDefaults();
+    var keyboardNav = new Ol.Control.KeyboardDefaults();
     map.addControls([keyboardNav]);
 
 
@@ -264,7 +269,9 @@ function init(){
                 var n=ll.length;
                 var lv=0;
                 for (i=0;i<n;i+=1) {
-                    if (ll[i].getVisibility()) { lv=i }
+                    if (ll[i].getVisibility()) { 
+                        lv=i;
+                    }
                     ll[i].setVisibility(false);
                 }
                 ll[(lv+1)%n].setVisibility(true);
@@ -291,9 +298,9 @@ function init(){
         var popup, layer_wms, getFeatureInfo;
 
         // fake popup function
-        var popup = { destroy: function() {} };
+        popup = { destroy: function() {} };
 
-        var layer_wms = new Ol.Layer.WMS(
+        layer_wms = new Ol.Layer.WMS(
             config.title,
             hardConfig.wms, {
                 layers: config.layers,
@@ -314,7 +321,7 @@ function init(){
         map.addLayer(layer_wms);
 
 
-        var getFeatureInfo = new Ol.Control.WMSGetFeatureInfo({
+        getFeatureInfo = new Ol.Control.WMSGetFeatureInfo({
             url: hardConfig.wms,
             title: 'Interroger la carte par clic',
             queryVisible: true,
@@ -351,16 +358,16 @@ function init(){
      */
     if (config.kml) {
 
-        function onPopupClose(e) {
+        var onPopupClose = function(e) {
             selectControl.unselectAll();
-        }
-        function onFeatureSelect(e) {
+        };
+        var onFeatureSelect = function(e) {
             var f = e.feature;
             var content = ["<h2>",config.title,"</h2>","<p>",
                 "<span class='pname'>",f.attributes.name,"</span><br />",
                 "<span class='pdesc'>",f.attributes.description,"</span>","</p>"].join(' ');
             // no dynamic content allowed
-            if (content.search("<script") != -1) { content = content.replace(/</g, "&lt;"); }
+            if (content.search("<script") !== -1) { content = content.replace(/</g, "&lt;"); }
             var popup = new Ol.Popup.FramedCloud(
                 "kmlPopup",
                 f.geometry.getBounds().getCenterLonLat(),
@@ -374,24 +381,24 @@ function init(){
             popup.maxSize = new Ol.Size(300,200);
             f.popup = popup;
             map.addPopup(popup);
-        }
-        function onFeatureUnselect(e) {
+        };
+        var onFeatureUnselect = function(e) {
             var f = e.feature;
             if(f.popup) {
                 map.removePopup(f.popup);
                 f.popup.destroy();
                 delete f.popup;
             }
-        }
+        };
 
         var layer_kml = new Ol.Layer.Vector(
             config.title,
             {
                 strategies: [new Ol.Strategy.Fixed()],
                 projection: hardConfig.projDisplay,
-                protocol: new OpenLayers.Protocol.HTTP({
+                protocol: new Ol.Protocol.HTTP({
                     url: config.kml,
-                    format: new OpenLayers.Format.KML({
+                    format: new Ol.Format.KML({
                     extractStyles: true,
                     extractAttributes: true
                 })
@@ -402,9 +409,9 @@ function init(){
             }
         });
         map.addLayer(layer_kml);
-        var selectControl = new OpenLayers.Control.SelectFeature(layer_kml, {toggle: true, clickout:false});
-        selectControl.handlers['feature'].stopDown = false;
-        selectControl.handlers['feature'].stopUp = false;
+        var selectControl = new Ol.Control.SelectFeature(layer_kml, {toggle: true, clickout:false});
+        selectControl.handlers.feature.stopDown = false;
+        selectControl.handlers.feature.stopUp = false;
         map.addControl(selectControl);
         selectControl.activate();
         layer_kml.events.fallThrough = true;
@@ -418,12 +425,12 @@ function init(){
      */
 
     // frame handling
-    helpFrame = Ol.Util.getElement("helpFrame");
-    aboutFrame = Ol.Util.getElement("aboutFrame");
-    permalinkFrame = Ol.Util.getElement("permalinkFrame");
-    helpLink = Ol.Util.getElement("helpLink");
-    aboutLink = Ol.Util.getElement("aboutLink");
-    permalinkLink = Ol.Util.getElement("permalinkLink");
+    var helpFrame = Ol.Util.getElement("helpFrame");
+    var aboutFrame = Ol.Util.getElement("aboutFrame");
+    var permalinkFrame = Ol.Util.getElement("permalinkFrame");
+    var helpLink = Ol.Util.getElement("helpLink");
+    var aboutLink = Ol.Util.getElement("aboutLink");
+    var permalinkLink = Ol.Util.getElement("permalinkLink");
 
     // frame buttons
     function helpFrameAction() {
@@ -434,7 +441,7 @@ function init(){
         permalinkFrame.style.display = "none";
         permalinkLink.className = "";
         return false;
-    };
+    }
     function aboutFrameAction() {
         helpFrame.style.display = "none";
         helpLink.className = "";
@@ -443,7 +450,7 @@ function init(){
         permalinkFrame.style.display = "none";
         permalinkLink.className = "";
         return false;
-    };
+    }
     function permalinkFrameAction() {
         helpFrame.style.display = "none";
         helpLink.className = "";
@@ -453,10 +460,8 @@ function init(){
         permalinkLink.className = (permalinkFrame.style.display==="block")?"selected":"";
         setPermalink();
         return false;
-    };
-    function setTab(list) {
-
     }
+
 
     Ol.Util.getElement("helpLink").onclick = helpFrameAction;
     Ol.Util.getElement("helpClose").onclick = helpFrameAction;
@@ -473,19 +478,18 @@ function init(){
      */
     var markGeoloc = new Ol.Layer.Markers("geocodage left");
     map.addLayers([markGeoloc]);
-    var infogeocoder = null;
     var addressInput = Ol.Util.getElement("addressInput");
     addressInput.onfocus = function() {
         addressInput.value = "";
         // navkeys are annoying
         keyboardNav.deactivate();
         return false;
-    }
+    };
     addressInput.onblur = function() {
         // navkeys are back
         keyboardNav.activate();
         return false;
-    }
+    };
 
 
     // geocodage via IGN
@@ -493,8 +497,7 @@ function init(){
         try {
             var q = text.trim();
             var qa = q.split(",");
-            if (q!="") {
-                var qxml = "";
+            if (q!=="") {
                 var countryCode ="ALL";
                 var freeFormAddress ="";
                 if (qa.length>1) {
@@ -546,7 +549,7 @@ function init(){
         catch(err) {
             console.log(err.message);
         }
-    };
+    }
 
     var onOpenLSSuccess = function (response) {
         //~ try {
@@ -597,7 +600,7 @@ function init(){
             console.log(err.message);
             return false;
         }
-    }
+    };
 
 
     /**
@@ -613,10 +616,10 @@ function init(){
     }
 
     // keeping permalink synchronized with the map extent
-    permalinkLink = Ol.Util.getElement("permalinkLink");
-    permalinkLink2 = Ol.Util.getElement("permalinkLink2");
-    permaqr =  Ol.Util.getElement("permaQR");
-    setPermalink = function() {
+    var permalinkLink = Ol.Util.getElement("permalinkLink");
+    var permalinkLink2 = Ol.Util.getElement("permalinkLink2");
+    var permaqr =  Ol.Util.getElement("permaQR");
+    var setPermalink = function() {
         var c = map.getCenter();
         var linkParams = {};
         linkParams.x = encodeURIComponent(Math.round(c.lon));
@@ -636,14 +639,14 @@ function init(){
         if (permalinkFrame.style.display==="block") {
             permaqr.src="http://chart.apis.google.com/chart?cht=qr&chs=140x140&chl=" + encodeURIComponent(url);
         }
-    }
+    };
     map.events.register("moveend", map, setPermalink);
     setPermalink();
 
     /**
      * Capabilities and metadata
      */
-    var format_WMS = new Ol.Format.WMSCapabilities;
+    var format_WMS = new Ol.Format.WMSCapabilities();
     var domAttribution = Ol.Util.getElement("attributions");
     var layernames = [].concat(config.layers);
     for (var i=0,l=layernames.length;i<l;i+=1) {
@@ -671,7 +674,7 @@ function init(){
                         "width" : 30,
                         "format" : "image/png",
                         "layer": mdLayer.name
-                    }
+                    };
                     var p = domAddNode(domAttribution,"p","","");
                     domAddNode(p,"span",mdLayer.title,"title");
                     domAddNode(p,"br","","");
@@ -963,6 +966,7 @@ html,body {
         <div id="aboutFrame" class="popupFrame">
             <div id="attributions"></div>
             <div id="baseAttributions"></div>
+            <div>visualiseur : http://github.com/geobretagne/sviewer/</div>
             <p class="pcenter">
                 <a id="aboutClose" href="#" class="bt" title="fermer">fermer</a>
             </p>
