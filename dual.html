@@ -9,6 +9,7 @@ $Author: fabrice.phung $
     -->
     <head>
         <title>[GeoBretagne] Bretagne 1950'</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
         <meta name="apple-mobile-web-app-capable" content="yes">
 
@@ -27,9 +28,9 @@ $Author: fabrice.phung $
 
 // libraries configuration
 var Ol = OpenLayers;
-OpenLayers.DOTS_PER_INCH = 90.71428571428572;
-OpenLayers.Util.onImageLoadErrorColor = 'transparent';
-OpenLayers.ProxyHost = '/proxy/?url=';
+Ol.DOTS_PER_INCH = 90.71428571428572;
+Ol.Util.onImageLoadErrorColor = 'transparent';
+Ol.ProxyHost = '/proxy/?url=';
 Proj4js.defs["EPSG:900913"] = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs";
 Proj4js.defs["EPSG:2154"] = "+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs";
 Proj4js.defs["EPSG:4326"] = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
@@ -37,6 +38,7 @@ Proj4js.defs["EPSG:4326"] = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
 // rough xml escape
 if (!String.prototype.encodeHTML) {
     String.prototype.encodeHTML = function () {
+        "use strict";
         return this.replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
@@ -46,26 +48,27 @@ if (!String.prototype.encodeHTML) {
 
 // string reverse
 String.prototype.reverse = function() {
-  var s="";
-  for (var i=this.length-1;i>=0;i-=1) {
-    s += this.charAt(i);
+    "use strict";
+    var s = "";
+    for (var i=this.length-1;i>=0;i-=1) {
+        s += this.charAt(i);
   }
   return s;
-}
+};
 
 
 // application hardcoded configuration
 var hardConfig = {
     // initial extent and zoom, may be overriden with &x=lon&y=lat&z=zoom
-    initialExtent: new OpenLayers.Bounds(349675, 6789788, 350675, 6790788),
+    initialExtent: new Ol.Bounds(349675, 6789788, 350675, 6790788),
     zinit: 16,
 
     // must match the TMS grid&scale if any
-    maxExtent: new OpenLayers.Bounds(-357823.2365, 6037008.6939, 2146865.3059, 8541697.2363),
+    maxExtent: new Ol.Bounds(-357823.2365, 6037008.6939, 2146865.3059, 8541697.2363),
     maxResolution: 156543.0339,
 
     // map center restricted in this extent
-    restrictedExtent: new OpenLayers.Bounds(80000,6670000,425000,6950000),
+    restrictedExtent: new Ol.Bounds(80000,6670000,425000,6950000),
 
     // real extent of interest (polygon)
     coveredExtent: [
@@ -82,26 +85,27 @@ var hardConfig = {
     ],
 
     // map projection
-    projMap: new OpenLayers.Projection('EPSG:2154'),
+    projMap: new Ol.Projection('EPSG:2154'),
 
     // display projection
-    projDisplay: new OpenLayers.Projection('EPSG:4326'),
+    projDisplay: new Ol.Projection('EPSG:4326'),
 
     // left compare layer
-    leftCompareLayer: new OpenLayers.Layer.WMS(
+    leftCompareLayer: new Ol.Layer.WMS(
         "BD ORTHO Historique",
         "http://tile.geobretagne.fr/gwc02/service/wms",
         { layers: 'satellite-ancien', format: 'image/jpeg', transparent: false },
         {
             attribution: "IGN BDORTHO Historique",
             isBaseLayer: false,
-            tileSize: new OpenLayers.Size(256,256),
+            tileSize: new Ol.Size(256,256),
             visibility: true
         }
     ),
 
     // geocoder
     openLSGeocodeUrl: function () {
+        "use strict";
         var url = "";
         switch (window.location.host) {
         case "dev.geobretagne.fr":
@@ -121,27 +125,27 @@ var hardConfig = {
     openLSMaxResponses: 1,
 
     // right compare layer
-    rightCompareLayer: new OpenLayers.Layer.WMS(
+    rightCompareLayer: new Ol.Layer.WMS(
         "BD ORTHO Historique",
         "http://tile.geobretagne.fr/gwc02/service/wms",
         { layers: 'satellite', format: 'image/jpeg', transparent: false },
         {
             attribution: "partenaires GéoBretagne, IGN RGE, PlanetObserver",
             isBaseLayer: false,
-            tileSize: new OpenLayers.Size(256,256),
+            tileSize: new Ol.Size(256,256),
             visibility: true
         }
     ),
 
     // left overlay layers array: shown on top of Left map
     leftOverlay: [
-        new OpenLayers.Layer.WMS(
+        new Ol.Layer.WMS(
             "Toponymes",
             "http://geobretagne.fr/imposm-google",
             {
                 srs: "EPSG:2154",
-                layers:"places0,places1,places2,places3,places4,places5,places6,places7,places8,places9"
-                +",places10,places11,places12,places13,places14,places15,places16,places17,places18",
+                layers:"places0,places1,places2,places3,places4,places5,places6,places7,places8,places9" +
+                ",places10,places11,places12,places13,places14,places15,places16,places17,places18",
                 format:"image/png",
                 transparent: true
             },
@@ -157,7 +161,7 @@ var hardConfig = {
 
     // right overlay layers array: shown on top of Right map
     rightOverlay: [
-        new OpenLayers.Layer.WMS(
+        new Ol.Layer.WMS(
             "Toponymes et routes",
             "http://osm.geobretagne.fr/gwc01/service/wms",
             {
@@ -175,7 +179,7 @@ var hardConfig = {
             }
         )
     ]
-}
+};
 
 /**
  * fin configuration application
@@ -186,9 +190,9 @@ var hardConfig = {
 
 
 function init() {
-
+    "use strict";
     var config = {};
-    var mapLeft, markGeolocLeft, mapOptions, navHistory, panel, icons, mapRight, markGeolocRight;
+    var mapLeft, markGeolocLeft, mapOptions, navHistory, panel, mapRight, markGeolocRight;
     var btLayerOverlayFn, btLayerOverlay;
     var helpFrame, aboutFrame, permalinkFrame;
     var helpLink, aboutLink, permalinkLink, permalinkLink2, permaqr,setPermalink;
@@ -196,8 +200,8 @@ function init() {
     /**
      * Fetching parameters from url hash or querystring
      */
-    OpenLayers.Util.applyDefaults(config, OpenLayers.Util.getParameters("?"+window.location.hash.substr(1)));
-    OpenLayers.Util.applyDefaults(config, OpenLayers.Util.getParameters(window.location.href));
+    Ol.Util.applyDefaults(config, Ol.Util.getParameters("?"+window.location.hash.substr(1)));
+    Ol.Util.applyDefaults(config, Ol.Util.getParameters(window.location.href));
 
     /**
      * Map common parameters
@@ -211,43 +215,43 @@ function init() {
         maxExtent: hardConfig.maxExtent,
         restrictedExtent: hardConfig.restrictedExtent,
         controls: []
-    }
+    };
 
 
     /**
      * Left map
      */
-    mapLeft = new OpenLayers.Map('mapLeft',mapOptions);
-    mapLeft.addLayer(new OpenLayers.Layer("fake", {isBaseLayer: true, displayInLayerSwitcher: false}));
+    mapLeft = new Ol.Map('mapLeft',mapOptions);
+    mapLeft.addLayer(new Ol.Layer("fake", {isBaseLayer: true, displayInLayerSwitcher: false}));
     mapLeft.addControls([
-        new OpenLayers.Control.Navigation({
+        new Ol.Control.Navigation({
             mouseWheelOptions: {
                 cumulative: false,
                 interval: 100
             }
         }),
-        new OpenLayers.Control.ScaleLine(),
-        new OpenLayers.Control.LoadingPanel()
+        new Ol.Control.ScaleLine(),
+        new Ol.Control.LoadingPanel()
     ]);
 
     // "previous extent" control
-    navHistory = new OpenLayers.Control.NavigationHistory({
+    navHistory = new Ol.Control.NavigationHistory({
         previousOptions: { title: "retour" }
     });
     mapLeft.addControl(navHistory);
 
     // toolbar on the map
-    panel = new OpenLayers.Control.Panel();
+    panel = new Ol.Control.Panel();
     mapLeft.addControl(panel);
     panel.addControls([
-        new OpenLayers.Control.ZoomToMaxExtent({title: "vue initiale"}),
+        new Ol.Control.ZoomToMaxExtent({title: "vue initiale"}),
         navHistory.previous,
-        new OpenLayers.Control.ZoomIn({title: "zoom avant"}),
-        new OpenLayers.Control.ZoomOut({title: "zoom arri&egrave;re"})
+        new Ol.Control.ZoomIn({title: "zoom avant"}),
+        new Ol.Control.ZoomOut({title: "zoom arri&egrave;re"})
     ]);
 
     // keyboard navigation
-    var keyboardNav = new OpenLayers.Control.KeyboardDefaults();
+    var keyboardNav = new Ol.Control.KeyboardDefaults();
     mapLeft.addControls([keyboardNav]);
 
 
@@ -258,25 +262,25 @@ function init() {
     /**
      * Right map
      */
-    mapRight = new OpenLayers.Map('mapRight',mapOptions);
-    mapRight.addLayer(new OpenLayers.Layer("fake", {isBaseLayer: true, displayInLayerSwitcher: false}));
+    mapRight = new Ol.Map('mapRight',mapOptions);
+    mapRight.addLayer(new Ol.Layer("fake", {isBaseLayer: true, displayInLayerSwitcher: false}));
     mapRight.addControls([
-        new OpenLayers.Control.Navigation({
+        new Ol.Control.Navigation({
             mouseWheelOptions: {
                 cumulative: false,
-                interval: 100,
+                interval: 100
             }
         }),
-        new OpenLayers.Control.ScaleLine(),
-        new OpenLayers.Control.LoadingPanel(),
-        new OpenLayers.Control.OverviewMap({
+        new Ol.Control.ScaleLine(),
+        new Ol.Control.LoadingPanel(),
+        new Ol.Control.OverviewMap({
             maximized : false,
             minRatio: 64,
             maxRatio: 128,
             autoPan : true,
-            layers: [new OpenLayers.Layer.OSM()],
+            layers: [new Ol.Layer.OSM()],
             mapOptions : {
-                projection : new OpenLayers.Projection("EPSG:900913"),
+                projection : new Ol.Projection("EPSG:900913"),
                 displayProjection : hardConfig.projMap,
                 units : "m",
                 resolutions: [100],
@@ -295,9 +299,9 @@ function init() {
      */
     mapLeft.addLayers(hardConfig.leftOverlay);
     mapRight.addLayers(hardConfig.rightOverlay);
-    markGeolocLeft = new OpenLayers.Layer.Markers("geocodage left");
+    markGeolocLeft = new Ol.Layer.Markers("geocodage left");
     mapLeft.addLayers([markGeolocLeft]);
-    markGeolocRight = new OpenLayers.Layer.Markers("geocodage right");
+    markGeolocRight = new Ol.Layer.Markers("geocodage right");
     mapRight.addLayers([markGeolocRight]);
 
     // button for overlay display toggle
@@ -306,25 +310,25 @@ function init() {
             for (var i=0,l=hardConfig.leftOverlay.length;i<l;i+=1) {
                 hardConfig.leftOverlay[i].setVisibility(false);
             }
-            for (var i=0;i<hardConfig.rightOverlay.length;i+=1) {
-                hardConfig.rightOverlay[i].setVisibility(false);
+            for (var j=0;j<hardConfig.rightOverlay.length;j+=1) {
+                hardConfig.rightOverlay[j].setVisibility(false);
             }
             this.deactivate();
         } else {
-            for (var i=0;i<hardConfig.leftOverlay.length;i+=1) {
-                hardConfig.leftOverlay[i].setVisibility(true);
+            for (var k=0;k<hardConfig.leftOverlay.length;k+=1) {
+                hardConfig.leftOverlay[k].setVisibility(true);
             }
-            for (var i=0;i<hardConfig.rightOverlay.length;i+=1) {
-                hardConfig.rightOverlay[i].setVisibility(true);
+            for (var m=0;m<hardConfig.rightOverlay.length;m+=1) {
+                hardConfig.rightOverlay[m].setVisibility(true);
             }
             this.activate();
         }
-    }
-    btLayerOverlay = new OpenLayers.Control.Button({
+    };
+    btLayerOverlay = new Ol.Control.Button({
         displayClass: "btLayerOverlay",
         autoActivate: false,
         title: "voir/masquer la carte",
-        type: OpenLayers.Control.TYPE_BUTTON,
+        type: Ol.Control.TYPE_BUTTON,
         trigger: btLayerOverlayFn
     });
     panel.addControls([btLayerOverlay]);
@@ -337,12 +341,12 @@ function init() {
      */
 
     // frame handling
-    helpFrame = OpenLayers.Util.getElement("helpFrame");
-    aboutFrame = OpenLayers.Util.getElement("aboutFrame");
-    permalinkFrame = OpenLayers.Util.getElement("permalinkFrame");
-    helpLink = OpenLayers.Util.getElement("helpLink");
-    aboutLink = OpenLayers.Util.getElement("aboutLink");
-    permalinkLink = OpenLayers.Util.getElement("permalinkLink");
+    helpFrame = Ol.Util.getElement("helpFrame");
+    aboutFrame = Ol.Util.getElement("aboutFrame");
+    permalinkFrame = Ol.Util.getElement("permalinkFrame");
+    helpLink = Ol.Util.getElement("helpLink");
+    aboutLink = Ol.Util.getElement("aboutLink");
+    permalinkLink = Ol.Util.getElement("permalinkLink");
 
     // frame buttons
     function helpFrameAction() {
@@ -353,7 +357,7 @@ function init() {
         permalinkFrame.style.display = "none";
         permalinkLink.className = "";
         return false;
-    };
+    }
     function aboutFrameAction() {
         helpFrame.style.display = "none";
         helpLink.className = "";
@@ -362,7 +366,7 @@ function init() {
         permalinkFrame.style.display = "none";
         permalinkLink.className = "";
         return false;
-    };
+    }
     function permalinkFrameAction() {
         helpFrame.style.display = "none";
         helpLink.className = "";
@@ -372,17 +376,14 @@ function init() {
         permalinkLink.className = (permalinkFrame.style.display==="block")?"selected":"";
         setPermalink();
         return false;
-    };
-    function setTab(list) {
-
     }
 
-    OpenLayers.Util.getElement("helpLink").onclick = helpFrameAction;
-    OpenLayers.Util.getElement("helpClose").onclick = helpFrameAction;
-    OpenLayers.Util.getElement("aboutLink").onclick = aboutFrameAction;
-    OpenLayers.Util.getElement("aboutClose").onclick = aboutFrameAction;
-    OpenLayers.Util.getElement("permalinkLink").onclick = permalinkFrameAction;
-    OpenLayers.Util.getElement("permalinkClose").onclick = permalinkFrameAction;
+    Ol.Util.getElement("helpLink").onclick = helpFrameAction;
+    Ol.Util.getElement("helpClose").onclick = helpFrameAction;
+    Ol.Util.getElement("aboutLink").onclick = aboutFrameAction;
+    Ol.Util.getElement("aboutClose").onclick = aboutFrameAction;
+    Ol.Util.getElement("permalinkLink").onclick = permalinkFrameAction;
+    Ol.Util.getElement("permalinkClose").onclick = permalinkFrameAction;
 
 
 
@@ -390,38 +391,27 @@ function init() {
      * geocodage form
      */
 
-    var addressInput = OpenLayers.Util.getElement("addressInput");
+    var addressInput = Ol.Util.getElement("addressInput");
     addressInput.onfocus = function() {
         addressInput.value = "";
         // navkeys are annoying
         keyboardNav.deactivate();
         return false;
-    }
+    };
     addressInput.onblur = function() {
         // navkeys are back
         keyboardNav.activate();
         return false;
-    }
-
-
-    function arrayToPolygon(xyarray) {
-        var a = [];
-        for (var i=0,l=xyarray.length;i<l;i+=1) {
-            xy = xyarray[i];
-            a.push(new OpenLayers.Geometry.Point(xy[0],xy[1]));
-        };
-        return new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(a)]);
     };
-    var openLsBounds = arrayToPolygon(hardConfig.coveredExtent);
 
 
+    
     // geocodage via IGN
     function openLs(text) {
         try {
             var q = text.trim();
             var qa = q.split(",");
-            if (q!="") {
-                var qxml = "";
+            if (q!=="") {
                 var countryCode ="ALL";
                 var freeFormAddress ="";
                 if (qa.length>1) {
@@ -473,7 +463,7 @@ function init() {
         catch(err) {
             console.log(err.message);
         }
-    };
+    }
 
     var onOpenLSSuccess = function (response) {
         try {
@@ -516,7 +506,7 @@ function init() {
         alert("la géolocalisation a échoué");
     };
 
-    OpenLayers.Util.getElement("addressForm").onsubmit = function() {
+    Ol.Util.getElement("addressForm").onsubmit = function() {
         try {
             markGeolocLeft.clearMarkers();
             markGeolocRight.clearMarkers();
@@ -527,7 +517,7 @@ function init() {
             console.log(err.message);
             return false;
         }
-    }
+    };
 
 
     /**
@@ -538,24 +528,24 @@ function init() {
     if (!mapLeft.getCenter()) {
         var center = hardConfig.initialExtent.getCenterLonLat();
         var zoom = hardConfig.zinit;
-        OpenLayers.Util.applyDefaults(config, {x:center.lon, y:center.lat, z:zoom});
-        mapLeft.setCenter(new OpenLayers.LonLat(config.x, config.y), config.z);
-        mapRight.setCenter(new OpenLayers.LonLat(config.x, config.y), config.z);
+        Ol.Util.applyDefaults(config, {x:center.lon, y:center.lat, z:zoom});
+        mapLeft.setCenter(new Ol.LonLat(config.x, config.y), config.z);
+        mapRight.setCenter(new Ol.LonLat(config.x, config.y), config.z);
     }
 
     // keeping permalink synchronized with the map extent
-    permalinkLink = OpenLayers.Util.getElement("permalinkLink");
-    permalinkLink2 = OpenLayers.Util.getElement("permalinkLink2");
-    permaqr =  OpenLayers.Util.getElement("permaQR");
+    permalinkLink = Ol.Util.getElement("permalinkLink");
+    permalinkLink2 = Ol.Util.getElement("permalinkLink2");
+    permaqr =  Ol.Util.getElement("permaQR");
     setPermalink = function() {
         var c = mapLeft.getCenter();
         var linkParams = {};
         linkParams.x = encodeURIComponent(Math.round(c.lon));
         linkParams.y = encodeURIComponent(Math.round(c.lat));
         linkParams.z = encodeURIComponent(mapLeft.getZoom());
-        var url = OpenLayers.Util.urlAppend(
+        var url = Ol.Util.urlAppend(
             window.location.href.split('?')[0],
-            OpenLayers.Util.getParameterString(linkParams)
+            Ol.Util.getParameterString(linkParams)
         );
         permalinkLink.href = url;
         permalinkLink2.href = url;
@@ -563,7 +553,7 @@ function init() {
         if (permalinkFrame.style.display==="block") {
             permaqr.src="http://chart.apis.google.com/chart?cht=qr&chs=140x140&chl=" + encodeURIComponent(url);
         }
-    }
+    };
     mapLeft.events.register("moveend", mapLeft, setPermalink);
     setPermalink();
 
@@ -573,18 +563,18 @@ function init() {
      */
 
     // left map cursor display
-    var markerLeftLayer = new OpenLayers.Layer.Markers( "markersLeft" );
+    var markerLeftLayer = new Ol.Layer.Markers( "markersLeft" );
     mapLeft.addLayer(markerLeftLayer);
-    var markerLeft = new OpenLayers.Marker(hardConfig.initialExtent.getCenterLonLat(),
-        new OpenLayers.Icon('img/crosshair-f.png',new OpenLayers.Size(48,48), new OpenLayers.Pixel(-24,-24))
+    var markerLeft = new Ol.Marker(hardConfig.initialExtent.getCenterLonLat(),
+        new Ol.Icon('img/crosshair-f.png',new Ol.Size(48,48), new Ol.Pixel(-24,-24))
     );
     markerLeftLayer.addMarker(markerLeft);
 
     // right map cursor display
-    var markersRightLayer = new OpenLayers.Layer.Markers( "markersRight" );
+    var markersRightLayer = new Ol.Layer.Markers( "markersRight" );
     mapRight.addLayer(markersRightLayer);
-    var markerRight = new OpenLayers.Marker(hardConfig.initialExtent.getCenterLonLat(),
-        new OpenLayers.Icon('img/crosshair-f.png',new OpenLayers.Size(48,48), new OpenLayers.Pixel(-24,-24))
+    var markerRight = new Ol.Marker(hardConfig.initialExtent.getCenterLonLat(),
+        new Ol.Icon('img/crosshair-f.png',new Ol.Size(48,48), new Ol.Pixel(-24,-24))
     );
     markersRightLayer.addMarker(markerRight);
 
@@ -612,7 +602,6 @@ function init() {
      * Keep maps on the same extent
      */
     var mapLeftCenter, mapRightCenter, mapLeftZoom, mapRightZoom;
-    var mapLeftUpdating = false
     var mapRightUpdating = false;
     var syncRightMove = function() {
         if(!mapRightUpdating){
@@ -624,7 +613,7 @@ function init() {
             mapRight.panTo(mapLeftCenter); // restrictedExtent needs that
             mapRightUpdating = false;
         }
-    }
+    };
     var syncLeftMove = function() {
         if(!mapRightUpdating){
             mapRightCenter = this.getCenter();
@@ -635,7 +624,7 @@ function init() {
             mapLeft.panTo(mapRightCenter); // restrictedExtent needs that
             mapRightUpdating = false;
         }
-    }
+    };
     mapLeft.events.register("moveend", mapLeft, syncRightMove);
     mapRight.events.register("moveend", mapRight, syncLeftMove);
 
@@ -911,7 +900,7 @@ html,body {
                         g&eacute;olocalisation: <a href="http://api.ign.fr/geoportail/api/doc/fr/developpeur/search.html">IGN G&eacute;oportail API</a>
                     </li>
                     <li>r&eacute;alisation : <a href="http://geobretagne.fr/">G&eacute;oBretagne</a>, Pr&eacute;fecture de la r&eacute;gion Bretagne</li>
-                    <li>technologie : OpenLayers, geOrchestra - $Revision: 77 $ $Date: 2012-07-23 12:29:19 +0200 (lun. 23 juil. 2012) $</li>
+                    <li>code source : http://github.com/geobretagne/sviewer/</li>
                 </ul>
                 <p class="pcenter">
                     <a id="aboutClose" class="bt" href="#">fermer</a>
