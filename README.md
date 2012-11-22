@@ -6,8 +6,9 @@ Sviewer offers basic map controls, geolocation (french geoportal based), WMS and
 It is touchscreen-friendly.
 
 Sviewer was designed to work within the GeoBretagne IDS, but it also may work with any OGC-enabled IDS with minimal changes.
+There's a user guide in french here : http://cms.geobretagne.fr/content/visualiseur-simple-g%C3%A9obretagne
 
-Sviewer comes with a "dual" viewer for map comparsion.
+Sviewer comes with a "dual" viewer for twin maps comparsion.
 
 Before using this project, read the LICENSE.en terms.
 
