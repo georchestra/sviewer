@@ -68,7 +68,7 @@ var hardConfig = {
     maxResolution: 156543.0339,
 
     // map center restricted in this extent
-    restrictedExtent: new Ol.Bounds(88000, 6680000, 414000, 6887000),
+    restrictedExtent: new Ol.Bounds(45518, 6626671, 472058, 6968691),
 
     // real extent of interest (polygon)
     coveredExtent: [
@@ -118,7 +118,7 @@ var hardConfig = {
             url = "http://gpp3-wxs.ign.fr/01gwgg3by2fpaxwxrfgvynqw/geoportail/ols?";
             break;
         default:
-            url = "http://gpp3-wxs.ign.fr/01gwgg3by2fpaxwxrfgvynqw/geoportail/ols?";
+            url = "http://gpp3-wxs.ign.fr/0za8j6silpfdyda2lh0lhqss/geoportail/ols?";
         }
         return url;
     },
@@ -483,14 +483,15 @@ function init() {
                 }
 
                 // map move and zoom
-                if (hardConfig.restrictedExtent.containsLonLat(ptResult)) {
+                //~ if (hardConfig.restrictedExtent.containsLonLat(ptResult)) {
+                // TODO: extent check disabled, doesn't work westwards
                     mapLeft.setCenter(ptResult, zoom);
                     markGeolocLeft.addMarker(new Ol.Marker(ptResult));
                     markGeolocRight.addMarker(new Ol.Marker(ptResult));
-                }
-                else {
-                    alert("La géolocalisation a échoué :\nlieu recherché hors carte");
-                }
+                //~ }
+                //~ else {
+                    //~ alert("La géolocalisation a échoué :\nlieu recherché hors carte");
+                //~ }
             }
             else {
                 alert("La géolocalisation a échoué :\naucun résultat");
