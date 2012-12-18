@@ -418,15 +418,14 @@ function init() {
                     // address and municipality separated by a comma
                     var address = qa.slice(0,qa.length-1).join(" ").trim();
                     var municipality = qa[qa.length-1].trim();
-                    countryCode="StreetAddress";
+                    countryCode = "StreetAddress";
                     freeFormAddress = address + " " + municipality;
-
                 } else {
                     // municipality
-                    countryCode="PositionOfInterest";
+                    //~ countryCode="PositionOfInterest";
+                    countryCode = "StreetAddress";
                     freeFormAddress = q;
                 }
-
                 Ol.Request.issue({
                     method: 'POST',
                     headers: { "Content-Type": "application/xml" },
@@ -483,15 +482,15 @@ function init() {
                 }
 
                 // map move and zoom
-                //~ if (hardConfig.restrictedExtent.containsLonLat(ptResult)) {
+                if (hardConfig.restrictedExtent.containsLonLat(ptResult)) {
                 // TODO: extent check disabled, doesn't work westwards
                     mapLeft.setCenter(ptResult, zoom);
                     markGeolocLeft.addMarker(new Ol.Marker(ptResult));
                     markGeolocRight.addMarker(new Ol.Marker(ptResult));
-                //~ }
-                //~ else {
-                    //~ alert("La géolocalisation a échoué :\nlieu recherché hors carte");
-                //~ }
+                }
+                else {
+                    alert("La géolocalisation a échoué :\nlieu recherché hors carte");
+                }
             }
             else {
                 alert("La géolocalisation a échoué :\naucun résultat");
