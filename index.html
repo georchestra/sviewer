@@ -130,7 +130,7 @@ var hardConfig = {
             url = "http://gpp3-wxs.ign.fr/01gwgg3by2fpaxwxrfgvynqw/geoportail/ols?";
             break;
         default:
-            url = "http://gpp3-wxs.ign.fr/01gwgg3by2fpaxwxrfgvynqw/geoportail/ols?";
+            url = "http://gpp3-wxs.ign.fr/0za8j6silpfdyda2lh0lhqss/geoportail/ols?";
         }
         return url;
     },
@@ -269,7 +269,7 @@ function init(){
                 var n=ll.length;
                 var lv=0;
                 for (i=0;i<n;i+=1) {
-                    if (ll[i].getVisibility()) { 
+                    if (ll[i].getVisibility()) {
                         lv=i;
                     }
                     ll[i].setVisibility(false);
@@ -509,7 +509,8 @@ function init(){
 
                 } else {
                     // municipality
-                    countryCode="PositionOfInterest";
+                    //~ countryCode="PositionOfInterest";
+                    countryCode="StreetAddress";
                     freeFormAddress = q;
                 }
 
