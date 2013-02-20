@@ -93,7 +93,7 @@ var hardConfig = {
     // left compare layer
     leftCompareLayer: new Ol.Layer.WMS(
         "BD ORTHO Historique",
-        "http://tile.geobretagne.fr/gwc02/service/wms",
+        "http://geobretagne.fr/gwc02/service/wms",
         { layers: 'satellite-ancien', format: 'image/jpeg', transparent: false },
         {
             attribution: "IGN BDORTHO Historique",
@@ -126,7 +126,7 @@ var hardConfig = {
 
     // right compare layer
     rightCompareLayer: new Ol.Layer.WMS(
-        "BD ORTHO Historique",
+        "image aerienne GeoBretagne",
         "http://tile.geobretagne.fr/gwc02/service/wms",
         { layers: 'satellite', format: 'image/jpeg', transparent: false },
         {
@@ -871,15 +871,14 @@ html,body {
                     En 2012, <a href="http://geobretagne.fr/">G&eacute;oBretagne</a> fait proc&eacute;der au g&eacute;or&eacute;f&eacute;rencement
                     des photographies a&eacute;riennes
                     issues de la premi&egrave;re couverture syst&eacute;matique du territoire achev&eacute;e en 1952 par l'IGN.
-                    Toute la Bretagne sera couverte : le Morbihan (1952), l'Ille-et-Vilaine (1949), le Finist&egrave;re (1952). Les C&ocirc;tes d'Armor
-                    seront publi&eacute;s fin 2012.
+                    Toute la Bretagne est couverte : le Morbihan (1952), l'Ille-et-Vilaine (1949), le Finist&egrave;re (1952), les C&ocirc;tes d'Armor (1952).
                     Ces donn&eacute;es pr&eacute;cises et exhaustives offrent aux professionnels et au public une
                     vision du territoire &agrave; soixante ann&eacute;es d'&eacute;cart.
                 </p>
                 <p>
                     Les <a href="http://geobretagne.fr/geonetwork/srv/fr/metadata.show?id=3064">donn&eacute;es BD ORTHO&reg; Historique en Bretagne</a>
                     issues du
-                    <a href="http://geobretagne.fr/geonetwork/srv/fr/metadata.show?uuid=0fe4d556-9795-4907-9397-864d1fcfec13">service WMS G&eacute;oBretagne</a>
+                    <a href="http://geobretagne.fr/geonetwork/srv/fr/metadata.show?uuid=0fe4d556-9795-4907-9397-864d1fcfec13">service R&eacute;f&eacute;rentiels G&eacute;oBretagne</a>
                     peuvent &ecirc;tre utilis&eacute;es sur tout site web internet
                     avec la mention apparente <em>IGN BD ORTHO Historique 2011</em>.
                 </p>
@@ -900,7 +899,9 @@ html,body {
                         g&eacute;olocalisation: <a href="http://api.ign.fr/geoportail/api/doc/fr/developpeur/search.html">IGN G&eacute;oportail API</a>
                     </li>
                     <li>r&eacute;alisation : <a href="http://geobretagne.fr/">G&eacute;oBretagne</a>, Pr&eacute;fecture de la r&eacute;gion Bretagne</li>
-                    <li>code source : http://github.com/geobretagne/sviewer/</li>
+                    <li>code source : http://github.com/geobretagne/sviewer/<br />
+                        G&eacute;oBretagne est propuls&eacute;e par <a href="http://georchestra.org/">geOrchestra</a>
+                    </li>
                 </ul>
                 <p class="pcenter">
                     <a id="aboutClose" class="bt" href="#">fermer</a>
