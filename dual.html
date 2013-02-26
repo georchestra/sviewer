@@ -106,20 +106,7 @@ var hardConfig = {
     // geocoder
     openLSGeocodeUrl: function () {
         "use strict";
-        var url = "";
-        switch (window.location.host) {
-        case "dev.geobretagne.fr":
-            url = "http://gpp3-wxs.ign.fr/x1uy9hv7ojndca8335mhgv38/geoportail/ols?";
-            break;
-        case "test.geobretagne.fr":
-            url = "http://gpp3-wxs.ign.fr/xsjb3kmbejbpxp04tysclyrc/geoportail/ols?";
-            break;
-        case "geobretagne.fr":
-            url = "http://gpp3-wxs.ign.fr/01gwgg3by2fpaxwxrfgvynqw/geoportail/ols?";
-            break;
-        default:
-            url = "http://gpp3-wxs.ign.fr/0za8j6silpfdyda2lh0lhqss/geoportail/ols?";
-        }
+        var url = "http://geobretagne.fr/openls";
         return url;
     },
     openLSMaxResponses: 1,
