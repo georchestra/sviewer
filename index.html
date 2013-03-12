@@ -9,9 +9,10 @@ $Author: fabrice.phung $
     -->
     <head>
         <title>Visualiseur simple GeoBretagne</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=100" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
 
         <!-- libraries -->
         <script type="text/javascript" src="lib/openlayers/OpenLayers.js"></script>
@@ -22,6 +23,7 @@ $Author: fabrice.phung $
         <link rel="stylesheet" href="style/ol.css" type="text/css" />
 
         <script type="text/javascript">
+//<![CDATA[
 /***********************************************************************************************
  * configuration
  */
@@ -683,6 +685,7 @@ function init(){
         }
     }
 }
+//]]>
     </script>
     <style type="text/css">
 html,body {
@@ -874,16 +877,18 @@ html,body {
         </style>
     </head>
     <body>
-        <noscript>cette page requiert l'activation de javascript</noscript>
+        <noscript><p>cette page requiert l'activation de javascript</p></noscript>
         <div id="banner">
             <a id="permalinkLink" href="#permalinkFrame" title="lien permanent sur la vue actuelle">
                 Permalien
             </a>
             <a id="aboutLink" href="#aboutFrame" title="&agrave; propos">A propos</a>
             <a id="helpLink" href="#helpFrame" title="Aide">Aide</a>
-            <form id="addressForm" method="get" target="#">
-                <input id="addressInput" type="text"  value="ex: rue Martenot, Rennes" title="ex: rue Martenot, Rennes" value="10 rue maurice fabre, rennes" />
+            <form id="addressForm" method="get" action="#">
+                <div>
+                <input id="addressInput" type="text"  value="ex: rue Martenot, Rennes" title="ex: rue Martenot, Rennes" />
                 <input type="submit" value="trouver" />
+                </div>
             </form>
             <h1 id="title"></h1>
         </div>
@@ -894,33 +899,33 @@ html,body {
             <table>
                 <tbody>
                     <tr>
-                        <td><img class="ico" src="img/home.png" title="bouton &eacute;tendue globale" /></td>
+                        <td><img class="ico" src="img/home.png" title="bouton &eacute;tendue globale" alt="&eacute;tendue globale" /></td>
                         <td>
                             Positionne la carte sur l'&eacute;tendue globale.
                         </td>
                     </tr>
                     <tr>
-                        <td><img class="ico" src="img/back.png" title="bouton annuler dernier d&eacute;placement" /></td>
+                        <td><img class="ico" src="img/back.png" title="bouton annuler dernier d&eacute;placement" alt="dernier d&eacute;placement" /></td>
                         <td>
                             Annule le dernier d&eacute;placement de carte.
                         </td>
                     </tr>
                     <tr>
-                        <td><img class="ico" src="img/plus.png" title="bouton zoom avant" /></td>
+                        <td><img class="ico" src="img/plus.png" title="bouton zoom avant" alt="zoom avant" /></td>
                         <td>
                             Effectue un zoom avant.
                             Alternative: touche [+] du clavier, double-clic
                         </td>
                     </tr>
                     <tr>
-                        <td><img class="ico" src="img/minus.png" title="bouton zoom arri&egrave;re" /></td>
+                        <td><img class="ico" src="img/minus.png" title="bouton zoom arri&egrave;re" alt="zoom arri&egrave;re" /></td>
                         <td>
                             Effectue un zoom arri&egrave;re.
                             Alternative: touche [-] du clavier.
                         </td>
                     </tr>
                     <tr>
-                        <td><img class="ico" src="img/layer.png" title="bouton fond de plan" /></td>
+                        <td><img class="ico" src="img/layer.png" title="bouton fond de plan" alt="fond de plan" /></td>
                         <td>
                             Change le fond de plan.
                         </td>
@@ -968,7 +973,7 @@ html,body {
                 <a id="permalinkLink2" href="#" title="lien permanent vers la carte">lien vers la carte</a>
                 <br />
                 <br />
-                <img id="permaQR" src="img/loading.gif" title="QR code vers la carte"/>
+                <img id="permaQR" src="img/loading.gif" title="QR code vers la carte" alt="QR code" />
             </p>
             <p class="pcenter">
                 <a id="permalinkClose" class="bt" href="#">fermer</a>
@@ -977,6 +982,6 @@ html,body {
 
         <!-- map -->
         <div id="map"></div>
-        <script>init();</script>
+        <script type="text/javascript">init();</script>
     </body>
 </html>
