@@ -185,6 +185,24 @@ function init(){
     Ol.Util.applyDefaults(config, Ol.Util.getParameters("?"+window.location.hash.substr(1)));
     Ol.Util.applyDefaults(config, Ol.Util.getParameters(window.location.href));
     Ol.Util.applyDefaults(config, defaultConfig);
+    
+    // layers and styles
+    config.styles = [];
+    if (config.layers instanceof Array === false) {
+        config.layers = [config.layers];
+    }
+    if (config.layers.join("").indexOf("*") > 0) {
+        for (var i=0,l=config.layers.length;i<l;i+=1) {            
+            var richlayer = config.layers[i].split("*");
+            var layer = richlayer[0];
+            var style="";
+            if (richlayer.length > 1) {
+                style = richlayer[1];
+            }
+            config.layers[i] = layer;
+            config.styles.push(style);                       
+        }
+    }
 
     // document title handling
     document.title = config.title;
@@ -305,6 +323,12 @@ function init(){
         if (config.CQL_FILTER) {
             layer_wms.mergeNewParams({
                 "CQL_FILTER": config.CQL_FILTER
+            });
+        }
+        // styles
+        if (config.styles) {
+            layer_wms.mergeNewParams({
+                "STYLES": config.styles
             });
         }
         map.addLayer(layer_wms);
