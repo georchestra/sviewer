@@ -186,21 +186,24 @@ function init(){
     Ol.Util.applyDefaults(config, Ol.Util.getParameters(window.location.href));
     Ol.Util.applyDefaults(config, defaultConfig);
     
-    // layers and styles
-    config.styles = [];
-    if (config.layers instanceof Array === false) {
-        config.layers = [config.layers];
-    }
-    if (config.layers.join("").indexOf("*") > 0) {
-        for (var i=0,l=config.layers.length;i<l;i+=1) {            
-            var richlayer = config.layers[i].split("*");
-            var layer = richlayer[0];
-            var style="";
-            if (richlayer.length > 1) {
-                style = richlayer[1];
+    // layers and styles    
+    if (config.layers) {
+        config.styles = [];
+        if (config.layers instanceof Array === false) {
+            config.layers = [config.layers];
+        }
+        if (config.layers.join("").indexOf("*") > 0) {
+            config.richlayers = String(config.layers);
+            for (var i=0,l=config.layers.length;i<l;i+=1) {            
+                var richlayer = config.layers[i].split("*");
+                var layer = richlayer[0];
+                var style="";
+                if (richlayer.length > 1) {
+                    style = richlayer[1];
+                }
+                config.layers[i] = layer;
+                config.styles.push(style);                       
             }
-            config.layers[i] = layer;
-            config.styles.push(style);                       
         }
     }
 
@@ -640,7 +643,8 @@ function init(){
         linkParams.y = encodeURIComponent(Math.round(c.lat));
         linkParams.z = encodeURIComponent(map.getZoom());
         if (config.kml) { linkParams.kml = config.kml; }
-        if (config.layers) { linkParams.layers = config.layers; }
+        if (config.richlayers) { linkParams.layers = config.richlayers; }
+        if (config.layers && !config.richlayers) { linkParams.layers = config.layers; }
         if (config.title) { linkParams.title = config.title; }
         if (config.CQL_FILTER) { linkParams.CQL_FILTER = config.CQL_FILTER; }
         var url = Ol.Util.urlAppend(
