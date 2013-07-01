@@ -136,7 +136,7 @@ var hardConfig = {
                 attribution: "Fond cartographique : OpenStreetMap CC-by-SA",
                 isBaseLayer: false,
                 tileSize: new Ol.Size(256,256),
-                visibility: true
+                visibility: false
             }
         ),
         new Ol.Layer.WMS(
@@ -288,7 +288,12 @@ function init(){
             }
         })]
     );
-
+    var lb=hardConfig.layersBackground;
+    if (config.bl && config.bl <lb.length) {			
+	lb[parseInt(config.bl)].setVisibility(true);	
+    } else	{
+	lb[0].setVisibility(true);
+    }
 
     /**
      * overlay layers
@@ -642,6 +647,12 @@ function init(){
         linkParams.x = encodeURIComponent(Math.round(c.lon));
         linkParams.y = encodeURIComponent(Math.round(c.lat));
         linkParams.z = encodeURIComponent(map.getZoom());
+        for (var i=0;i<hardConfig.layersBackground.length;i++) {
+            if (hardConfig.layersBackground[i].getVisibility()) {
+                linkParams.bl = encodeURIComponent(i);
+                break;
+            }
+        }		
         if (config.kml) { linkParams.kml = config.kml; }
         if (config.richlayers) { linkParams.layers = config.richlayers; }
         if (config.layers && !config.richlayers) { linkParams.layers = config.layers; }
