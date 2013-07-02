@@ -288,11 +288,12 @@ function init(){
             }
         })]
     );
-    var lb=hardConfig.layersBackground;
-    if (config.bl && config.bl <lb.length) {			
-	lb[parseInt(config.bl)].setVisibility(true);	
-    } else	{
-	lb[0].setVisibility(true);
+    // backgoundLayer restore
+    var ll=hardConfig.layersBackground;
+    if (config.lb && config.lb<ll.length) {			
+	ll[parseInt(config.lb)].setVisibility(true);	
+    } else {
+	ll[0].setVisibility(true);
     }
 
     /**
@@ -649,7 +650,7 @@ function init(){
         linkParams.z = encodeURIComponent(map.getZoom());
         for (var i=0;i<hardConfig.layersBackground.length;i++) {
             if (hardConfig.layersBackground[i].getVisibility()) {
-                linkParams.bl = encodeURIComponent(i);
+                linkParams.lb = encodeURIComponent(i);
                 break;
             }
         }		
