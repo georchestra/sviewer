@@ -171,17 +171,6 @@ function init() {
     map = new Ol.Map('map', mapOptions );
 
 
-    var overview = new OpenLayers.Control.OverviewMap({
-        layers: [new OpenLayers.Layer.OSM()],
-        mapOptions: {
-            maxExtent: hardConfig.maxExtent,
-            restrictedExtent: hardConfig.restrictedExtent
-        },
-        maximized: true
-    });
-    map.addControl(overview);
-
-
     // keyboard navigation
     var keyboardNav = new Ol.Control.KeyboardDefaults();
     map.addControls([keyboardNav]);
@@ -222,11 +211,13 @@ function init() {
     }
 
 
+    /**
+    * UI
+    */
     $("#ziBt").click(function() { map.zoomIn(); });
     $("#zoBt").click(function() { map.zoomOut(); });
     $("#zeBt").click(function() { map.zoomToExtent(hardConfig.initialExtent); });
     $("#bgBt").click(switchBackground);
-
 
 
     /**
