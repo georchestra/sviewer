@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr">
+    <!--
+geOrchestra simple viewer
+    -->
+    <head>
+        <title>Visualiseur mobile geOrchestra</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=100" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+
+        <!-- external libraries -->
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css" />
+        <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+        <script src="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
+
+        <script type="text/javascript" src="lib/openlayers/OpenLayers.js"></script>
+        <script type="text/javascript" src="lib/proj4js/proj4js-compressed.js"></script>
+        <script type="text/javascript" src="lib/LoadingPanel.js"></script>
+
+        <!-- local -->
+        <!--script type="text/javascript" src="http://dev.openlayers.org/sandbox/jgrocha/openlayers/examples/mobile.js"></script-->
+        <script type="text/javascript" src="js/m.js"></script>
+
+        <style>
+html {
+    height: 100%;
+}
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-size: 0.8em;
+}
+
+#frameMap {
+    padding: 0px;
+}
+#map {
+    width: 100%;
+    height: 100%;
+}
+#mapcontrols {
+    position: absolute;
+    top: 50px;
+    left: 10px;
+    z-index:8000;
+}
+
+#legend .title {
+    font-weight: bold;
+}
+
+#legend .abstract {
+}
+
+#legend img.legend {
+    padding:  2px 0 2px 0;
+}
+
+#legend a.attribution {
+    font-style: italic;
+    text-decoration: none;
+}
+
+
+/* disable "dismiss" on wide viewports */
+    .ui-popup-screen {
+    display: none;
+}
+        </style>
+        <script type="text/javascript">
+//<![CDATA[
+            $(document).ready(function() {
+                // fix height of content to allow for header & footer
+                function fixContentHeight() {
+                    var header = $("div[data-role='header']:visible");
+                    var content = $("div[data-role='content']:visible:visible");
+                    var viewHeight = $(window).height();
+
+                    var contentHeight = viewHeight - header.outerHeight();
+                    if ((content.outerHeight() + header.outerHeight()) !== viewHeight) {
+                        contentHeight -= (content.outerHeight() - content.height());
+                        content.height(contentHeight);
+                    }
+                    if (window.map) {
+                        map.updateSize();
+                    } else {
+                        // initialize map
+                        init();
+                    }
+                }
+                $(window).bind("orientationchange resize pageshow", fixContentHeight);
+                fixContentHeight();
+            });
+//]]>
+        </script>
+    </head>
+    <body>
+        <div data-role="page">
+
+            <!-- locate frame -->
+            <div id="frameLocate" data-role="popup" class="ui-content">
+                    <h3 class="ui-title">Localiser</h3>
+                    <a href="#frameLocate" data-role="button" data-rel="close" data-icon="delete" data-mini="true" data-iconpos="notext" class="ui-btn-right">Fermer</a>
+                    <form id="addressForm" href="#" method="get" action="#">
+                        <label for="addressInput">chercher une adresse</label>
+                        <input id="addressInput" name="addressInput" type="search" data-mini="true" value="" placeholder="ex: rue Martenot, Rennes" title="ex: rue Martenot, Rennes" />
+                        <input type="submit" data-role="button" data-icon="search" data-mini="true" data-theme="b" value="localiser" />
+                    </form>
+            </div>
+
+            <!-- share frame -->
+            <div id="frameShare" data-role="popup" data-dismissible="false">
+                <div data-role="header" class="ui-corner-top">
+                    <h3 class="ui-title">Partager</h3>
+                    <a href="#frameShare" data-role="button" data-rel="close" data-icon="delete" data-mini="true" data-iconpos="notext" class="ui-btn-right">Fermer</a>
+                </div>
+                <div data-role="content" class="ui-corner-bottom ui-content">
+                    <p>
+                        <a id="permalink" href="#" title="lien permanent vers la carte">lien vers la carte</a>
+                        <br />
+                        <img id="permaQR" src="img/loading.gif" title="QR code vers la carte" alt="QR code" />
+                    </p>
+                </div>
+            </div>
+
+            <!-- legend frame -->
+            <div id="frameLegend" data-role="popup" data-dismissible="false">
+                <div data-role="header" class="ui-corner-top">
+                    <h3 class="ui-title">Légende</h3>
+                    <a href="#frameLegend" data-role="button" data-rel="close" data-icon="delete" data-mini="true" data-iconpos="notext" class="ui-btn-right">Fermer</a>
+                </div>
+                <div data-role="content" class="ui-corner-bottom ui-content">
+                    <div id="legend"></div>
+                    <div id="baseAttributions"></div>
+                </div>
+            </div>
+
+            <!-- help frame -->
+            <div id="frameHelp" data-role="popup" data-dismissible="false">
+                <div data-role="header" class="ui-corner-top">
+                    <h3 class="ui-title">Aide</h3>
+                    <a href="#frameShare" data-role="button" data-rel="close" data-icon="delete" data-mini="true" data-iconpos="notext" class="ui-btn-right">Fermer</a>
+                </div>
+                <div data-role="content" class="ui-corner-bottom ui-content">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td><a href="#" data-role="button" data-icon="home" data-iconpos="notext" data-mini="true"></td>
+                                <td>
+                                    positionne la carte sur l'&eacute;tendue globale.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><a href="#" data-role="button" data-icon="plus" data-iconpos="notext" data-mini="true"></td>
+                                <td>
+                                    effectue un zoom avant.
+                                    alternative: touche [+] du clavier, double-clic
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><a href="#" data-role="button" data-icon="minus" data-iconpos="notext" data-mini="true"></td>
+                                <td>
+                                    effectue un zoom arri&egrave;re.
+                                    alternative: touche [-] du clavier.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><a href="#" data-role="button" data-icon="gear" data-iconpos="notext" data-mini="true"></td>
+                                <td>
+                                    change le fond de plan.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>
+                        <strong>&eacute;crans tactiles</strong>
+                        <br />
+                        toucher la carte pour afficher les informations.
+                        glisser sur l'&eacute;cran pour se d&eacute;placer sur la carte.
+                        pincer l'&eacute;cran pour effectuer un zoom avant/arri&egrave;re.
+                    </p>
+                    <p>
+                        <strong>clavier&amp;souris</strong>
+                        <br />
+                        cliquer sur la carte pour afficher les informations.
+                        pour se d&eacute;placer,
+                        maintenir le bouton souris et glisser sur la carte, ou touches fl&eacute;ch&eacute;es du clavier.
+                        pour recadrer,
+                        maintenir la touche MAJ du clavier et tracer un rectangle avec la souris, bouton maintenu.
+                    </p>
+                </div>
+            </div>
+
+            <!-- header -->
+            <div data-role="header" class="ui-bar-b">
+                <h2 id="title"></h2>
+                <a href="#frameMenu" data-rel="popup" data-role="button" data-mini="true" data-icon="gear" class="ui-btn-right">Outils</a>
+
+                <div id="frameMenu" data-role="popup">
+                    <ul data-role="listview" data-inset="true">
+                        <li><a href="#frameLocate" data-rel="popup" data-position-to="window">Localiser</a></li>
+                        <li><a href="#frameShare"  data-rel="popup" data-position-to="window">Partager</a></li>
+                        <li><a href="#frameLegend" data-rel="popup" data-position-to="window">Légende</a></li>
+                        <li><a href="#frameHelp"   data-rel="popup"data-position-to="window">Aide</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- content -->
+            <div data-role="content" id="frameMap">
+
+                    <!-- map -->
+                    <div id="map"></div>
+
+                    <div data-role="controlgroup" data-type="horizontal" data-mini="true" id="mapcontrols">
+                        <a id="zeBt" href="#" data-role="button" data-iconpos="notext" data-icon="home">vue initiale</a>
+                        <a id="ziBt" href="#" data-role="button" data-iconpos="notext" data-icon="plus">zoom +</a>
+                        <a id="zoBt" href="#" data-role="button" data-iconpos="notext" data-icon="minus">zoom -</a>
+                        <a id="bgBt" href="#" data-role="button" data-iconpos="notext" data-icon="gear">fond de plan</a>
+                    </div>
+
+            <!-- end content -->
+            </div>
+
+        <!-- end page -->
+        </div>
+    </body>
+</html>
