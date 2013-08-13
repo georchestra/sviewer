@@ -11,10 +11,14 @@ geOrchestra simple viewer
         <meta name="apple-mobile-web-app-capable" content="yes" />
 
         <!-- external libraries -->
-        <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
         <script type="text/javascript">
             $(document).bind("mobileinit", function(){
                 $.mobile.hashListeningEnabled = false;
+                $.mobile.loader.prototype.options.text = "chargement";
+                $.mobile.loader.prototype.options.textVisible = false;
+                $.mobile.loader.prototype.options.theme = "a";
+                $.mobile.loader.prototype.options.html = "";
             });
         </script>
         <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css" />
@@ -70,6 +74,10 @@ body {
     text-decoration: none;
 }
 
+.ui-icon-sviewer-gps {
+  background-image: url( "app-icon-email.png" );
+}
+
 
 /* enables map control behind popup */
 #frameLocate-screen, #frameShare-screen, #frameLegend-screen, #frameHelp-screen {
@@ -106,89 +114,6 @@ body {
     <body>
         <div data-role="page">
 
-            <!-- locate frame -->
-            <div id="frameLocate" data-role="popup" class="ui-content" data-transition="slidefade">
-                <h3 class="ui-title">Localiser</h3>
-                <a href="#frameLocate" data-role="button" data-rel="close" data-icon="delete" data-mini="true" data-iconpos="notext" class="ui-btn-right">Fermer</a>
-                <form id="addressForm" method="POST" action="#">
-                    <label for="addressInput">chercher une adresse</label>
-                    <input id="addressInput" name="addressInput" type="search" data-mini="true" value="" placeholder="ex: rue Martenot, Rennes" title="ex: rue Martenot, Rennes" />
-                    <input type="submit" data-role="button" data-icon="search" data-mini="true" data-theme="b" value="localiser" />
-                </form>
-                <span id="locateMsg"></span>
-            </div>
-
-            <!-- share frame -->
-            <div id="frameShare" data-role="popup" class="ui-content">
-                <h3 class="ui-title">Partager</h3>
-                <a href="#frameShare" data-role="button" data-rel="close" data-icon="delete" data-mini="true" data-iconpos="notext" class="ui-btn-right">Fermer</a>
-
-                <div id="socialLinks" data-role="controlgroup">
-                </div>
-            </div>
-
-            <!-- legend frame -->
-            <div id="frameLegend" data-role="popup" class="ui-content">
-                <h3 class="ui-title">Légende</h3>
-                <a href="#frameLegend" data-role="button" data-rel="close" data-icon="delete" data-mini="true" data-iconpos="notext" class="ui-btn-right">Fermer</a>
-                <div id="legend"></div>
-                <div id="baseAttributions"></div>
-            </div>
-
-            <!-- help frame -->
-            <div id="frameHelp" data-role="popup" class="ui-content">
-                <h3 class="ui-title">Aide</h3>
-                <a href="#frameHelp" data-role="button" data-rel="close" data-icon="delete" data-mini="true" data-iconpos="notext" class="ui-btn-right">Fermer</a>
-                <table>
-                    <tbody>
-                        <tr>
-                            <td><a href="#" data-role="button" data-icon="home" data-iconpos="notext" data-mini="true"></td>
-                            <td>
-                                positionner la carte sur l'&eacute;tendue globale.
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><a href="#" data-role="button" data-icon="plus" data-iconpos="notext" data-mini="true"></td>
-                            <td>
-                                zoom avant.
-                                alternative: touche [+] du clavier, double-clic
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><a href="#" data-role="button" data-icon="minus" data-iconpos="notext" data-mini="true"></td>
-                            <td>
-                                zoom arri&egrave;re.
-                                alternative: touche [-] du clavier.
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><a href="#" data-role="button" data-icon="grid" data-iconpos="notext" data-mini="true"></td>
-                            <td>
-                                parcourir les fonds de plan.
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <p>
-                    <strong>&eacute;crans tactiles</strong>
-                    <br />
-                    toucher la carte pour afficher les informations.
-                    glisser sur l'&eacute;cran pour se d&eacute;placer sur la carte.
-                    pincer l'&eacute;cran pour effectuer un zoom avant/arri&egrave;re.
-                </p>
-                <p>
-                    <strong>clavier&amp;souris</strong>
-                    <br />
-                    Cliquer sur la carte pour afficher les informations.
-                    <br />
-                    pour se d&eacute;placer,
-                    maintenir le bouton souris et glisser sur la carte, ou touches fl&eacute;ch&eacute;es du clavier.
-                    <br />
-                    Pour recadrer,
-                    maintenir la touche MAJ du clavier et tracer un rectangle avec la souris, bouton maintenu.
-                </p>
-            </div>
-
             <!-- header -->
             <div data-role="header" class="ui-bar-b">
                 <h2 id="title"></h2>
@@ -203,12 +128,112 @@ body {
                 </div>
             </div>
 
+
+            <!-- locate frame -->
+            <div id="frameLocate" data-role="popup" data-transition="slidefade">
+                <div data-role="header">
+                    <h3>Localiser</h3>
+                    <a href="#frameLocate" data-role="button" data-rel="close" data-icon="delete" data-mini="true" data-iconpos="notext" class="ui-btn-right">Fermer</a>
+                </div>
+                <div class="ui-content">
+                    <form id="addressForm" method="POST" action="#">
+                        <label for="addressInput">recherche par adresse</label>
+                        <input id="addressInput" name="addressInput" type="search" data-mini="true" value="" placeholder="ex: rue Martenot, Rennes" title="ex: rue Martenot, Rennes" />
+                        <input type="submit" data-role="button" data-mini="true" data-inline="true" value="rechercher" />
+                        <br />
+                        <span id="locateMsg"></span>
+                    </form>
+                </div>
+            </div>
+
+            <!-- share frame -->
+            <div id="frameShare" data-role="popup">
+                <div data-role="header">
+                    <h3 class="ui-title">Partager</h3>
+                    <a href="#frameShare" data-role="button" data-rel="close" data-icon="delete" data-mini="true" data-iconpos="notext" class="ui-btn-right">Fermer</a>
+                </div>
+                <div class="ui-content">
+                    <div id="socialLinks">
+                    </div>
+                </div>
+            </div>
+
+            <!-- legend frame -->
+            <div id="frameLegend" data-role="popup">
+                <div data-role="header">
+                    <h3 class="ui-title">Légende</h3>
+                    <a href="#frameLegend" data-role="button" data-rel="close" data-icon="delete" data-mini="true" data-iconpos="notext" class="ui-btn-right">Fermer</a>
+                </div>
+                <div class="ui-content">
+                    <div id="legend"></div>
+                    <div id="baseAttributions"></div>
+                </div>
+            </div>
+
+            <!-- help frame -->
+            <div id="frameHelp" data-role="popup">
+                <div data-role="header">
+                    <h3 class="ui-title">Aide</h3>
+                    <a href="#frameHelp" data-role="button" data-rel="close" data-icon="delete" data-mini="true" data-iconpos="notext" class="ui-btn-right">Fermer</a>
+                </div>
+                <div class="ui-content">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td><a href="#" data-role="button" data-icon="home" data-iconpos="notext" data-mini="true"></td>
+                                <td>
+                                    positionner la carte sur l'&eacute;tendue globale.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><a href="#" data-role="button" data-icon="plus" data-iconpos="notext" data-mini="true"></td>
+                                <td>
+                                    zoom avant.
+                                    alternative: touche [+] du clavier, double-clic
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><a href="#" data-role="button" data-icon="minus" data-iconpos="notext" data-mini="true"></td>
+                                <td>
+                                    zoom arri&egrave;re.
+                                    alternative: touche [-] du clavier.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><a href="#" data-role="button" data-icon="grid" data-iconpos="notext" data-mini="true"></td>
+                                <td>
+                                    parcourir les fonds de plan.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>
+                        <strong>&eacute;crans tactiles</strong>
+                        <br />
+                        toucher la carte pour afficher les informations.
+                        glisser sur l'&eacute;cran pour se d&eacute;placer sur la carte.
+                        pincer l'&eacute;cran pour effectuer un zoom avant/arri&egrave;re.
+                    </p>
+                    <p>
+                        <strong>clavier&amp;souris</strong>
+                        <br />
+                        Cliquer sur la carte pour afficher les informations.
+                        <br />
+                        pour se d&eacute;placer,
+                        maintenir le bouton souris et glisser sur la carte, ou touches fl&eacute;ch&eacute;es du clavier.
+                        <br />
+                        Pour recadrer,
+                        maintenir la touche MAJ du clavier et tracer un rectangle avec la souris, bouton maintenu.
+                    </p>
+                </div>
+            </div>
+
             <!-- content -->
             <div data-role="content" id="frameMap">
 
                     <!-- map -->
                     <div id="map"></div>
-                    <div data-role="controlgroup" data-type="horizontal" data-mini="true" id="mapcontrols">
+                    <div data-role="controlgroup" data-type="horizontal" id="mapcontrols">
                         <a id="zeBt" href="#" data-role="button" data-iconpos="notext" data-icon="home">vue initiale</a>
                         <a id="ziBt" href="#" data-role="button" data-iconpos="notext" data-icon="plus">zoom +</a>
                         <a id="zoBt" href="#" data-role="button" data-iconpos="notext" data-icon="minus">zoom -</a>

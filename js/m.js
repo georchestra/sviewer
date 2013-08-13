@@ -108,6 +108,7 @@ var hardConfig = {
                 "http://c.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png"
             ],
             {
+                attribution: "<br />Fond cartographique : <a href='http://www.openstreetmap.org/'>OpenStreetMap CC-by-SA</a>",
                 visibility: false
             }
         )
@@ -147,9 +148,10 @@ function init() {
         CQL_FILTER: hardConfig.CQL_FILTER
     };
 
-    // defaultConfig + querystring = config
+    // defaultConfig + hashstring + querystring = config
     var config = {};
-    Ol.Util.applyDefaults(config, Ol.Util.getParameters($(location).href));
+    Ol.Util.applyDefaults(config, Ol.Util.getParameters(window.location.href,{ splitArgs: false }));
+    Ol.Util.applyDefaults(config, Ol.Util.getParameters(window.location.href.replace('#','?'),{ splitArgs: false }));
     Ol.Util.applyDefaults(config, defaultConfig);
 
     // document title handling
@@ -213,19 +215,18 @@ function init() {
     }
 
     /**
-     * map controls
+     * map control methods
      */
-    var switchBackground = function() {
-        var ll=hardConfig.layersBackground;
-        var n=ll.length;
-        var lv=0;
-        for (var i=0;i<n;i+=1) {
-            if (ll[i].getVisibility()) {
-                lv=i;
+    function switchBackground () {
+        var n = hardConfig.layersBackground.length;
+        var lv = 0;
+        $.each(hardConfig.layersBackground, function(i, layer) {
+            if (layer.getVisibility()) {
+                lv = i;
             }
-            ll[i].setVisibility(false);
-        }
-        ll[(lv+1)%n].setVisibility(true);
+            layer.setVisibility(false);
+        });
+        hardConfig.layersBackground[(lv+1)%n].setVisibility(true);
     }
 
     /**
@@ -367,23 +368,13 @@ function init() {
         layer_kml.events.fallThrough = true;
     }
 
+
+
     /**
-     * geocoding form
+     * geoloc functions
      */
-    var markGeoloc = new Ol.Layer.Markers("geocodage left");
+    var markGeoloc = new Ol.Layer.Markers("geocodage");
     map.addLayers([markGeoloc]);
-    var addressInput = Ol.Util.getElement("addressInput");
-    addressInput.onfocus = function() {
-        addressInput.value = "";
-        // navkeys are annoying
-        keyboardNav.deactivate();
-        return false;
-    };
-    addressInput.onblur = function() {
-        // navkeys are back
-        keyboardNav.activate();
-        return false;
-    };
 
 
     // geocoding
@@ -446,8 +437,10 @@ function init() {
         }
     }
 
-    var onOpenLSSuccess = function (response) {
+    function onOpenLSSuccess (response) {
         try {
+            $.mobile.loading('hide');
+
             var format = new Ol.Format.XML();
             var doc = format.read(response.responseText);
             var results = format.getElementsByTagNameNS(doc,"*","GeocodedAddress");
@@ -484,14 +477,18 @@ function init() {
         }
     };
 
-    var onOpenLSFailure = function (response) {
+    function onOpenLSFailure (response) {
         $("#locateMsg").text("La géolocalisation a échoué");
+            $.mobile.loading('hide');
     };
 
     $("#addressForm").on('submit', function() {
         try {
+            $.mobile.loading('show', {
+                text: "recherche du lieu"
+            });
             markGeoloc.clearMarkers();
-            openLs(addressInput.value);
+            openLs($("#addressInput").val());
         }
         catch(err) {
             console.log(err.message);
@@ -529,21 +526,23 @@ function init() {
         if (config.title) { linkParams.title = config.title; }
         if (config.CQL_FILTER) { linkParams.CQL_FILTER = config.CQL_FILTER; }
 
-        var url = Ol.Util.urlAppend(
-            window.location.href.split('?')[0].split('#')[0],
-            jQuery.param(linkParams)
-        );
+        window.location.href = window.location.origin + window.location.pathname + "#" + jQuery.param(linkParams);
+        var permalinkQuery = window.location.origin + window.location.pathname + "?" + jQuery.param(linkParams);
 
         // permalink, social links & QR code update only if frame is visible
         if ($('#frameShare').css('display')==='block') {
             $('#socialLinks').empty();
-            $.each(hardConfig.socialMedia, function(name, urlprefix) {
-                $('#socialLinks').append('<a class="socialLink" target="ext" href="'+urlprefix+encodeURIComponent(url)+'">'+name+'</a>');
+            $.each(hardConfig.socialMedia, function(name, socialUrl) {
+                $('#socialLinks').append('<a class="socialLink" target="ext" href="'
+                    + socialUrl+encodeURIComponent(permalinkQuery)
+                    + '">'
+                    + name
+                    + '</a>'
+                );
             });
 
-            $('#socialLinks').append('<a class="socialLink" target="ext" href='+url+'>permalien</a>');
             $('#socialLinks').append('<br /><img src="http://chart.apis.google.com/chart?cht=qr&chs=160x160&chld=L&chl='
-                + encodeURIComponent(url)
+                + encodeURIComponent(permalinkQuery)
                 + '" />');
             $(".socialLink").buttonMarkup(
             {
@@ -551,9 +550,9 @@ function init() {
                 mini: true,
                 theme: "b"
             });
-
         }
     };
+
     map.events.register("moveend", map, setPermalink);
     setPermalink();
 
@@ -562,10 +561,9 @@ function init() {
      * Capabilities and metadata
      */
     var format_WMS = new Ol.Format.WMSCapabilities();
-    var layernames = [].concat(config.layers);
-    for (var i=0,l=layernames.length;i<l;i+=1) {
-        if (layernames[i]) {
-            var la = layernames[i].split(":",2);
+    $.each([].concat(config.layers), function(i, layername) {
+        if (layername) {
+            var la = layername.split(":",2);
             var onlineResource = [hardConfig.geoserver,la[0],la[1],"wms"].join("/");
             Ol.Request.GET({
                 url: onlineResource,
@@ -589,18 +587,17 @@ function init() {
                         "format" : "image/png",
                         "layer": mdLayer.name
                     };
-                    var domLegend=$("#legend");
-                    domLegend.append("<span class='title'>"
+                    $("#legend").append("<span class='title'>"
                         + $('<div/>').text(mdLayer.title).html()
-                        + "</span><br />");
-                    domLegend.append("<span class='abstract'>"
+                        + "</span><br />"
+                        + "<span class='abstract'>"
                         + $('<div/>').text(mdLayer.abstract).html()
-                        + "</span><br />");
-                    domLegend.append("<img class='legend' src='"
+                        + "</span><br />"
+                        + "<img class='legend' src='"
                         + Ol.Util.urlAppend(capabilities.service.href, Ol.Util.getParameterString(legendArgs))
                         + "' />");
                     if (mdLayer.attribution) {
-                        domLegend.append("<br />Source : <a class='attribution' href='"
+                        $("#legend").append("<br />Source : <a class='attribution' href='"
                             + mdLayer.attribution.href
                             + "'>"
                             + $('<div/>').text(mdLayer.attribution.title).html()
@@ -613,16 +610,33 @@ function init() {
                 }
             });
         }
-    };
+    });
+
 
 
     /**
     * UI
     */
-    $("#ziBt").click(function() { map.zoomIn(); });
-    $("#zoBt").click(function() { map.zoomOut(); });
-    $("#zeBt").click(function() { map.zoomToExtent(hardConfig.initialExtent); });
-    $("#bgBt").click(switchBackground);
+    // disables navkeys when using forms
+    $("form").focus(function() {
+        keyboardNav.deactivate();
+        return false;
+    });
+    $("form").blur(function() {
+        keyboardNav.activate();
+        return false;
+    });
 
+    $("#ziBt").click(function() {
+        map.zoomIn();
+    });
+    $("#zoBt").click(function() {
+        map.zoomOut();
+    });
+    $("#zeBt").click(function() {
+        map.zoomToExtent(hardConfig.initialExtent);
+        map.zoomTo(hardConfig.zinit);
+    });
+    $("#bgBt").click(switchBackground);
 
 }
