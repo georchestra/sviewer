@@ -71,7 +71,7 @@ var hardConfig = {
 
     // openLS geocoding service
     openLSGeocodeUrl: "http://geobretagne.fr/openls?",
-    openLSMaxResponses: 1,
+    openLSMaxResponses: 4,
 
     // array of background (opaque) map layers. Only one shall be visible on startup.
     // The user can switch layers with a button.
@@ -83,11 +83,11 @@ var hardConfig = {
             {
                 attribution: "<br />Photographie aérienne : partenaires GéoBretagne/IGN RGE/PlanetObserver",
                 tileSize: new Ol.Size(256,256),
-                visibility: false
+                visibility: true
             }
         ),
         new Ol.Layer.WMS(
-            "Plan OpenStreetMap",
+            "Plan OpenStreetMap simple",
             [
                 "http://a.osm.geobretagne.fr/gwc01/service/wms",
                 "http://b.osm.geobretagne.fr/gwc01/service/wms",
@@ -99,6 +99,17 @@ var hardConfig = {
                 tileSize: new Ol.Size(256,256),
                 visibility: false
             }
+        ),
+        new Ol.Layer.OSM(
+            "Plan OpenStreetMap",
+            [
+                "http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
+                "http://b.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
+                "http://c.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png"
+            ],
+            {
+                visibility: false
+            }
         )
     ],
 
@@ -107,7 +118,14 @@ var hardConfig = {
     layersOverlay: [],
 
     // CQL filter applied to the overlay layers
-    CQL_FILTER: null
+    CQL_FILTER: null,
+
+    // social media links
+    socialMedia: {
+        "Facebook": "http://www.facebook.com/sharer/sharer.php?u=",
+        "Twitter" : "https://twitter.com/intent/tweet?text=",
+        "Google+" : "https://plus.google.com/share?url="
+    }
 }
 
 //~ hardConfig.layersBackground = hardConfig.layersBackground.concat([]);
@@ -131,8 +149,7 @@ function init() {
 
     // defaultConfig + querystring = config
     var config = {};
-    Ol.Util.applyDefaults(config, Ol.Util.getParameters("?"+window.location.hash.substr(1)));
-    Ol.Util.applyDefaults(config, Ol.Util.getParameters(window.location.href));
+    Ol.Util.applyDefaults(config, Ol.Util.getParameters($(location).href));
     Ol.Util.applyDefaults(config, defaultConfig);
 
     // document title handling
@@ -179,13 +196,14 @@ function init() {
     /**
      * background layers
      */
-    map.addLayers(hardConfig.layersBackground);
     // reading visible background index with &lb=
     if (config.lb && config.lb<hardConfig.layersBackground.length) {
         hardConfig.layersBackground[parseInt(config.lb)].setVisibility(true);
     } else {
         hardConfig.layersBackground[0].setVisibility(true);
     }
+    map.addLayers(hardConfig.layersBackground);
+
 
     /**
      * overlay layers
@@ -209,16 +227,6 @@ function init() {
         }
         ll[(lv+1)%n].setVisibility(true);
     }
-
-
-    /**
-    * UI
-    */
-    $("#ziBt").click(function() { map.zoomIn(); });
-    $("#zoBt").click(function() { map.zoomOut(); });
-    $("#zeBt").click(function() { map.zoomToExtent(hardConfig.initialExtent); });
-    $("#bgBt").click(switchBackground);
-
 
     /**
      * WMS layer providing onclick getFeatureInfo
@@ -252,7 +260,7 @@ function init() {
         }
 
         // styles specified with &layers=layername*namedstyle
-        var namedStyles = $.map(config.layers, function(l) {
+        var namedStyles = $.map(config.layers.split(','), function(l) {
             var v = l.split('*',2)
             if (l.length>1) {  return v[1] }
             else { return "" }
@@ -359,8 +367,6 @@ function init() {
         layer_kml.events.fallThrough = true;
     }
 
-
-
     /**
      * geocoding form
      */
@@ -462,35 +468,36 @@ function init() {
                 if (hardConfig.restrictedExtent.containsLonLat(ptResult)) {
                     map.setCenter(ptResult, zoom);
                     markGeoloc.addMarker(new Ol.Marker(ptResult));
+                    $("#locateMsg").text("");
+                    $("#frameLocate").popup("close");
                 }
                 else {
-                    alert("La géolocalisation a échoué :\nlieu recherché hors carte");
+                    $("#locateMsg").text("La géolocalisation a échoué :\nlieu recherché hors carte");
                 }
             }
             else {
-                alert("La géolocalisation a échoué :\naucun résultat");
+                $("#locateMsg").text("La géolocalisation a échoué :\naucun résultat");
             }
         } catch(err) {
-            alert("la géolocalisation a échoué");
+            $("#locateMsg").text("La géolocalisation a échoué");
             console.log(err);
         }
     };
 
     var onOpenLSFailure = function (response) {
-        alert("la géolocalisation a échoué");
+        $("#locateMsg").text("La géolocalisation a échoué");
     };
 
-    Ol.Util.getElement("addressForm").onsubmit = function() {
+    $("#addressForm").on('submit', function() {
         try {
             markGeoloc.clearMarkers();
             openLs(addressInput.value);
-            return false;
         }
         catch(err) {
             console.log(err.message);
-            return false;
         }
-    };
+        return false;
+    });
 
 
     /**
@@ -524,13 +531,27 @@ function init() {
 
         var url = Ol.Util.urlAppend(
             window.location.href.split('?')[0].split('#')[0],
-            Ol.Util.getParameterString(linkParams)
+            jQuery.param(linkParams)
         );
 
-        // permalink & QR code update only if frame is visible
-        if ($("#frameShare").css("display")==="block") {
-            $("#permalink").prop("href", url);
-            $("#permaQR").prop("src","http://chart.apis.google.com/chart?cht=qr&chs=160x160&chld=L&chl=" + encodeURIComponent(url));
+        // permalink, social links & QR code update only if frame is visible
+        if ($('#frameShare').css('display')==='block') {
+            $('#socialLinks').empty();
+            $.each(hardConfig.socialMedia, function(name, urlprefix) {
+                $('#socialLinks').append('<a class="socialLink" target="ext" href="'+urlprefix+encodeURIComponent(url)+'">'+name+'</a>');
+            });
+
+            $('#socialLinks').append('<a class="socialLink" target="ext" href='+url+'>permalien</a>');
+            $('#socialLinks').append('<br /><img src="http://chart.apis.google.com/chart?cht=qr&chs=160x160&chld=L&chl='
+                + encodeURIComponent(url)
+                + '" />');
+            $(".socialLink").buttonMarkup(
+            {
+                inline: true,
+                mini: true,
+                theme: "b"
+            });
+
         }
     };
     map.events.register("moveend", map, setPermalink);
@@ -593,6 +614,15 @@ function init() {
             });
         }
     };
+
+
+    /**
+    * UI
+    */
+    $("#ziBt").click(function() { map.zoomIn(); });
+    $("#zoBt").click(function() { map.zoomOut(); });
+    $("#zeBt").click(function() { map.zoomToExtent(hardConfig.initialExtent); });
+    $("#bgBt").click(switchBackground);
 
 
 }
