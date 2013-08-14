@@ -126,8 +126,9 @@ var hardConfig = {
         "Facebook": "http://www.facebook.com/sharer/sharer.php?u=",
         "Twitter" : "https://twitter.com/intent/tweet?text=",
         "Google+" : "https://plus.google.com/share?url="
+
     }
-}
+};
 
 //~ hardConfig.layersBackground = hardConfig.layersBackground.concat([]);
 
@@ -142,21 +143,25 @@ var map;
 
 function init() {
     "use strict";
+
     // defaultConfig may be overriden with querystring
     var defaultConfig = {
         title: hardConfig.title,
-        CQL_FILTER: hardConfig.CQL_FILTER
+        CQL_FILTER: hardConfig.CQL_FILTER,
+        layernames: [],
+        stylenames: []
     };
 
-    // defaultConfig + hashstring + querystring = config
+    // config = defaultConfig + querystring + hashstring
     var config = {};
-    Ol.Util.applyDefaults(config, Ol.Util.getParameters(window.location.href,{ splitArgs: false }));
-    Ol.Util.applyDefaults(config, Ol.Util.getParameters(window.location.href.replace('#','?'),{ splitArgs: false }));
+    Ol.Util.applyDefaults(config, Ol.Util.getParameters("/" + window.location.search, { splitArgs: false }));
+    Ol.Util.applyDefaults(config, Ol.Util.getParameters("/?" + window.location.hash.substring(1),  { splitArgs: false }));
     Ol.Util.applyDefaults(config, defaultConfig);
 
     // document title handling
     document.title = config.title;
-    $('#title').append(config.title);
+    $('#title').text(config.title);
+    $('#setTitle').val(config.title);
 
     /**
      * MAP
@@ -200,7 +205,7 @@ function init() {
      */
     // reading visible background index with &lb=
     if (config.lb && config.lb<hardConfig.layersBackground.length) {
-        hardConfig.layersBackground[parseInt(config.lb)].setVisibility(true);
+        hardConfig.layersBackground[parseInt(config.lb, 10)].setVisibility(true);
     } else {
         hardConfig.layersBackground[0].setVisibility(true);
     }
@@ -211,7 +216,7 @@ function init() {
      * overlay layers
      */
     if (hardConfig.hasOwnProperty("layersOverlay")) {
-        map.addLayers(hardConfig.layersOverlay)
+        map.addLayers(hardConfig.layersOverlay);
     }
 
     /**
@@ -231,28 +236,44 @@ function init() {
 
     /**
      * WMS layer providing onclick getFeatureInfo
-     * Activated with &layers=layernames
+     * Activated with &layers=layername[*style][,layername...]
      * This WMS layer must be queryable with info_format text/html
      */
 
     if (config.layers) {
-        var popup, layer_wms, namedStyles, getFeatureInfo;
+        var popup, layer_wms, layersstyles = [], getFeatureInfo;
+
+        // parser to retrieve layernames and styles
+        layersstyles = (typeof config.layers == 'string') ? config.layers.split(',') : config.layers
+        $.each(layersstyles, function(i,s) {
+            var a = s.split('*',2);
+            config.layernames.push(a[0]);
+            config.stylenames.push( (a.length > 1) ? a[1]:"");
+        });
 
         // fake popup function
-        popup = { destroy: function() {} };
+        popup = { destroy: function() {}
+        };
 
         layer_wms = new Ol.Layer.WMS(
             config.title,
-            hardConfig.wms, {
-                layers: config.layers,
+            hardConfig.wms,
+            {
+                layers: config.layernames.join(','),
                 format: "image/png",
                 transparent: true
-            },{
+            },
+            {
                 isBaseLayer: false,
                 singleTile: true,
                 ratio: 1.2
             }
         );
+
+        layer_wms.mergeNewParams({
+            styles: config.stylenames.join(',')
+        });
+
         // CQL filter specified with &CQL_FILTER=
         if (config.CQL_FILTER) {
             layer_wms.mergeNewParams({
@@ -260,17 +281,7 @@ function init() {
             });
         }
 
-        // styles specified with &layers=layername*namedstyle
-        var namedStyles = $.map(config.layers.split(','), function(l) {
-            var v = l.split('*',2)
-            if (l.length>1) {  return v[1] }
-            else { return "" }
-        }).join(',')
-        layer_wms.mergeNewParams({
-            "STYLES": namedStyles
-        });
         map.addLayer(layer_wms);
-
 
         getFeatureInfo = new Ol.Control.WMSGetFeatureInfo({
             url: hardConfig.wms,
@@ -391,8 +402,9 @@ function init() {
                     var municipality = qa[qa.length-1].trim();
                     countryCode="StreetAddress";
                     freeFormAddress = address + " " + municipality;
-
-                } else {
+                }
+                else
+                {
                     // municipality
                     countryCode="PositionOfInterest";
                     countryCode="StreetAddress";
@@ -428,7 +440,6 @@ function init() {
                         '</XLS>'].join(""),
                     failure: onOpenLSFailure,
                     success: onOpenLSSuccess
-
                 });
             }
         }
@@ -440,7 +451,6 @@ function init() {
     function onOpenLSSuccess (response) {
         try {
             $.mobile.loading('hide');
-
             var format = new Ol.Format.XML();
             var doc = format.read(response.responseText);
             var results = format.getElementsByTagNameNS(doc,"*","GeocodedAddress");
@@ -466,21 +476,24 @@ function init() {
                 }
                 else {
                     $("#locateMsg").text("La géolocalisation a échoué :\nlieu recherché hors carte");
+                    $.mobile.loading('hide');
                 }
             }
             else {
                 $("#locateMsg").text("La géolocalisation a échoué :\naucun résultat");
+                $.mobile.loading('hide');
             }
         } catch(err) {
             $("#locateMsg").text("La géolocalisation a échoué");
+            $.mobile.loading('hide');
             console.log(err);
         }
-    };
+    }
 
     function onOpenLSFailure (response) {
         $("#locateMsg").text("La géolocalisation a échoué");
             $.mobile.loading('hide');
-    };
+    }
 
     $("#addressForm").on('submit', function() {
         try {
@@ -511,6 +524,7 @@ function init() {
 
     // keeping permalink synchronized with the map extent
     var setPermalink = function() {
+        var permalinkHash, permalinkQuery;
         var c = map.getCenter();
         var linkParams = {};
         linkParams.x = encodeURIComponent(Math.round(c.lon));
@@ -526,30 +540,34 @@ function init() {
         if (config.title) { linkParams.title = config.title; }
         if (config.CQL_FILTER) { linkParams.CQL_FILTER = config.CQL_FILTER; }
 
-        window.location.href = window.location.origin + window.location.pathname + "#" + jQuery.param(linkParams);
-        var permalinkQuery = window.location.origin + window.location.pathname + "?" + jQuery.param(linkParams);
+        permalinkHash = window.location.origin + window.location.pathname + "#" + jQuery.param(linkParams);
+        permalinkQuery = window.location.origin + window.location.pathname + "?" + jQuery.param(linkParams);
 
         // permalink, social links & QR code update only if frame is visible
         if ($('#frameShare').css('display')==='block') {
             $('#socialLinks').empty();
             $.each(hardConfig.socialMedia, function(name, socialUrl) {
-                $('#socialLinks').append('<a class="socialLink" target="ext" href="'
-                    + socialUrl+encodeURIComponent(permalinkQuery)
-                    + '">'
-                    + name
-                    + '</a>'
+                $('#socialLinks').append('<a class="socialLink" target="_blank" href="' +
+                    socialUrl+encodeURIComponent(permalinkQuery) +
+                    '">' +
+                    name +
+                    '</a>'
                 );
             });
-
-            $('#socialLinks').append('<br /><img src="http://chart.apis.google.com/chart?cht=qr&chs=160x160&chld=L&chl='
-                + encodeURIComponent(permalinkQuery)
-                + '" />');
             $(".socialLink").buttonMarkup(
             {
+                icon: "plus",
                 inline: true,
                 mini: true,
-                theme: "b"
+                theme: "c"
             });
+
+            $('#qrcode').prop('src','http://chart.apis.google.com/chart?cht=qr&chs=160x160&chld=L&chl=' +
+                encodeURIComponent(permalinkQuery));
+            $('#permalink').val(permalinkQuery);
+            $('#embedcode').text('<iframe style="width: 600px; height: 400px;" src="' +
+            permalinkQuery +
+            '"></iframe>');
         }
     };
 
@@ -561,7 +579,7 @@ function init() {
      * Capabilities and metadata
      */
     var format_WMS = new Ol.Format.WMSCapabilities();
-    $.each([].concat(config.layers), function(i, layername) {
+    $.each([].concat(config.layernames), function(i, layername) {
         if (layername) {
             var la = layername.split(":",2);
             var onlineResource = [hardConfig.geoserver,la[0],la[1],"wms"].join("/");
@@ -574,6 +592,7 @@ function init() {
                 },
                 success: function(request) {
                     var doc = request.responseXML;
+                    var html = "";
                     if (!doc || !doc.documentElement) {
                         doc = request.responseText;
                     }
@@ -581,29 +600,34 @@ function init() {
                     var mdLayer = capabilities.capability.layers[0];
                     var legendArgs = {
                         "service" : "WMS",
-                        "version" : "1.3",
+                        "version" : capabilities.version,
                         "request" : "GetLegendGraphic",
                         "width" : 30,
                         "format" : "image/png",
-                        "layer": mdLayer.name
+                        "layer": mdLayer.name,
+                        "style": config.stylenames[i]
                     };
-                    $("#legend").append("<span class='title'>"
-                        + $('<div/>').text(mdLayer.title).html()
-                        + "</span><br />"
-                        + "<span class='abstract'>"
-                        + $('<div/>').text(mdLayer.abstract).html()
-                        + "</span><br />"
-                        + "<img class='legend' src='"
-                        + Ol.Util.urlAppend(capabilities.service.href, Ol.Util.getParameterString(legendArgs))
-                        + "' />");
-                    if (mdLayer.attribution) {
-                        $("#legend").append("<br />Source : <a class='attribution' href='"
-                            + mdLayer.attribution.href
-                            + "'>"
-                            + $('<div/>').text(mdLayer.attribution.title).html()
 
-                            + "</a><hr />");
-                    }
+                    html = "<li><h3 class='title'>" +
+                        $('<span/>').text(mdLayer.title).html() +
+                        "</h3><p class='abstract'>" +
+                        $('<span/>').text(mdLayer.abstract).html() +
+                        "<br /><img class='legend' src='" +
+                        Ol.Util.urlAppend(capabilities.service.href, Ol.Util.getParameterString(legendArgs)) +
+                        "' />";
+
+                    if (mdLayer.attribution) {
+                        html = html +
+                            "<br /><a target='_blank'class='attribution' href='" +
+                            mdLayer.attribution.href +
+                            "'>" +
+                            $('<span/>').text(mdLayer.attribution.title).html() +
+                            "</a>";
+                    };
+
+                    html = html + "</p></li>";
+
+                    $("#legend").append(html);
                 },
                 failure: function() {
                     Ol.Console.error.apply(Ol.Console, arguments);
@@ -618,11 +642,11 @@ function init() {
     * UI
     */
     // disables navkeys when using forms
-    $("form").focus(function() {
+    $("input").focus(function() {
         keyboardNav.deactivate();
         return false;
     });
-    $("form").blur(function() {
+    $("input").blur(function() {
         keyboardNav.activate();
         return false;
     });
@@ -638,5 +662,12 @@ function init() {
         map.zoomTo(hardConfig.zinit);
     });
     $("#bgBt").click(switchBackground);
-
+    $("#setTitle").keypress(function() {
+        config.title = $("#setTitle").val();
+        document.title = config.title;
+        $('#title').text(config.title);
+    });
+    $("#setTitle").blur(function() {
+        setPermalink();
+    });
 }

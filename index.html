@@ -22,6 +22,9 @@ geOrchestra simple viewer
             });
         </script>
         <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css" />
+        <link rel="stylesheet" href="css/jqm-icon-pack-2.0-original.css" />
+
+
         <script src="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
 
         <script type="text/javascript" src="lib/openlayers/OpenLayers.js"></script>
@@ -57,27 +60,9 @@ body {
     z-index:8000;
 }
 
-
-#legend .title {
-    font-weight: bold;
-}
-
-#legend .abstract {
-}
-
 #legend img.legend {
-    padding:  2px 0 2px 0;
+    margin: 2px 0 2px 0;
 }
-
-#legend a.attribution {
-    font-style: italic;
-    text-decoration: none;
-}
-
-.ui-icon-sviewer-gps {
-  background-image: url( "app-icon-email.png" );
-}
-
 
 /* enables map control behind popup */
 #frameLocate-screen, #frameShare-screen, #frameLegend-screen, #frameHelp-screen {
@@ -120,9 +105,9 @@ body {
                 <a href="#frameMenu" data-rel="popup" data-role="button" data-mini="true" data-icon="gear" class="ui-btn-right">Outils</a>
                 <div id="frameMenu" data-role="popup">
                     <ul data-role="listview" data-inset="true">
+                        <li><a href="#frameLegend" data-rel="popup" data-position-to="window">Légende</a></li>
                         <li><a href="#frameLocate" data-rel="popup" data-position-to="window">Localiser</a></li>
                         <li><a href="#frameShare"  data-rel="popup" data-position-to="window">Partager</a></li>
-                        <li><a href="#frameLegend" data-rel="popup" data-position-to="window">Légende</a></li>
                         <li><a href="#frameHelp"   data-rel="popup"data-position-to="window">Aide</a></li>
                     </ul>
                 </div>
@@ -155,6 +140,16 @@ body {
                 <div class="ui-content">
                     <div id="socialLinks">
                     </div>
+                    <hr />
+                    <div data-role="fieldcontain">
+                        <label for="setTitle">titre</label>
+                        <input data-mini="true" type="text" name="setTitle" id="setTitle" value="" />
+                        <label for="permalink">lien</label>
+                        <input data-mini="true" type="text" name="permalink" id="permalink" value="" />
+                        <label for="embedcode">HTML</label>
+                        <textarea data-mini="true" name="embedcode" id="embedcode"></textarea>
+                        <img id="qrcode" src="" />
+                    </div>
                 </div>
             </div>
 
@@ -165,7 +160,8 @@ body {
                     <a href="#frameLegend" data-role="button" data-rel="close" data-icon="delete" data-mini="true" data-iconpos="notext" class="ui-btn-right">Fermer</a>
                 </div>
                 <div class="ui-content">
-                    <div id="legend"></div>
+                    <ul data-role="listview" data-inset="true" id="legend">
+                    </ul>
                     <div id="baseAttributions"></div>
                 </div>
             </div>
@@ -182,27 +178,27 @@ body {
                             <tr>
                                 <td><a href="#" data-role="button" data-icon="home" data-iconpos="notext" data-mini="true"></td>
                                 <td>
-                                    positionner la carte sur l'&eacute;tendue globale.
+                                    vue initiale
                                 </td>
                             </tr>
                             <tr>
                                 <td><a href="#" data-role="button" data-icon="plus" data-iconpos="notext" data-mini="true"></td>
                                 <td>
-                                    zoom avant.
+                                    zoom avant
                                     alternative: touche [+] du clavier, double-clic
                                 </td>
                             </tr>
                             <tr>
                                 <td><a href="#" data-role="button" data-icon="minus" data-iconpos="notext" data-mini="true"></td>
                                 <td>
-                                    zoom arri&egrave;re.
+                                    zoom arri&egrave;re
                                     alternative: touche [-] du clavier.
                                 </td>
                             </tr>
                             <tr>
                                 <td><a href="#" data-role="button" data-icon="grid" data-iconpos="notext" data-mini="true"></td>
                                 <td>
-                                    parcourir les fonds de plan.
+                                    parcourir les fonds de plan
                                 </td>
                             </tr>
                         </tbody>
