@@ -11,7 +11,7 @@ geOrchestra simple viewer
         <meta name="apple-mobile-web-app-capable" content="yes" />
 
         <!-- external libraries -->
-        <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+        <script type="text/javascript" src="lib/jquery/jquery-1.10.2.min.js"></script>
         <script type="text/javascript">
             $(document).bind("mobileinit", function(){
                 $.mobile.hashListeningEnabled = false;
@@ -21,18 +21,13 @@ geOrchestra simple viewer
                 $.mobile.loader.prototype.options.html = "";
             });
         </script>
-        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css" />
-        <link rel="stylesheet" href="css/jqm-icon-pack-2.0-original.css" />
-
-
-        <script src="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
-
+        <link rel="stylesheet" href="lib/jquery/jquery.mobile-1.3.2.min.css" />
+        <script src="lib/jquery/jquery.mobile-1.3.2.min.js"></script>
         <script type="text/javascript" src="lib/openlayers/OpenLayers.js"></script>
         <script type="text/javascript" src="lib/proj4js/proj4js-compressed.js"></script>
         <script type="text/javascript" src="lib/LoadingPanel.js"></script>
 
         <!-- local -->
-        <!--script type="text/javascript" src="http://dev.openlayers.org/sandbox/jgrocha/openlayers/examples/mobile.js"></script-->
         <script type="text/javascript" src="js/m.js"></script>
 
         <style>
@@ -108,7 +103,6 @@ body {
                         <li><a href="#frameLegend" data-rel="popup" data-position-to="window">Légende</a></li>
                         <li><a href="#frameLocate" data-rel="popup" data-position-to="window">Localiser</a></li>
                         <li><a href="#frameShare"  data-rel="popup" data-position-to="window">Partager</a></li>
-                        <li><a href="#frameHelp"   data-rel="popup"data-position-to="window">Aide</a></li>
                     </ul>
                 </div>
             </div>
@@ -138,18 +132,18 @@ body {
                     <a href="#frameShare" data-role="button" data-rel="close" data-icon="delete" data-mini="true" data-iconpos="notext" class="ui-btn-right">Fermer</a>
                 </div>
                 <div class="ui-content">
-                    <div id="socialLinks">
-                    </div>
-                    <hr />
-                    <div data-role="fieldcontain">
+                    <div data-role="fieldcontain" data-mini="true">
                         <label for="setTitle">titre</label>
                         <input data-mini="true" type="text" name="setTitle" id="setTitle" value="" />
+                        <hr />
                         <label for="permalink">lien</label>
                         <input data-mini="true" type="text" name="permalink" id="permalink" value="" />
                         <label for="embedcode">HTML</label>
                         <textarea data-mini="true" name="embedcode" id="embedcode"></textarea>
-                        <img id="qrcode" src="" />
                     </div>
+                    <div data-role="controlgroup" data-type="horizontal" data-mini="true" id="socialLinks">
+                    </div>
+                    <img id="qrcode" src="" />
                 </div>
             </div>
 
@@ -163,64 +157,6 @@ body {
                     <ul data-role="listview" data-inset="true" id="legend">
                     </ul>
                     <div id="baseAttributions"></div>
-                </div>
-            </div>
-
-            <!-- help frame -->
-            <div id="frameHelp" data-role="popup">
-                <div data-role="header">
-                    <h3 class="ui-title">Aide</h3>
-                    <a href="#frameHelp" data-role="button" data-rel="close" data-icon="delete" data-mini="true" data-iconpos="notext" class="ui-btn-right">Fermer</a>
-                </div>
-                <div class="ui-content">
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td><a href="#" data-role="button" data-icon="home" data-iconpos="notext" data-mini="true"></td>
-                                <td>
-                                    vue initiale
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><a href="#" data-role="button" data-icon="plus" data-iconpos="notext" data-mini="true"></td>
-                                <td>
-                                    zoom avant
-                                    alternative: touche [+] du clavier, double-clic
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><a href="#" data-role="button" data-icon="minus" data-iconpos="notext" data-mini="true"></td>
-                                <td>
-                                    zoom arri&egrave;re
-                                    alternative: touche [-] du clavier.
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><a href="#" data-role="button" data-icon="grid" data-iconpos="notext" data-mini="true"></td>
-                                <td>
-                                    parcourir les fonds de plan
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <p>
-                        <strong>&eacute;crans tactiles</strong>
-                        <br />
-                        toucher la carte pour afficher les informations.
-                        glisser sur l'&eacute;cran pour se d&eacute;placer sur la carte.
-                        pincer l'&eacute;cran pour effectuer un zoom avant/arri&egrave;re.
-                    </p>
-                    <p>
-                        <strong>clavier&amp;souris</strong>
-                        <br />
-                        Cliquer sur la carte pour afficher les informations.
-                        <br />
-                        pour se d&eacute;placer,
-                        maintenir le bouton souris et glisser sur la carte, ou touches fl&eacute;ch&eacute;es du clavier.
-                        <br />
-                        Pour recadrer,
-                        maintenir la touche MAJ du clavier et tracer un rectangle avec la souris, bouton maintenu.
-                    </p>
                 </div>
             </div>
 
