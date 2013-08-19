@@ -18,7 +18,8 @@ var hardConfig = {
     // viewer title, may be overriden with &title=text
     title: "geOrchestra simple viewer",
 
-    // default wms onlineResource for &layers=layernames
+    // geOrchestra URL &layers=layernames and advanced viewer
+    geOrchestraURL: "http://geobretagne.fr/",
     wms: "http://geobretagne.fr/geoserver/ows",
     geoserver: "http://geobretagne.fr/geoserver",
 
@@ -158,6 +159,7 @@ function init() {
     Ol.Util.applyDefaults(config, Ol.Util.getParameters("/?" + window.location.hash.substring(1),  { splitArgs: false }));
     Ol.Util.applyDefaults(config, defaultConfig);
 
+
     // document title handling
     document.title = config.title;
     $('#title').text(config.title);
@@ -231,13 +233,15 @@ function init() {
             }
             layer.setVisibility(false);
         });
-        hardConfig.layersBackground[(lv+1)%n].setVisibility(true);
+        config.lb = (lv+1)%n;
+        hardConfig.layersBackground[config.lb].setVisibility(true);
+        setPermalink();
     }
 
     /**
-     * WMS layer providing onclick getFeatureInfo
+     * WMS layers stack providing getFeatureInfo.
      * Activated with &layers=layername[*style][,layername...]
-     * This WMS layer must be queryable with info_format text/html
+     * This WMS layers stack must be queryable with info_format text/html
      */
 
     if (config.layers) {
@@ -509,6 +513,32 @@ function init() {
         return false;
     });
 
+    /**
+     * sentMapTo
+     */
+    function sendMapTo(goal) {
+        // sendto : georchestra advanced viewer
+        if (goal === "georchestra_viewer") {
+            var params = {
+                "services": [],
+                "layers" : []
+            };
+            $.each(map.getLayersByClass('OpenLayers.Layer.WMS'), function(i, layer) {
+                if (layer.visibility) {
+                    params.layers.push({
+                        "layername" : layer.params.LAYERS,
+                        "owstype" : "WMS",
+                        "owsurl" : layer.url
+                    });
+                };
+            });
+            $("#georchestraFormData").val(JSON.stringify(params));
+            return true;
+        }
+    };
+
+
+
 
     /**
      * permalink
@@ -530,11 +560,7 @@ function init() {
         linkParams.x = encodeURIComponent(Math.round(c.lon));
         linkParams.y = encodeURIComponent(Math.round(c.lat));
         linkParams.z = encodeURIComponent(map.getZoom());
-        for (var i=0;i<hardConfig.layersBackground.length;i++) {
-            if (hardConfig.layersBackground[i].getVisibility()) {
-                linkParams.lb = encodeURIComponent(i);
-            }
-        }
+        linkParams.lb = encodeURIComponent(config.lb);
         if (config.kml) { linkParams.kml = config.kml; }
         if (config.layers) { linkParams.layers = config.layers; }
         if (config.title) { linkParams.title = config.title; }
@@ -561,9 +587,10 @@ function init() {
                 mini: true,
                 theme: "c"
             });
-
+            if ($('#qrcode').css("visibility")=="visible") {
             $('#qrcode').prop('src','http://chart.apis.google.com/chart?cht=qr&chs=160x160&chld=L&chl=' +
                 encodeURIComponent(permalinkQuery));
+            }
             $('#permalink').val(permalinkQuery);
             $('#embedcode').text('<iframe style="width: 600px; height: 400px;" src="' +
             permalinkQuery +
@@ -582,6 +609,7 @@ function init() {
     $.each([].concat(config.layernames), function(i, layername) {
         if (layername) {
             var la = layername.split(":",2);
+            // onlineResource from prefix = namespace
             var onlineResource = [hardConfig.geoserver,la[0],la[1],"wms"].join("/");
             Ol.Request.GET({
                 url: onlineResource,
@@ -638,6 +666,9 @@ function init() {
 
 
 
+
+
+
     /**
     * UI
     */
@@ -651,6 +682,7 @@ function init() {
         return false;
     });
 
+    // nav buttons
     $("#ziBt").click(function() {
         map.zoomIn();
     });
@@ -670,4 +702,11 @@ function init() {
     $("#setTitle").blur(function() {
         setPermalink();
     });
+
+    $("#georchestraForm").submit(function() {
+        sendMapTo("georchestra_viewer");
+    });
+
+
+
 }
