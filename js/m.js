@@ -127,7 +127,6 @@ var hardConfig = {
         "Facebook": "http://www.facebook.com/sharer/sharer.php?u=",
         "Twitter" : "https://twitter.com/intent/tweet?text=",
         "Google+" : "https://plus.google.com/share?url="
-
     }
 };
 
@@ -689,8 +688,7 @@ function init() {
             {
                 icon: "plus",
                 inline: true,
-                mini: true,
-                theme: "c"
+                mini: true
             });
             if ($('#qrcode').css("visibility")=="visible") {
             $('#qrcode').prop('src','http://chart.apis.google.com/chart?cht=qr&chs=160x160&chld=L&chl=' +
@@ -859,6 +857,9 @@ function init() {
         return false;
     });
 
-
+    // permalinks
+    $("#frameShare").bind({
+        popupafteropen: function() { setPermalink(); }
+    });
 
 }

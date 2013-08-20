@@ -63,6 +63,7 @@ body {
 #frameLocate-screen, #frameShare-screen, #frameLegend-screen, #frameHelp-screen {
     display: none;
 }
+
         </style>
         <script type="text/javascript">
 //<![CDATA[
@@ -132,24 +133,28 @@ body {
                     <a href="#frameShare" data-role="button" data-rel="close" data-icon="delete" data-mini="true" data-iconpos="notext" class="ui-btn-right">Fermer</a>
                 </div>
                 <div class="ui-content">
-                    <div data-role="fieldcontain" data-mini="true">
-                        <label for="setTitle">titre</label>
-                        <input data-mini="true" type="text" name="setTitle" id="setTitle" value="" />
-                        <hr />
-                        <label for="permalink">lien</label>
-                        <input data-mini="true" type="text" name="permalink" id="permalink" value="" />
-                        <label for="embedcode">HTML</label>
-                        <textarea data-mini="true" name="embedcode" id="embedcode"></textarea>
-                    </div>
-                    <div data-role="controlgroup" data-type="horizontal" data-mini="true" id="socialLinks">
-                    </div>
-                    <img id="qrcode" src="" />
-
-                    <form id="georchestraForm" target="_blank" method="post" action="http://geobretagne.fr/mapfishapp/">
-                        <input type="hidden" id="georchestraFormData" name="data" value="Azertyuio" />
-                        <input type="submit" data-role="button" data-icon="submit" value="visualiseur avancé" />
-                    </form>
-
+                    <ul data-role="listview" data-inset="true">
+                        <li data-role="fieldcontain">
+                            <label for="setTitle">titre</label>
+                            <input data-mini="true" type="text" name="setTitle" id="setTitle" data-mini="true" value="" />
+                        </li>
+                        <li data-role="fieldcontain">
+                            <label for="permalink">lien</label>
+                            <input data-mini="true" type="text" name="permalink" id="permalink" data-mini="true" value="" />
+                            <input type="image" id="qrcode" src="" />
+                        </li>
+                        <li data-role="fieldcontain">
+                            <label for="embedcode">HTML</label>
+                            <textarea data-mini="true" name="embedcode" id="embedcode" data-mini="true"></textarea>
+                        </li>
+                        <li  data-role="fieldcontain" id="socialLinks"></li>
+                        <li data-role="fieldcontain">
+                            <form id="georchestraForm" target="_blank" method="post" action="http://geobretagne.fr/mapfishapp/">
+                                <input type="hidden" id="georchestraFormData" name="data" value="" />
+                                <input type="submit" data-role="button" data-icon="submit" data-mini="true" data-inline="true" value="visualiseur avancé" />
+                            </form>
+                        </li>
+                    </ul>
                 </div>
             </div>
 
@@ -171,7 +176,7 @@ body {
 
                     <!-- map -->
                     <div id="map"></div>
-                    <div data-role="controlgroup" data-type="horizontal" id="mapcontrols">
+                    <div data-role="controlgroup" data-type="horizontal" data-mini="true"  id="mapcontrols">
                         <a id="zeBt" href="#" data-role="button" data-iconpos="notext" data-icon="home">vue initiale</a>
                         <a id="ziBt" href="#" data-role="button" data-iconpos="notext" data-icon="plus">zoom +</a>
                         <a id="zoBt" href="#" data-role="button" data-iconpos="notext" data-icon="minus">zoom -</a>
