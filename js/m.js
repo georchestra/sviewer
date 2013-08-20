@@ -150,7 +150,8 @@ function init() {
         title: hardConfig.title,
         CQL_FILTER: hardConfig.CQL_FILTER,
         layernames: [],
-        stylenames: []
+        stylenames: [],
+        onlineresources: []
     };
 
     // config = defaultConfig + querystring + hashstring
@@ -165,10 +166,8 @@ function init() {
     $('#title').text(config.title);
     $('#setTitle').val(config.title);
 
-    /**
-     * MAP
-     */
-    var mapOptions = {
+    // map creation
+    map = new Ol.Map('map', {
         allOverlays: true,
         projection: hardConfig.projMap,
         displayProjection: hardConfig.projDisplay,
@@ -193,8 +192,7 @@ function init() {
             new Ol.Control.LoadingPanel()
         ],
         layers: [new Ol.Layer("fake", {isBaseLayer: true, displayInLayerSwitcher: false})]
-    };
-    map = new Ol.Map('map', mapOptions );
+    });
 
 
     // keyboard navigation
@@ -202,68 +200,36 @@ function init() {
     map.addControls([keyboardNav]);
 
 
-    /**
-     * background layers
-     */
-    // reading visible background index with &lb=
-    if (config.lb && config.lb<hardConfig.layersBackground.length) {
-        hardConfig.layersBackground[parseInt(config.lb, 10)].setVisibility(true);
-    } else {
-        hardConfig.layersBackground[0].setVisibility(true);
-    }
-    map.addLayers(hardConfig.layersBackground);
+    // ----- methods ------------------------------------------------------------------------------------
 
 
     /**
-     * overlay layers
-     */
-    if (hardConfig.hasOwnProperty("layersOverlay")) {
-        map.addLayers(hardConfig.layersOverlay);
-    }
-
-    /**
-     * map control methods
-     */
-    function switchBackground () {
-        var n = hardConfig.layersBackground.length;
-        var lv = 0;
-        $.each(hardConfig.layersBackground, function(i, layer) {
-            if (layer.getVisibility()) {
-                lv = i;
-            }
-            layer.setVisibility(false);
-        });
-        config.lb = (lv+1)%n;
-        hardConfig.layersBackground[config.lb].setVisibility(true);
-        setPermalink();
-    }
-
-    /**
-     * WMS layers stack providing getFeatureInfo.
-     * Activated with &layers=layername[*style][,layername...]
+     * Method: addQueryLayer
+     * Adds a WMS layers stack with getFeatureInfo.
      * This WMS layers stack must be queryable with info_format text/html
+     *
+     * Parameters:
+     * onlineresource {String} the WMS service URL
+     * layernames {Array} list of layers
+     * layerstyles {Array} list of styles
+     * cql {String} comma separated list of CQL filters
+     *
+     * Returns:
+     * {OpenLayers.Layer.WMS} the Ol WMS layer
      */
+    function addQueryLayer (onlineresource, layernames, layerstyles, cql) {
 
-    if (config.layers) {
-        var popup, layer_wms, layersstyles = [], getFeatureInfo;
-
-        // parser to retrieve layernames and styles
-        layersstyles = (typeof config.layers == 'string') ? config.layers.split(',') : config.layers
-        $.each(layersstyles, function(i,s) {
-            var a = s.split('*',2);
-            config.layernames.push(a[0]);
-            config.stylenames.push( (a.length > 1) ? a[1]:"");
-        });
+        var popup, layer_wms, getFeatureInfo;
 
         // fake popup function
         popup = { destroy: function() {}
         };
 
         layer_wms = new Ol.Layer.WMS(
-            config.title,
-            hardConfig.wms,
+            layernames.join(','),
+            onlineresource,
             {
-                layers: config.layernames.join(','),
+                layers: layernames.join(','),
                 format: "image/png",
                 transparent: true
             },
@@ -275,20 +241,20 @@ function init() {
         );
 
         layer_wms.mergeNewParams({
-            styles: config.stylenames.join(',')
+            styles: layerstyles.join(',')
         });
 
-        // CQL filter specified with &CQL_FILTER=
-        if (config.CQL_FILTER) {
+        // optional CQL filter
+        if (cql) {
             layer_wms.mergeNewParams({
-                "CQL_FILTER": config.CQL_FILTER
+                "CQL_FILTER": cql
             });
         }
 
         map.addLayer(layer_wms);
 
         getFeatureInfo = new Ol.Control.WMSGetFeatureInfo({
-            url: hardConfig.wms,
+            url: onlineresource,
             title: 'Interroger la carte par clic',
             queryVisible: true,
             infoFormat: 'text/html',
@@ -316,25 +282,37 @@ function init() {
         });
         map.addControl(getFeatureInfo);
         getFeatureInfo.activate();
+
+        return layer_wms;
     }
 
 
     /**
-     * Optional KML Layer activated with &kml=kmlurl
+     * Method addKmlLayer
+     *Adds a KML overlay.
+     *
+     * Parameters:
+     * onlineresource {String} the KML url
+     *
+     * Returns:
+     * {OpenLayers.Layer.KML} the Ol KML layer
      */
-    if (config.kml) {
+    function addKmlLayer(onlineresource) {
+        var layer_kml, selectControl;
 
-        var onPopupClose = function(e) {
+        function onPopupClose(e) {
             selectControl.unselectAll();
         };
-        var onFeatureSelect = function(e) {
-            var f = e.feature;
-            var content = ["<h2>",config.title,"</h2>","<p>",
+
+        function onFeatureSelect(e) {
+            var f, content, popup;
+            f = e.feature;
+            content = ["<h2>",config.title,"</h2>","<p>",
                 "<span class='pname'>",f.attributes.name,"</span><br />",
                 "<span class='pdesc'>",f.attributes.description,"</span>","</p>"].join(' ');
             // no dynamic content allowed
             if (content.search("<script") !== -1) { content = content.replace(/</g, "&lt;"); }
-            var popup = new Ol.Popup.FramedCloud(
+            popup = new Ol.Popup.FramedCloud(
                 "kmlPopup",
                 f.geometry.getBounds().getCenterLonLat(),
                 new Ol.Size(100,100),
@@ -348,7 +326,8 @@ function init() {
             f.popup = popup;
             map.addPopup(popup);
         };
-        var onFeatureUnselect = function(e) {
+
+        function onFeatureUnselect(e) {
             var f = e.feature;
             if(f.popup) {
                 map.removePopup(f.popup);
@@ -357,13 +336,13 @@ function init() {
             }
         };
 
-        var layer_kml = new Ol.Layer.Vector(
+        layer_kml = new Ol.Layer.Vector(
             config.title,
             {
                 strategies: [new Ol.Strategy.Fixed()],
                 projection: hardConfig.projDisplay,
                 protocol: new Ol.Protocol.HTTP({
-                    url: config.kml,
+                    url: onlineresource,
                     format: new Ol.Format.KML({
                     extractStyles: true,
                     extractAttributes: true
@@ -375,25 +354,123 @@ function init() {
             }
         });
         map.addLayer(layer_kml);
-        var selectControl = new Ol.Control.SelectFeature(layer_kml, {toggle: true, clickout:false});
+        selectControl = new Ol.Control.SelectFeature(layer_kml, {toggle: true, clickout:false});
         selectControl.handlers.feature.stopDown = false;
         selectControl.handlers.feature.stopUp = false;
         map.addControl(selectControl);
         selectControl.activate();
         layer_kml.events.fallThrough = true;
+
+        return layer_kml;
     }
 
 
 
+
+
     /**
-     * geoloc functions
+     * Method: switchBackground
+     * Iterates over background layers
      */
-    var markGeoloc = new Ol.Layer.Markers("geocodage");
-    map.addLayers([markGeoloc]);
+    function switchBackground () {
+        var n = hardConfig.layersBackground.length;
+        var lv = 0;
+        $.each(hardConfig.layersBackground, function(i, layer) {
+            if (layer.getVisibility()) {
+                lv = i;
+            }
+            layer.setVisibility(false);
+        });
+        config.lb = (lv+1)%n;
+        hardConfig.layersBackground[config.lb].setVisibility(true);
+        setPermalink();
+    }
 
 
-    // geocoding
-    function openLs(text) {
+    /**
+     * Method addWMCLayers
+     *Adds WMS Layers from a WMC
+     *
+     * Parameters:
+     * onlineresource {String} the WMC url
+     */
+    function addWMCLayers(onlineresource) {
+        var format = new OpenLayers.Format.WMC();
+        Ol.Request.GET({
+            url: onlineresource,
+            params: {
+                SERVICE: "WMS",
+                VERSION: "1.3.0",
+                REQUEST: "GetCapabilities"
+            },
+            success: function(request) {
+                var doc = request.responseXML;
+            },
+            failure: function() {
+                Ol.Console.error.apply(Ol.Console, arguments);
+            }
+        });
+    }
+
+    /**
+     * Method openLsRequest
+     * Queries the OpenLS service and recenters the map
+     *
+     * Parameters:
+     * text {String} the OpenLS plain text query
+     *
+     * Returns:
+     * {OpenLayers.Layer.KML} the Ol KML layer
+     */
+    function openLsRequest(text) {
+
+        function onOpenLSSuccess (response) {
+            try {
+                $.mobile.loading('hide');
+                var format = new Ol.Format.XML();
+                var doc = format.read(response.responseText);
+                var results = format.getElementsByTagNameNS(doc,"*","GeocodedAddress");
+                if (results.length>0) {
+                    var position = format.getElementsByTagNameNS(results[0],"*","pos")[0];
+                    var loc = (position.textContent) ? position.textContent.split(" ") : position.nodeTypedValue.split(" ");
+                    var ptResult = new Ol.LonLat(loc[1], loc[0]).transform(new Ol.Projection("EPSG:4326"), hardConfig.projMap);
+                    console.log(ptResult);
+                    var matchType = results[0].getElementsByTagName("GeocodeMatchCode")[0].getAttribute("matchType");
+                    switch (matchType) {
+                        case "City": zoom = 15; break;
+                        case "Street": zoom = 17; break;
+                        case "Street enhanced": zoom = 18; break;
+                        case "Street number": zoom = 18; break;
+                    }
+
+                    // map move and zoom
+                    if (hardConfig.restrictedExtent.containsLonLat(ptResult)) {
+                        map.setCenter(ptResult, zoom);
+                        markGeoloc.addMarker(new Ol.Marker(ptResult));
+                        $("#locateMsg").text("");
+                        $("#frameLocate").popup("close");
+                    }
+                    else {
+                        $("#locateMsg").text("La géolocalisation a échoué :\nlieu recherché hors carte");
+                        $.mobile.loading('hide');
+                    }
+                }
+                else {
+                    $("#locateMsg").text("La géolocalisation a échoué :\naucun résultat");
+                    $.mobile.loading('hide');
+                }
+            } catch(err) {
+                $("#locateMsg").text("La géolocalisation a échoué");
+                $.mobile.loading('hide');
+                console.log(err);
+            }
+        }
+
+        function onOpenLSFailure (response) {
+            $("#locateMsg").text("La géolocalisation a échoué");
+                $.mobile.loading('hide');
+        }
+
         try {
             var q = text.trim();
             var qa = q.split(",");
@@ -452,73 +529,17 @@ function init() {
         }
     }
 
-    function onOpenLSSuccess (response) {
-        try {
-            $.mobile.loading('hide');
-            var format = new Ol.Format.XML();
-            var doc = format.read(response.responseText);
-            var results = format.getElementsByTagNameNS(doc,"*","GeocodedAddress");
-            if (results.length>0) {
-                var position = format.getElementsByTagNameNS(results[0],"*","pos")[0];
-                var loc = (position.textContent) ? position.textContent.split(" ") : position.nodeTypedValue.split(" ");
-                var ptResult = new Ol.LonLat(loc[1], loc[0]).transform(new Ol.Projection("EPSG:4326"), hardConfig.projMap);
-                console.log(ptResult);
-                var matchType = results[0].getElementsByTagName("GeocodeMatchCode")[0].getAttribute("matchType");
-                switch (matchType) {
-                    case "City": zoom = 15; break;
-                    case "Street": zoom = 17; break;
-                    case "Street enhanced": zoom = 18; break;
-                    case "Street number": zoom = 18; break;
-                }
-
-                // map move and zoom
-                if (hardConfig.restrictedExtent.containsLonLat(ptResult)) {
-                    map.setCenter(ptResult, zoom);
-                    markGeoloc.addMarker(new Ol.Marker(ptResult));
-                    $("#locateMsg").text("");
-                    $("#frameLocate").popup("close");
-                }
-                else {
-                    $("#locateMsg").text("La géolocalisation a échoué :\nlieu recherché hors carte");
-                    $.mobile.loading('hide');
-                }
-            }
-            else {
-                $("#locateMsg").text("La géolocalisation a échoué :\naucun résultat");
-                $.mobile.loading('hide');
-            }
-        } catch(err) {
-            $("#locateMsg").text("La géolocalisation a échoué");
-            $.mobile.loading('hide');
-            console.log(err);
-        }
-    }
-
-    function onOpenLSFailure (response) {
-        $("#locateMsg").text("La géolocalisation a échoué");
-            $.mobile.loading('hide');
-    }
-
-    $("#addressForm").on('submit', function() {
-        try {
-            $.mobile.loading('show', {
-                text: "recherche du lieu"
-            });
-            markGeoloc.clearMarkers();
-            openLs($("#addressInput").val());
-        }
-        catch(err) {
-            console.log(err.message);
-        }
-        return false;
-    });
 
     /**
-     * sentMapTo
+     * Method: sentMapTo
+     * Call external viewers
+     *
+     * Parameters:
+     * viewerId {String} the external viewer codename
      */
-    function sendMapTo(goal) {
+    function sendMapTo(viewerId) {
         // sendto : georchestra advanced viewer
-        if (goal === "georchestra_viewer") {
+        if (viewerId === "georchestra_viewer") {
             var params = {
                 "services": [],
                 "layers" : []
@@ -537,23 +558,11 @@ function init() {
         }
     };
 
-
-
-
     /**
-     * permalink
+     * Method: setPermalink
+     * keeps permalinks synchronized with the map extent
      */
-
-    // reading map initial extent &x=&y=&z=
-    if (!map.getCenter()) {
-        var center = hardConfig.initialExtent.getCenterLonLat();
-        var zoom = hardConfig.zinit;
-        Ol.Util.applyDefaults(config, {x:center.lon, y:center.lat, z:zoom});
-        map.setCenter(new Ol.LonLat(config.x, config.y), config.z);
-    }
-
-    // keeping permalink synchronized with the map extent
-    var setPermalink = function() {
+    function setPermalink () {
         var permalinkHash, permalinkQuery;
         var c = map.getCenter();
         var linkParams = {};
@@ -598,42 +607,50 @@ function init() {
         }
     };
 
-    map.events.register("moveend", map, setPermalink);
-    setPermalink();
-
 
     /**
-     * Capabilities and metadata
+     * Method: addLegend
+     * Queries the layer capabilities to display its legend and metadata.
+     *
+     * Parameters:
+     * onlineresource {String} the WMS service URL
+     * layernames {Array} list of layer names
+     * layerstyles {Array} list of style names
      */
-    var format_WMS = new Ol.Format.WMSCapabilities();
-    $.each([].concat(config.layernames), function(i, layername) {
-        if (layername) {
-            var la = layername.split(":",2);
-            // onlineResource from prefix = namespace
-            var onlineResource = [hardConfig.geoserver,la[0],la[1],"wms"].join("/");
-            Ol.Request.GET({
-                url: onlineResource,
-                params: {
-                    SERVICE: "WMS",
-                    VERSION: "1.3.0",
-                    REQUEST: "GetCapabilities"
-                },
-                success: function(request) {
-                    var doc = request.responseXML;
-                    var html = "";
-                    if (!doc || !doc.documentElement) {
-                        doc = request.responseText;
+    function getWMSLegend(onlineresource, layername, layerstyle) {
+        var format_WMS = new Ol.Format.WMSCapabilities();
+        Ol.Request.GET({
+            url: onlineresource,
+            params: {
+                SERVICE: "WMS",
+                VERSION: "1.3.0",
+                REQUEST: "GetCapabilities"
+            },
+            success: function(request) {
+                var doc = request.responseXML;
+                var html = "";
+                var capabilities, mdLayer, legendArgs;
+                if (!doc || !doc.documentElement) {
+                    doc = request.responseText;
+                }
+                capabilities = format_WMS.read(doc);
+                // searching for the layer
+                $.each(capabilities.capability.layers, function(i, layer) {
+                    console.log(layer.name);
+                    if (layer.name === layername) {
+                        mdLayer = layer;
                     }
-                    var capabilities = format_WMS.read(doc);
-                    var mdLayer = capabilities.capability.layers[0];
-                    var legendArgs = {
+                });
+                if (mdLayer) {
+                    mdLayer = capabilities.capability.layers[0];
+                    legendArgs = {
                         "service" : "WMS",
                         "version" : capabilities.version,
                         "request" : "GetLegendGraphic",
                         "width" : 30,
                         "format" : "image/png",
                         "layer": mdLayer.name,
-                        "style": config.stylenames[i]
+                        "style": layerstyle
                     };
 
                     html = "<li><h3 class='title'>" +
@@ -656,23 +673,96 @@ function init() {
                     html = html + "</p></li>";
 
                     $("#legend").append(html);
-                },
-                failure: function() {
-                    Ol.Console.error.apply(Ol.Console, arguments);
                 }
-            });
-        }
-    });
+            },
+            failure: function() {
+                Ol.Console.error.apply(Ol.Console, arguments);
+            }
+        });
+    }
 
 
 
 
 
 
-    /**
-    * UI
-    */
-    // disables navkeys when using forms
+    // ----- layers ------------------------------------------------------------------------------------
+
+
+    // background layers (opaque, non queryable, one at a time)
+    if (config.lb && config.lb<hardConfig.layersBackground.length) {
+        hardConfig.layersBackground[parseInt(config.lb, 10)].setVisibility(true);
+    } else {
+        hardConfig.layersBackground[0].setVisibility(true);
+    }
+    map.addLayers(hardConfig.layersBackground);
+
+    // overlays (non-queryable) layers
+    if (hardConfig.hasOwnProperty("layersOverlay")) {
+        map.addLayers(hardConfig.layersOverlay);
+    }
+
+    // marker layer
+    var markGeoloc = new Ol.Layer.Markers("geocodage");
+    map.addLayers([markGeoloc]);
+
+
+    // WMC layers
+    if (config.wmc) {
+        addWMCLayers(config.wmc);
+    }
+
+    // queryable WMS layers
+    if (config.layers) {
+        var ns_layer_style_list = [], getFeatureInfo;
+        // parser to retrieve namespaces, names and styles
+        ns_layer_style_list = (typeof config.layers == 'string') ? config.layers.split(',') : config.layers
+        $.each(ns_layer_style_list, function(i,s) {
+            var a = s.split('*',2);
+            var name = a[0];
+            var style = (a.length > 1) ? a[1]:"";
+            var ns = (name.indexOf(":")>1) ? name.split(':')[0] : "";
+            var name_no_ns = (name.indexOf(":")>1) ? name.split(':')[1] : layername;
+            config.layernames.push(name);
+            config.stylenames.push(style);
+            // using GS ability to deliver virtual layer services = fast on capabilities
+            getWMSLegend(hardConfig.geOrchestraURL+"/geoserver/" + ns + "/" + name_no_ns + "/wms", name_no_ns, style);
+        });
+        // we want grouped getMap, using the global service for getMaps & getFeatureInfo
+        addQueryLayer(hardConfig.geOrchestraURL + "/geoserver/ows", config.layernames, config.stylenames, config.CQL_FILTER);
+    }
+
+    // KML layer
+    if (config.kml) {
+        addKmlLayer(config.kml);
+    }
+
+
+
+
+    // ----- map initialisation ------------------------------------------------------------------------------------
+
+
+    // reading map initial extent &x=&y=&z=
+    if (!map.getCenter()) {
+        var center = hardConfig.initialExtent.getCenterLonLat();
+        var zoom = hardConfig.zinit;
+        Ol.Util.applyDefaults(config, {x:center.lon, y:center.lat, z:zoom});
+        map.setCenter(new Ol.LonLat(config.x, config.y), config.z);
+    }
+    setPermalink();
+
+
+    // permalink refresh on map changes
+    map.events.register("moveend", map, setPermalink);
+
+
+
+    // ----- UI events ------------------------------------------------------------------------------------
+
+
+
+    // disables kbd map navigation when using text inputs
     $("input").focus(function() {
         keyboardNav.deactivate();
         return false;
@@ -682,7 +772,7 @@ function init() {
         return false;
     });
 
-    // nav buttons
+    // map buttons
     $("#ziBt").click(function() {
         map.zoomIn();
     });
@@ -694,6 +784,8 @@ function init() {
         map.zoomTo(hardConfig.zinit);
     });
     $("#bgBt").click(switchBackground);
+
+    // set title dialog
     $("#setTitle").keypress(function() {
         config.title = $("#setTitle").val();
         document.title = config.title;
@@ -703,8 +795,24 @@ function init() {
         setPermalink();
     });
 
+    // sendto form
     $("#georchestraForm").submit(function() {
         sendMapTo("georchestra_viewer");
+    });
+
+    // geolocation
+    $("#addressForm").on('submit', function() {
+        try {
+            $.mobile.loading('show', {
+                text: "recherche du lieu"
+            });
+            markGeoloc.clearMarkers();
+            openLsRequest($("#addressInput").val());
+        }
+        catch(err) {
+            console.log(err.message);
+        }
+        return false;
     });
 
 
