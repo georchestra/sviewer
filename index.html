@@ -54,6 +54,11 @@ body {
     left: 10px;
     z-index:8000;
 }
+#popupAnchor {
+    position: absolute;
+    top: 100px;
+    right: 10px;
+}
 
 #legend img.legend {
     margin: 2px 0 2px 0;
@@ -101,9 +106,9 @@ body {
                 <a href="#frameMenu" data-rel="popup" data-role="button" data-mini="true" data-icon="gear" class="ui-btn-right">Outils</a>
                 <div id="frameMenu" data-role="popup">
                     <ul data-role="listview" data-inset="true">
-                        <li><a href="#frameLegend" data-rel="popup" data-position-to="window">Légende</a></li>
-                        <li><a href="#frameLocate" data-rel="popup" data-position-to="window">Localiser</a></li>
-                        <li><a href="#frameShare"  data-rel="popup" data-position-to="window">Partager</a></li>
+                        <li><a href="#frameLegend" data-rel="popup" data-position-to="#popupAnchor">Légende</a></li>
+                        <li><a href="#frameLocate" data-rel="popup" data-position-to="#popupAnchor">Localiser</a></li>
+                        <li><a href="#frameShare"  data-rel="popup" data-position-to="#popupAnchor">Partager</a></li>
                     </ul>
                 </div>
             </div>
@@ -182,6 +187,8 @@ body {
                         <a id="zoBt" href="#" data-role="button" data-iconpos="notext" data-icon="minus">zoom -</a>
                         <a id="bgBt" href="#" data-role="button" data-iconpos="notext" data-icon="grid">fond de plan</a>
                     </div>
+
+                    <div id="popupAnchor"></div>
 
             <!-- end content -->
             </div>

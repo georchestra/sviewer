@@ -88,7 +88,7 @@ var hardConfig = {
             }
         ),
         new Ol.Layer.WMS(
-            "Plan OpenStreetMap simple",
+            "OpenStreetMap simple",
             [
                 "http://a.osm.geobretagne.fr/gwc01/service/wms",
                 "http://b.osm.geobretagne.fr/gwc01/service/wms",
@@ -101,15 +101,17 @@ var hardConfig = {
                 visibility: false
             }
         ),
-        new Ol.Layer.OSM(
-            "Plan OpenStreetMap",
+        new OpenLayers.Layer.XYZ(
+            "OpenStreetMap MapQuest",
             [
-                "http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
-                "http://b.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
-                "http://c.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png"
+                "http://otile1.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
+                "http://otile2.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
+                "http://otile3.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
+                "http://otile4.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png"
             ],
             {
-                attribution: "<br />Fond cartographique : <a href='http://www.openstreetmap.org/'>OpenStreetMap CC-by-SA</a>",
+                attribution: "Data, imagery and map information provided by <a href='http://www.mapquest.com/'  target='_blank'>MapQuest</a>, <a href='http://www.openstreetmap.org/' target='_blank'>Open Street Map</a> and contributors, <a href='http://creativecommons.org/licenses/by-sa/2.0/' target='_blank'>CC-BY-SA</a>  <img src='http://developer.mapquest.com/content/osm/mq_logo.png' border='0'>",
+                transitionEffect: "resize",
                 visibility: false
             }
         )
@@ -742,6 +744,7 @@ function init() {
         hardConfig.layersBackground[parseInt(config.lb, 10)].setVisibility(true);
     } else {
         hardConfig.layersBackground[0].setVisibility(true);
+        config.lb = 0;
     }
     map.addLayers(hardConfig.layersBackground);
 
