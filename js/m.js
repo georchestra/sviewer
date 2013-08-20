@@ -586,6 +586,8 @@ function init() {
         if (config.layers) { linkParams.layers = config.layers; }
         if (config.title) { linkParams.title = config.title; }
         if (config.CQL_FILTER) { linkParams.CQL_FILTER = config.CQL_FILTER; }
+        if (config.wmc) { linkParams.wmc = config.wmc; }
+
 
         permalinkHash = window.location.origin + window.location.pathname + "#" + jQuery.param(linkParams);
         permalinkQuery = window.location.origin + window.location.pathname + "?" + jQuery.param(linkParams);
