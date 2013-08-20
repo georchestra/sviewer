@@ -389,13 +389,13 @@ function init() {
 
     /**
      * Method addWMCLayers
-     *Adds WMS Layers from a WMC
+     * Adds visible and queryable WMS Layers from a WMC.
      *
      * Parameters:
      * onlineresource {String} the WMC url
      */
     function addWMCLayers(onlineresource) {
-        var format = new OpenLayers.Format.WMC();
+        var format_WMC = new OpenLayers.Format.WMC();
         Ol.Request.GET({
             url: onlineresource,
             params: {
@@ -404,7 +404,19 @@ function init() {
                 REQUEST: "GetCapabilities"
             },
             success: function(request) {
+                var context;
                 var doc = request.responseXML;
+                var layers = [];
+                if (!doc || !doc.documentElement) {
+                    doc = request.responseText;
+                };
+                context = format_WMC.read(doc);
+                $.each(context.layersContext, function(i, layer) {
+                    if (layer.visibility&&layer.queryable) {
+                        addQueryLayer(layer.url,[layer.name],['']);
+                        getWMSLegend(layer.url, layer.name, "");
+                    }
+                });
             },
             failure: function() {
                 Ol.Console.error.apply(Ol.Console, arguments);
@@ -618,7 +630,7 @@ function init() {
      * layerstyles {Array} list of style names
      */
     function getWMSLegend(onlineresource, layername, layerstyle) {
-        var format_WMS = new Ol.Format.WMSCapabilities();
+        var format_Cap = new Ol.Format.WMSCapabilities();
         Ol.Request.GET({
             url: onlineresource,
             params: {
@@ -633,10 +645,10 @@ function init() {
                 if (!doc || !doc.documentElement) {
                     doc = request.responseText;
                 }
-                capabilities = format_WMS.read(doc);
+                capabilities = format_Cap.read(doc);
+
                 // searching for the layer
                 $.each(capabilities.capability.layers, function(i, layer) {
-                    console.log(layer.name);
                     if (layer.name === layername) {
                         mdLayer = layer;
                     }
