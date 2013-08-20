@@ -204,6 +204,53 @@ function init() {
 
 
     /**
+     * Method: parseLayerParam
+     * Parses the layer param, ie ns1:layer1*style1,ns2:layer2*style2
+     *
+     * Parameters:
+     * s {String} the layer string
+     *
+     * Returns:
+     * {Object} layers description
+     */
+    function parseLayerParam (s) {
+        var dic = {};
+        dic.ns_name = s.split('*')[0];
+        dic.style = (s.indexOf("*")>0) ? s.split('*',2)[1]:'';
+        dic.ns = (dic.ns_name.indexOf(":")>0) ? s.split(':',2)[0]:'';
+        dic.name = (dic.ns_name.indexOf(":")>0) ? s.split(':',2)[1]:'';
+        dic.wms_global = hardConfig.georchestraURL + "/geoserver/wms"
+        dic.wms_ns = hardConfig.geOrchestraURL + "/geoserver/" + dic.ns + "/wms";
+        dic.wms_layer = hardConfig.geOrchestraURL + "/geoserver/" + dic.ns + "/" + dic.name + "/wms";
+        return dic;
+    }
+
+
+
+    /**
+     * Method: switchBackground
+     * Iterates over background layers
+     *
+     * Returns :
+     * {OpenLayers.Layer.Layer} the active background layer
+     */
+    function switchBackground () {
+        var n = hardConfig.layersBackground.length;
+        var lv = 0;
+        $.each(hardConfig.layersBackground, function(i, layer) {
+            if (layer.getVisibility()) {
+                lv = i;
+            }
+            layer.setVisibility(false);
+        });
+        config.lb = (lv+1)%n;
+        hardConfig.layersBackground[config.lb].setVisibility(true);
+        setPermalink();
+        return hardConfig.layersBackground[config.lb];
+    }
+
+
+    /**
      * Method: addQueryLayer
      * Adds a WMS layers stack with getFeatureInfo.
      * This WMS layers stack must be queryable with info_format text/html
@@ -215,7 +262,7 @@ function init() {
      * cql {String} comma separated list of CQL filters
      *
      * Returns:
-     * {OpenLayers.Layer.WMS} the Ol WMS layer
+     * {OpenLayers.Layer.WMS} the added Ol WMS layer
      */
     function addQueryLayer (onlineresource, layernames, layerstyles, cql) {
 
@@ -284,6 +331,82 @@ function init() {
         getFeatureInfo.activate();
 
         return layer_wms;
+    }
+
+
+
+
+    /**
+     * Method: addLegend
+     * Queries the layer capabilities to display its legend and metadata.
+     *
+     * Parameters:
+     * onlineresource {String} the WMS service URL
+     * layernames {Array} list of layer names
+     * layerstyles {Array} list of style names
+     */
+    function getWMSLegend(onlineresource, layername, layerstyle) {
+        var format_Cap = new Ol.Format.WMSCapabilities();
+        Ol.Request.GET({
+            url: onlineresource,
+            params: {
+                SERVICE: "WMS",
+                VERSION: "1.3.0",
+                REQUEST: "GetCapabilities"
+            },
+            success: function(request) {
+                var doc = request.responseXML;
+                var html = "";
+                var capabilities, mdLayer, legendArgs;
+                if (!doc || !doc.documentElement) {
+                    doc = request.responseText;
+                }
+                capabilities = format_Cap.read(doc);
+
+                // searching for the layer
+                $.each(capabilities.capability.layers, function(i, layer) {
+                    if (layer.name === layername) {
+                        mdLayer = layer;
+                    }
+                });
+                if (mdLayer) {
+                    mdLayer = capabilities.capability.layers[0];
+                    legendArgs = {
+                        "service" : "WMS",
+                        "version" : capabilities.version,
+                        "request" : "GetLegendGraphic",
+                        "width" : 30,
+                        "format" : "image/png",
+                        "layer": mdLayer.name,
+                        "style": layerstyle
+                    };
+
+                    html = "<li><h3 class='title'>" +
+                        $('<span/>').text(mdLayer.title).html() +
+                        "</h3><p class='abstract'>" +
+                        $('<span/>').text(mdLayer.abstract).html() +
+                        "<br /><img class='legend' src='" +
+                        Ol.Util.urlAppend(capabilities.service.href, Ol.Util.getParameterString(legendArgs)) +
+                        "' />";
+
+                    if (mdLayer.attribution) {
+                        html = html +
+                            "<br /><a target='_blank'class='attribution' href='" +
+                            mdLayer.attribution.href +
+                            "'>" +
+                            $('<span/>').text(mdLayer.attribution.title).html() +
+                            "</a>";
+                    };
+
+                    html = html + "</p></li>";
+
+                    $("#legend").append(html);
+                }
+            },
+            failure: function() {
+                Ol.Console.error.apply(Ol.Console, arguments);
+            }
+        });
     }
 
 
@@ -368,24 +491,6 @@ function init() {
 
 
 
-    /**
-     * Method: switchBackground
-     * Iterates over background layers
-     */
-    function switchBackground () {
-        var n = hardConfig.layersBackground.length;
-        var lv = 0;
-        $.each(hardConfig.layersBackground, function(i, layer) {
-            if (layer.getVisibility()) {
-                lv = i;
-            }
-            layer.setVisibility(false);
-        });
-        config.lb = (lv+1)%n;
-        hardConfig.layersBackground[config.lb].setVisibility(true);
-        setPermalink();
-    }
-
 
     /**
      * Method addWMCLayers
@@ -423,6 +528,8 @@ function init() {
             }
         });
     }
+
+
 
     /**
      * Method openLsRequest
@@ -542,33 +649,8 @@ function init() {
     }
 
 
-    /**
-     * Method: sentMapTo
-     * Call external viewers
-     *
-     * Parameters:
-     * viewerId {String} the external viewer codename
-     */
-    function sendMapTo(viewerId) {
-        // sendto : georchestra advanced viewer
-        if (viewerId === "georchestra_viewer") {
-            var params = {
-                "services": [],
-                "layers" : []
-            };
-            $.each(map.getLayersByClass('OpenLayers.Layer.WMS'), function(i, layer) {
-                if (layer.visibility) {
-                    params.layers.push({
-                        "layername" : layer.params.LAYERS,
-                        "owstype" : "WMS",
-                        "owsurl" : layer.url
-                    });
-                };
-            });
-            $("#georchestraFormData").val(JSON.stringify(params));
-            return true;
-        }
-    };
+
+
 
     /**
      * Method: setPermalink
@@ -622,81 +704,35 @@ function init() {
     };
 
 
+
+
     /**
-     * Method: addLegend
-     * Queries the layer capabilities to display its legend and metadata.
+     * Method: sentMapTo
+     * Call external viewers
      *
      * Parameters:
-     * onlineresource {String} the WMS service URL
-     * layernames {Array} list of layer names
-     * layerstyles {Array} list of style names
+     * viewerId {String} the external viewer codename
      */
-    function getWMSLegend(onlineresource, layername, layerstyle) {
-        var format_Cap = new Ol.Format.WMSCapabilities();
-        Ol.Request.GET({
-            url: onlineresource,
-            params: {
-                SERVICE: "WMS",
-                VERSION: "1.3.0",
-                REQUEST: "GetCapabilities"
-            },
-            success: function(request) {
-                var doc = request.responseXML;
-                var html = "";
-                var capabilities, mdLayer, legendArgs;
-                if (!doc || !doc.documentElement) {
-                    doc = request.responseText;
-                }
-                capabilities = format_Cap.read(doc);
-
-                // searching for the layer
-                $.each(capabilities.capability.layers, function(i, layer) {
-                    if (layer.name === layername) {
-                        mdLayer = layer;
-                    }
-                });
-                if (mdLayer) {
-                    mdLayer = capabilities.capability.layers[0];
-                    legendArgs = {
-                        "service" : "WMS",
-                        "version" : capabilities.version,
-                        "request" : "GetLegendGraphic",
-                        "width" : 30,
-                        "format" : "image/png",
-                        "layer": mdLayer.name,
-                        "style": layerstyle
-                    };
-
-                    html = "<li><h3 class='title'>" +
-                        $('<span/>').text(mdLayer.title).html() +
-                        "</h3><p class='abstract'>" +
-                        $('<span/>').text(mdLayer.abstract).html() +
-                        "<br /><img class='legend' src='" +
-                        Ol.Util.urlAppend(capabilities.service.href, Ol.Util.getParameterString(legendArgs)) +
-                        "' />";
-
-                    if (mdLayer.attribution) {
-                        html = html +
-                            "<br /><a target='_blank'class='attribution' href='" +
-                            mdLayer.attribution.href +
-                            "'>" +
-                            $('<span/>').text(mdLayer.attribution.title).html() +
-                            "</a>";
-                    };
-
-                    html = html + "</p></li>";
-
-                    $("#legend").append(html);
-                }
-            },
-            failure: function() {
-                Ol.Console.error.apply(Ol.Console, arguments);
-            }
-        });
-    }
-
-
-
+    function sendMapTo(viewerId) {
+        // sendto : georchestra advanced viewer
+        if (viewerId === "georchestra_viewer") {
+            var params = {
+                "services": [],
+                "layers" : []
+            };
+            $.each(map.getLayersByClass('OpenLayers.Layer.WMS'), function(i, layer) {
+                if (layer.visibility) {
+                    params.layers.push({
+                        "layername" : layer.params.LAYERS,
+                        "owstype" : "WMS",
+                        "owsurl" : layer.url
+                    });
+                };
+            });
+            $("#georchestraFormData").val(JSON.stringify(params));
+            return true;
+        }
+    };
 
 
 
@@ -716,11 +752,6 @@ function init() {
         map.addLayers(hardConfig.layersOverlay);
     }
 
-    // marker layer
-    var markGeoloc = new Ol.Layer.Markers("geocodage");
-    map.addLayers([markGeoloc]);
-
-
     // WMC layers
     if (config.wmc) {
         addWMCLayers(config.wmc);
@@ -732,15 +763,11 @@ function init() {
         // parser to retrieve namespaces, names and styles
         ns_layer_style_list = (typeof config.layers == 'string') ? config.layers.split(',') : config.layers
         $.each(ns_layer_style_list, function(i,s) {
-            var a = s.split('*',2);
-            var name = a[0];
-            var style = (a.length > 1) ? a[1]:"";
-            var ns = (name.indexOf(":")>1) ? name.split(':')[0] : "";
-            var name_no_ns = (name.indexOf(":")>1) ? name.split(':')[1] : layername;
-            config.layernames.push(name);
-            config.stylenames.push(style);
+            var p = parseLayerParam(s);
+            config.layernames.push(p.name);
+            config.stylenames.push(p.style);
             // using GS ability to deliver virtual layer services = fast on capabilities
-            getWMSLegend(hardConfig.geOrchestraURL+"/geoserver/" + ns + "/" + name_no_ns + "/wms", name_no_ns, style);
+            getWMSLegend(p.wms_layer, p.name, p.style);
         });
         // we want grouped getMap, using the global service for getMaps & getFeatureInfo
         addQueryLayer(hardConfig.geOrchestraURL + "/geoserver/ows", config.layernames, config.stylenames, config.CQL_FILTER);
@@ -751,6 +778,9 @@ function init() {
         addKmlLayer(config.kml);
     }
 
+    // marker layer
+    var markGeoloc = new Ol.Layer.Markers("geocodage");
+    map.addLayers([markGeoloc]);
 
 
 
