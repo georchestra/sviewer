@@ -376,17 +376,15 @@ function init() {
                         "service" : "WMS",
                         "version" : capabilities.version,
                         "request" : "GetLegendGraphic",
-                        "width" : 30,
+                        "width" : 20,
                         "format" : "image/png",
                         "layer": mdLayer.name,
                         "style": layerstyle
                     };
 
-                    html = "<li><h3 class='title'>" +
-                        $('<span/>').text(mdLayer.title).html() +
-                        "</h3><p class='abstract'>" +
-                        $('<span/>').text(mdLayer.abstract).html() +
-                        "<br /><img class='legend' src='" +
+                    html = "<h4 class='legendTitle'>" +
+                        $('<div/>').text(mdLayer.title).html() +
+                        "</h4><img class='legend' src='" +
                         Ol.Util.urlAppend(capabilities.service.href, Ol.Util.getParameterString(legendArgs)) +
                         "' />";
 
@@ -395,11 +393,11 @@ function init() {
                             "<br /><a target='_blank'class='attribution' href='" +
                             mdLayer.attribution.href +
                             "'>" +
-                            $('<span/>').text(mdLayer.attribution.title).html() +
+                            $('<hr/>').text(mdLayer.attribution.title).html() +
                             "</a>";
                     };
 
-                    html = html + "</p></li>";
+                    html = html + "</span>";
 
                     $("#legend").append(html);
                 }
@@ -676,19 +674,18 @@ function init() {
         permalinkQuery = window.location.origin + window.location.pathname + "?" + jQuery.param(linkParams);
 
         // permalink, social links & QR code update only if frame is visible
-        if ($('#frameShare').css('display')==='block') {
+        if ($('#popupShare').css('display')==='block') {
             $('#socialLinks').empty();
             $.each(hardConfig.socialMedia, function(name, socialUrl) {
-                $('#socialLinks').append('<a class="socialLink" target="_blank" href="' +
+                $('#socialLinks').append('<option value="' +
                     socialUrl+encodeURIComponent(permalinkQuery) +
                     '">' +
                     name +
-                    '</a>'
+                    '</option>'
                 );
             });
             $(".socialLink").buttonMarkup(
             {
-                icon: "plus",
                 inline: true,
                 mini: true
             });
@@ -872,5 +869,7 @@ function init() {
             setPermalink();
         }
     });
+    $("#popupPanel").popup("open");
+
 
 }
