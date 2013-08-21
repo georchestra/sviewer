@@ -78,11 +78,11 @@ var hardConfig = {
     // The user can switch layers with a button.
     layersBackground: [
         new Ol.Layer.WMS(
-            "Photographie aérienne",
+            "Aerial photography",
             "http://a.tile.geobretagne.fr/gwc02/service/wms",
             { layers: 'satellite', format: 'image/jpeg', transparent: false },
             {
-                attribution: "<br />Photographie aérienne : partenaires GéoBretagne/IGN RGE/PlanetObserver",
+                attribution: "<br />Photographie aérienne partenaires GéoBretagne/IGN RGE/PlanetObserver",
                 tileSize: new Ol.Size(256,256),
                 visibility: true
             }
@@ -96,7 +96,7 @@ var hardConfig = {
             ],
             { layers: 'imposm:default', format: 'image/png', transparent: false },
             {
-                attribution: "<br />Fond cartographique : <a href='http://www.openstreetmap.org/'>OpenStreetMap CC-by-SA</a>",
+                attribution: "<br />Fond cartographique <a href='http://www.openstreetmap.org/'>OpenStreetMap CC-by-SA</a>",
                 tileSize: new Ol.Size(256,256),
                 visibility: false
             }
@@ -110,7 +110,7 @@ var hardConfig = {
                 "http://otile4.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png"
             ],
             {
-                attribution: "Data, imagery and map information provided by <a href='http://www.mapquest.com/'  target='_blank'>MapQuest</a>, <a href='http://www.openstreetmap.org/' target='_blank'>Open Street Map</a> and contributors, <a href='http://creativecommons.org/licenses/by-sa/2.0/' target='_blank'>CC-BY-SA</a>  <img src='http://developer.mapquest.com/content/osm/mq_logo.png' border='0'>",
+                attribution: "Data, imagery and map <a href='http://www.mapquest.com/'  target='_blank'>MapQuest</a>, <a href='http://www.openstreetmap.org/' target='_blank'>Open Street Map</a> and contributors, <a href='http://creativecommons.org/licenses/by-sa/2.0/' target='_blank'>CC-BY-SA</a>  <img src='http://developer.mapquest.com/content/osm/mq_logo.png' border='0'>",
                 transitionEffect: "resize",
                 visibility: false
             }
@@ -303,7 +303,7 @@ function init() {
 
         getFeatureInfo = new Ol.Control.WMSGetFeatureInfo({
             url: onlineresource,
-            title: 'Interroger la carte par clic',
+            title: 'Query',
             queryVisible: true,
             infoFormat: 'text/html',
             hover: false,
@@ -571,23 +571,23 @@ function init() {
                         $("#frameLocate").popup("close");
                     }
                     else {
-                        $("#locateMsg").text("La géolocalisation a échoué :\nlieu recherché hors carte");
+                        $("#locateMsg").text("Geolocation failed :\nfound one place but it's off map");
                         $.mobile.loading('hide');
                     }
                 }
                 else {
-                    $("#locateMsg").text("La géolocalisation a échoué :\naucun résultat");
+                    $("#locateMsg").text("Geolocation failed :\nno result");
                     $.mobile.loading('hide');
                 }
             } catch(err) {
-                $("#locateMsg").text("La géolocalisation a échoué");
+                $("#locateMsg").text("Geolocation failed");
                 $.mobile.loading('hide');
                 console.log(err);
             }
         }
 
         function onOpenLSFailure (response) {
-            $("#locateMsg").text("La géolocalisation a échoué");
+            $("#locateMsg").text("Geolocation failed");
                 $.mobile.loading('hide');
         }
 
@@ -780,7 +780,7 @@ function init() {
     }
 
     // marker layer
-    var markGeoloc = new Ol.Layer.Markers("geocodage");
+    var markGeoloc = new Ol.Layer.Markers("geocode");
     map.addLayers([markGeoloc]);
 
 
@@ -849,7 +849,7 @@ function init() {
     $("#addressForm").on('submit', function() {
         try {
             $.mobile.loading('show', {
-                text: "recherche du lieu"
+                text: "searching"
             });
             markGeoloc.clearMarkers();
             openLsRequest($("#addressInput").val());
@@ -863,6 +863,14 @@ function init() {
     // permalinks
     $("#frameShare").bind({
         popupafteropen: function() { setPermalink(); }
+    });
+
+    // right panel
+    $( "#popupPanel" ).on({
+        popupbeforeposition: function() {
+            $( "#popupPanel" ).css( "height", $( window ).height() );
+            setPermalink();
+        }
     });
 
 }

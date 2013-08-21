@@ -54,19 +54,31 @@ body {
     left: 10px;
     z-index:8000;
 }
-#popupAnchor {
-    position: absolute;
-    top: 100px;
-    right: 10px;
-}
+
 
 #legend img.legend {
     margin: 2px 0 2px 0;
 }
 
-/* enables map control behind popup */
-#frameLocate-screen, #frameShare-screen, #frameLegend-screen, #frameHelp-screen {
+
+#popupPanel-popup {
+    top: 0px !important;
+    right: 0 !important;
+    left: auto !important;
+}
+#popupPanel {
+    width: 400px;
+    border-left: 1px solid #333;
+    background: rgba(64,64,64,.7);
+    margin: -1px 0;
+}
+#popupPanel-screen {
     display: none;
+}
+
+#qrcode {
+    width: 160px;
+    height: 160px;
 }
 
         </style>
@@ -103,78 +115,70 @@ body {
             <!-- header -->
             <div data-role="header" class="ui-bar-b">
                 <h2 id="title"></h2>
-                <a href="#frameMenu" data-rel="popup" data-role="button" data-mini="true" data-icon="gear" class="ui-btn-right">Outils</a>
-                <div id="frameMenu" data-role="popup">
-                    <ul data-role="listview" data-inset="true">
-                        <li><a href="#frameLegend" data-rel="popup" data-position-to="#popupAnchor">Légende</a></li>
-                        <li><a href="#frameLocate" data-rel="popup" data-position-to="#popupAnchor">Localiser</a></li>
-                        <li><a href="#frameShare"  data-rel="popup" data-position-to="#popupAnchor">Partager</a></li>
-                    </ul>
-                </div>
+                <a href="#popupPanel" data-rel="popup" data-role="button" data-transition="slide" data-position-to="window" data-mini="true" data-icon="arrow-l" class="ui-btn-right">Tools</a>
             </div>
 
+            <!-- tool panel -->
+            <div id="popupPanel" data-role="popup" data-corners="false" data-theme="none" data-tolerance="0,0">
+                <a href="#" data-rel="back" data-role="button" data-theme="b" data-mini="true" data-icon="arrow-r" data-inline="true">Hide</a>
 
-            <!-- locate frame -->
-            <div id="frameLocate" data-role="popup" data-transition="slidefade">
-                <div data-role="header">
-                    <h3>Localiser</h3>
-                    <a href="#frameLocate" data-role="button" data-rel="close" data-icon="delete" data-mini="true" data-iconpos="notext" class="ui-btn-right">Fermer</a>
-                </div>
-                <div class="ui-content">
-                    <form id="addressForm" method="POST" action="#">
-                        <label for="addressInput">recherche par adresse</label>
-                        <input id="addressInput" name="addressInput" type="search" data-mini="true" value="" placeholder="ex: rue Martenot, Rennes" title="ex: rue Martenot, Rennes" />
-                        <input type="submit" data-role="button" data-mini="true" data-inline="true" value="rechercher" />
-                        <br />
-                        <span id="locateMsg"></span>
-                    </form>
-                </div>
-            </div>
+                <div data-role="collapsible-set" data-mini="true" data-theme="b" data-content-theme="c">
 
-            <!-- share frame -->
-            <div id="frameShare" data-role="popup">
-                <div data-role="header">
-                    <h3 class="ui-title">Partager</h3>
-                    <a href="#frameShare" data-role="button" data-rel="close" data-icon="delete" data-mini="true" data-iconpos="notext" class="ui-btn-right">Fermer</a>
-                </div>
-                <div class="ui-content">
-                    <ul data-role="listview" data-inset="true">
-                        <li data-role="fieldcontain">
-                            <label for="setTitle">titre</label>
+
+                    <!-- search -->
+                    <div data-role="collapsible">
+                        <h3 id="locateTitle">Find</h3>
+                        <form id="addressForm" method="POST" action="#">
+                            <label for="addressInput">enter address or place</label>
+                            <input type="search" name="addressInput" id="addressInput" data-mini="true" value="" placeholder="ex: rue Martenot, Rennes" title="ex: rue Martenot, Rennes" />
+                            <input type="submit" data-role="button" data-mini="true" data-inline="true" data-icon="search" value="search" />
+                            <br />
+                            <span id="locateMsg"></span>
+                        </form>
+                    </div>
+
+                    <!-- share -->
+                    <div data-role="collapsible">
+                        <h3 id="locateShare">Share</h3>
+
+                        <fieldset data-role="fieldcontain">
+                            <label for="setTitle">Edit title</label>
                             <input data-mini="true" type="text" name="setTitle" id="setTitle" data-mini="true" value="" />
-                        </li>
-                        <li data-role="fieldcontain">
-                            <label for="permalink">lien</label>
+                        </fieldset>
+
+                        <fieldset data-role="fieldcontain">
+                            <label for="permalink">link</label>
                             <input data-mini="true" type="text" name="permalink" id="permalink" data-mini="true" value="" />
-                            <input type="image" id="qrcode" src="" />
-                        </li>
-                        <li data-role="fieldcontain">
+                            <img id="qrcode" src="" />
+                        </fieldset>
+
+                        <fieldset data-role="fieldcontain">
                             <label for="embedcode">HTML</label>
                             <textarea data-mini="true" name="embedcode" id="embedcode" data-mini="true"></textarea>
-                        </li>
-                        <li  data-role="fieldcontain" id="socialLinks"></li>
-                        <li data-role="fieldcontain">
-                            <form id="georchestraForm" target="_blank" method="post" action="http://geobretagne.fr/mapfishapp/">
-                                <input type="hidden" id="georchestraFormData" name="data" value="" />
-                                <input type="submit" data-role="button" data-icon="submit" data-mini="true" data-inline="true" value="visualiseur avancé" />
-                            </form>
-                        </li>
-                    </ul>
+                        </fieldset>
+
+                        <fieldset data-role="fieldcontain">
+                            <div id="socialLinks"></div>
+                        </fieldset>
+
+
+                        <form id="georchestraForm" target="_blank" method="post" action="http://geobretagne.fr/mapfishapp/">
+                            <input type="hidden" id="georchestraFormData" name="data" value="" />
+                            <input type="submit" data-role="button" data-icon="submit" data-mini="true" data-inline="true" value="send to geOrchestra viewer" />
+                        </form>
+                    </div>
+
+                    <!-- legend -->
+                    <div data-role="collapsible" data-collapsed="false">
+                        <h3 id="legendTitle">Legend</h3>
+                        <ul data-role="listview" id="legend"></ul>
+                        <div id="baseAttributions"></div>
+                    </div>
+
+
                 </div>
             </div>
 
-            <!-- legend frame -->
-            <div id="frameLegend" data-role="popup">
-                <div data-role="header">
-                    <h3 class="ui-title">Légende</h3>
-                    <a href="#frameLegend" data-role="button" data-rel="close" data-icon="delete" data-mini="true" data-iconpos="notext" class="ui-btn-right">Fermer</a>
-                </div>
-                <div class="ui-content">
-                    <ul data-role="listview" data-inset="true" id="legend">
-                    </ul>
-                    <div id="baseAttributions"></div>
-                </div>
-            </div>
 
             <!-- content -->
             <div data-role="content" id="frameMap">
@@ -182,14 +186,11 @@ body {
                     <!-- map -->
                     <div id="map"></div>
                     <div data-role="controlgroup" data-type="horizontal" data-mini="true"  id="mapcontrols">
-                        <a id="zeBt" href="#" data-role="button" data-iconpos="notext" data-icon="home">vue initiale</a>
+                        <a id="zeBt" href="#" data-role="button" data-iconpos="notext" data-icon="home">initial view</a>
                         <a id="ziBt" href="#" data-role="button" data-iconpos="notext" data-icon="plus">zoom +</a>
                         <a id="zoBt" href="#" data-role="button" data-iconpos="notext" data-icon="minus">zoom -</a>
-                        <a id="bgBt" href="#" data-role="button" data-iconpos="notext" data-icon="grid">fond de plan</a>
+                        <a id="bgBt" href="#" data-role="button" data-iconpos="notext" data-icon="grid">background map</a>
                     </div>
-
-                    <div id="popupAnchor"></div>
-
             <!-- end content -->
             </div>
 
