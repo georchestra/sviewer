@@ -23,6 +23,7 @@ geOrchestra simple viewer
         </script>
         <link rel="stylesheet" href="lib/jquery/jquery.mobile-1.3.2.min.css" />
         <script src="lib/jquery/jquery.mobile-1.3.2.min.js"></script>
+        <link rel="stylesheet" href="css/jqm-icon-pack-2.0-original.css"></script>
         <script type="text/javascript" src="lib/openlayers/OpenLayers.js"></script>
         <script type="text/javascript" src="lib/proj4js/proj4js-compressed.js"></script>
         <script type="text/javascript" src="lib/LoadingPanel.js"></script>
@@ -53,6 +54,11 @@ body {
     top: 50px;
     left: 10px;
     z-index:8000;
+}
+
+label {
+    color: #555555 !important;
+    font-size: small !important;
 }
 
 /* legend layout */
@@ -89,8 +95,8 @@ a.mdMeta {
     z-index:8010;
 }
 #panelLegend-popup,#panelFind-popup,#panelShare-popup {
-    top: 60px !important;
-    right: 10px !important;
+    top: 50px !important;
+    right: 5px !important;
     left: auto !important;
 }
 #panelLegend-screen, #panelFind-screen, #panelShare-screen {
@@ -139,15 +145,18 @@ a.mdMeta {
             <div data-role="header" id="header" class="ui-bar-b">
                 <h2 id="title"></h2>
                 <div data-role="controlgroup" data-type="horizontal" class="ui-btn-right">
-                <a href="#panelLegend" data-rel="popup" data-role="button" data-position-to="window" data-mini="true">Legend</a>
-                <a href="#panelFind" data-rel="popup" data-role="button" data-position-to="window" data-mini="true">Find</a>
-                <a href="#panelShare" data-rel="popup" data-role="button" data-position-to="window" data-mini="true">Share</a>
+                    <a href="#panelLegend" data-rel="popup" data-role="button" data-position-to="window" data-mini="true" data-icon="info2" data-iconpos="notext">Legend</a>
+                    <a href="#panelFind" data-rel="popup" data-role="button" data-position-to="window" data-mini="true" data-icon="search" data-iconpos="notext">Find</a>
+                    <a href="#panelShare" data-rel="popup" data-role="button" data-position-to="window" data-mini="true" data-icon="person" data-iconpos="notext">Share</a>
                 </div>
             </div>
 
             <!-- legend panel -->
             <div id="panelLegend" class="popupPanel" data-role="popup" data-tolerance="0,0">
-                <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
+                <div data-role="header" data-theme="b">
+                    <h3>Legend</h3>
+                    <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
+                </div>
                 <div data-role="content">
                     <div id="legend"></div>
                     <p id="baseAttributions"></p>
@@ -156,7 +165,10 @@ a.mdMeta {
 
             <!-- find panel -->
             <div id="panelFind" class="popupPanel" data-role="popup" data-tolerance="0,0">
-                <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
+                <div data-role="header" data-theme="b">
+                    <h3>Find</h3>
+                    <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
+                </div>
                 <div data-role="content">
                     <form id="addressForm" method="POST" action="#">
                         <label for="addressInput" class="ui-hidden-accessible">search for address or place</label>
@@ -166,8 +178,8 @@ a.mdMeta {
                         <span id="locateMsg"></span>
 
                         <div data-role="controlgroup" data-type="horizontal">
-                            <input type="button" data-role="button" data-mini="true" value="Where am I ?" />
-                            <input type="button" data-role="button" data-mini="true" value="Track my pos" />
+                            <input type="button" data-role="button" data-mini="true" data-icon="mappin" value="Where am I ?" />
+                            <input type="button" data-role="button" data-mini="true" data-icon="direction" value="Track my pos" />
                         </div>
                     </form>
                 </div>
@@ -175,28 +187,36 @@ a.mdMeta {
 
             <!-- share panel -->
             <div id="panelShare" class="popupPanel" data-role="popup" data-tolerance="0,0">
-                <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
+                <div data-role="header" data-theme="b">
+                    <h3>Share</h3>
+                    <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
+                </div>
 
                 <div data-role="content">
-                    <label for="setTitle">Set the title</label>
+                    <label for="setTitle">Title</label>
                     <input type="text" name="setTitle" id="setTitle" data-mini="true" value="" />
-                    <label for="permalink">Link to this map</label>
-                    <input type="text" name="permalink" id="permalink" data-mini="true" value="" />
+
                     <label for="embedcode">Embed it in a web page</label>
                     <textarea name="embedcode" id="embedcode" data-mini="true"></textarea>
 
-                    <!-- to georchestra viewer -->
-                    <form id="georchestraForm" target="_blank" method="post" action="http://geobretagne.fr/mapfishapp/">
-                        <input type="hidden" id="georchestraFormData" name="data" value="" />
-                        <input type="submit" data-role="button" data-mini="true" data-icon="gear" value="geOrchestra" />
-                    </form>
-
-                    <!-- social links -->
-                    <div id="socialLinks">
+                    <label>Send to ...</label>
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a">
+                            <!-- permalink -->
+                            <a data-role="button" id="permalink" data-ajax="false" href="" data-mini="true" data-icon="link">Permalink</a>
+                            <!-- social links -->
+                            <span id="socialLinks"></span>
+                            <!-- to georchestra viewer -->
+                            <form id="georchestraForm" target="_blank" method="post" action="http://geobretagne.fr/mapfishapp/">
+                                <input type="hidden" id="georchestraFormData" name="data" value="" />
+                                <input type="submit" data-role="button" data-mini="true" data-icon="gear" value="geOrchestra" />
+                            </form>
+                        </div>
+                        <!-- QQR code -->
+                        <div class="ui-block-b">
+                            <img id="qrcode" src="" />
+                        </div>
                     </div>
-
-
-                    <img id="qrcode" src="" />
                 </div>
             </div>
 

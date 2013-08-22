@@ -125,9 +125,9 @@ var hardConfig = {
 
     // social media links
     socialMedia: {
-        "Facebook": "http://www.facebook.com/sharer/sharer.php?u=",
         "Twitter" : "https://twitter.com/intent/tweet?text=",
-        "Google+" : "https://plus.google.com/share?url="
+        "Google+" : "https://plus.google.com/share?url=",
+        "Facebook": "http://www.facebook.com/sharer/sharer.php?u=",
     }
 };
 
@@ -724,14 +724,15 @@ function init() {
                     '</a>'
                 );
             });
-            $('.socialBtn').buttonMarkup(
-                { mini: true, icon: "arrow-r" }
-            );
+            $('.socialBtn').buttonMarkup({
+                mini: true,
+                icon: "link"
+            });
             if ($('#qrcode').css("visibility")=="visible") {
             $('#qrcode').prop('src','http://chart.apis.google.com/chart?cht=qr&chs=160x160&chld=L&chl=' +
                 encodeURIComponent(permalinkQuery));
             }
-            $('#permalink').val(permalinkQuery);
+            $('#permalink').prop('href',permalinkQuery);
             $('#embedcode').text('<iframe style="width: 600px; height: 400px;" src="' +
             permalinkQuery +
             '"></iframe>');
