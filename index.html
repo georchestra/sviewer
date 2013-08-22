@@ -55,31 +55,52 @@ body {
     z-index:8000;
 }
 
-#legend .legendTitle {
+/* legend layout */
+#legend a {
     font-weight: bold;
+    text-decoration: none;
+}
+#legend h3,p {
+    padding: 0 0 2px 0 !important;
+    margin: 0;
+}
+.mdTitle {
+}
+.mdAbstract {
+    color: #555555;
+}
+.mdAttrib {
+}
+img.mdLegend {
+    padding: 4px;
+    max-width: 320px;
+}
+a.mdMeta {
+    text-decoration: none;
 }
 
-#legend img.legend {
-    margin: 2px 0 2px 0;
-}
-
-
-#popupPanel-popup {
-    top: 0px !important;
-    right: 0 !important;
-    left: auto !important;
-}
-#popupPanel {
-    width: 400px;
-    border-left: 1px solid #333;
+/* panels placement */
+.popupPanel {
+    max-width: 350px;
+    border: 1px solid #333;
+    border-bottom: none;
     background: rgba(255,255,255,1);
     margin: -1px 0;
+    z-index:8010;
 }
-#popupPanel-screen, #popupShare-screen {
+#panelLegend-popup,#panelFind-popup,#panelShare-popup {
+    top: 60px !important;
+    right: 10px !important;
+    left: auto !important;
+}
+#panelLegend-screen, #panelFind-screen, #panelShare-screen {
     display: none;
 }
 
+
 #qrcode {
+    display: block;
+    margin: 0 auto;
     width: 160px;
     height: 160px;
 }
@@ -116,93 +137,81 @@ body {
 
             <!-- header -->
             <div data-role="header" id="header" class="ui-bar-b">
-                <a href="#popupShare" data-rel="popup" data-role="button" data-position-to="window" data-mini="true" data-inline="true" class="ui-bt-left">Share</a>
                 <h2 id="title"></h2>
-                <a href="#popupPanel" data-rel="popup" data-role="button" data-transition="slide" data-position-to="window" data-mini="true" data-inline="true" data-icon="info" class="ui-bt-right">Info</a>
+                <div data-role="controlgroup" data-type="horizontal" class="ui-btn-right">
+                <a href="#panelLegend" data-rel="popup" data-role="button" data-position-to="window" data-mini="true">Legend</a>
+                <a href="#panelFind" data-rel="popup" data-role="button" data-position-to="window" data-mini="true">Find</a>
+                <a href="#panelShare" data-rel="popup" data-role="button" data-position-to="window" data-mini="true">Share</a>
+                </div>
             </div>
 
-            <!-- tool panel -->
-            <div id="popupPanel" data-role="popup" data-corners="false" data-tolerance="0,0">
-
-
-                <div data-role="header" class="ui-bar-b">
-                    <h4 id="title">Tools</h4>
-                    <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="arrow-r" data-inline="true" class="ui-btn-right">Hide</a>
-                </div>
-
+            <!-- legend panel -->
+            <div id="panelLegend" class="popupPanel" data-role="popup" data-tolerance="0,0">
+                <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
                 <div data-role="content">
+                    <div id="legend"></div>
+                    <p id="baseAttributions"></p>
+                </div>
+            </div>
 
-                    <!-- find -->
+            <!-- find panel -->
+            <div id="panelFind" class="popupPanel" data-role="popup" data-tolerance="0,0">
+                <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
+                <div data-role="content">
                     <form id="addressForm" method="POST" action="#">
-                        <label for="addressInput" class="ui-hidden-accessible">enter address or place</label>
+                        <label for="addressInput" class="ui-hidden-accessible">search for address or place</label>
                         <input type="search" name="addressInput" id="addressInput" data-mini="true" data-inline="true" value="" placeholder="enter address or place" title="ex: rue Martenot, Rennes" />
-                        
+
                         <input type="submit" data-role="button" data-mini="true" data-inline="true" data-icon="search" value="Find" />
+                        <span id="locateMsg"></span>
 
                         <div data-role="controlgroup" data-type="horizontal">
                             <input type="button" data-role="button" data-mini="true" value="Where am I ?" />
-                            <input type="button" data-role="button" data-mini="true" value="Track" />
+                            <input type="button" data-role="button" data-mini="true" value="Track my pos" />
                         </div>
-                        
-                        <span id="locateMsg"></span>
                     </form>
-                    <hr />
-                    <!-- legend -->
-                    <p id="legend"></p>
-                    <p id="baseAttributions"></p>
-                    <hr />
-                    <!-- share -->
-                    <a href="#popupShare" data-rel="popup" data-role="button" data-position-to="window" data-mini="true">Share this map</a>
+                </div>
             </div>
-        </div>
 
+            <!-- share panel -->
+            <div id="panelShare" class="popupPanel" data-role="popup" data-tolerance="0,0">
+                <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
 
-        <!-- share -->
-        <div data-role="popup" id="popupShare">
-            <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
-            <div data-role="header">
-                <h1>Share</h1>
-            </div>
-            <div class="ui-grid-a">
-                <div class="ui-block-a">
-                    <div data-role="content">
+                <div data-role="content">
                     <label for="setTitle">Set the title</label>
                     <input type="text" name="setTitle" id="setTitle" data-mini="true" value="" />
                     <label for="permalink">Link to this map</label>
                     <input type="text" name="permalink" id="permalink" data-mini="true" value="" />
-                    <label for="embedcode">Embed this map in a web page</label>
+                    <label for="embedcode">Embed it in a web page</label>
                     <textarea name="embedcode" id="embedcode" data-mini="true"></textarea>
+
+                    <!-- to georchestra viewer -->
+                    <form id="georchestraForm" target="_blank" method="post" action="http://geobretagne.fr/mapfishapp/">
+                        <input type="hidden" id="georchestraFormData" name="data" value="" />
+                        <input type="submit" data-role="button" data-mini="true" data-icon="gear" value="geOrchestra" />
+                    </form>
+
+                    <!-- social links -->
+                    <div id="socialLinks">
                     </div>
-                </div>
-                <div class="ui-block-b">
-                    <div data-role="content">
-                        <label for="socialLinks" name="socialLinks">Send to</label>
-                        <select id="socialLinks"></select>
-                        <form id="georchestraForm" target="_blank" method="post" action="http://geobretagne.fr/mapfishapp/">
-                            <input type="hidden" id="georchestraFormData" name="data" value="" />
-                            <input type="submit" data-role="button" data-mini="true" data-inline="true" value="geOrchestra" />
-                        </form>
-                        <br />
-                        <label>Flash this code</label>
-                        <img id="qrcode" src="" />
-                    </div>
+
+
+                    <img id="qrcode" src="" />
                 </div>
             </div>
-        </div>
 
 
             <!-- content -->
             <div data-role="content" id="frameMap">
-
-                    <!-- map -->
-                    <div id="map"></div>
-                    <div data-role="controlgroup" data-type="horizontal" data-mini="true"  id="mapcontrols">
-                        <a id="zeBt" href="#" data-role="button" data-iconpos="notext" data-icon="home">initial view</a>
-                        <a id="ziBt" href="#" data-role="button" data-iconpos="notext" data-icon="plus">zoom +</a>
-                        <a id="zoBt" href="#" data-role="button" data-iconpos="notext" data-icon="minus">zoom -</a>
-                        <a id="bgBt" href="#" data-role="button" data-iconpos="notext" data-icon="grid">background map</a>
-                    </div>
-            <!-- end content -->
+                <!-- map -->
+                <div id="map"></div>
+                <!-- map controls -->
+                <div data-role="controlgroup" data-type="horizontal" data-mini="true"  id="mapcontrols">
+                    <a id="zeBt" href="#" data-role="button" data-iconpos="notext" data-icon="home">initial view</a>
+                    <a id="ziBt" href="#" data-role="button" data-iconpos="notext" data-icon="plus">zoom +</a>
+                    <a id="zoBt" href="#" data-role="button" data-iconpos="notext" data-icon="minus">zoom -</a>
+                    <a id="bgBt" href="#" data-role="button" data-iconpos="notext" data-icon="grid">background map</a>
+                </div>
             </div>
 
         <!-- end page -->

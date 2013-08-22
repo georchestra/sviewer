@@ -106,8 +106,7 @@ var hardConfig = {
             [
                 "http://otile1.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
                 "http://otile2.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
-                "http://otile3.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
-                "http://otile4.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png"
+                "http://otile3.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png"
             ],
             {
                 attribution: "Data, imagery and map <a href='http://www.mapquest.com/'  target='_blank'>MapQuest</a>, <a href='http://www.openstreetmap.org/' target='_blank'>Open Street Map</a> and contributors, <a href='http://creativecommons.org/licenses/by-sa/2.0/' target='_blank'>CC-BY-SA</a>  <img src='http://developer.mapquest.com/content/osm/mq_logo.png' border='0'>",
@@ -146,13 +145,16 @@ var map;
 function init() {
     "use strict";
 
+
+
     // defaultConfig may be overriden with querystring
     var defaultConfig = {
         title: hardConfig.title,
         CQL_FILTER: hardConfig.CQL_FILTER,
         layernames: [],
         stylenames: [],
-        onlineresources: []
+        onlineresources: [],
+        querylayers: []
     };
 
     // config = defaultConfig + querystring + hashstring
@@ -161,6 +163,7 @@ function init() {
     Ol.Util.applyDefaults(config, Ol.Util.getParameters("/?" + window.location.hash.substring(1),  { splitArgs: false }));
     Ol.Util.applyDefaults(config, defaultConfig);
 
+    console.log(config);
 
     // document title handling
     document.title = config.title;
@@ -203,6 +206,19 @@ function init() {
 
     // ----- methods ------------------------------------------------------------------------------------
 
+    /**
+     * Method: escHTML
+     * Sanitize strings
+     *
+     * Parameters:
+     * s {String} input string
+     *
+     * Returns:
+     * {String} secured string
+     */
+    function escHTML (s) {
+        return $('<p/>').text(s).html();
+    };
 
     /**
      * Method: parseLayerParam
@@ -376,28 +392,51 @@ function init() {
                         "service" : "WMS",
                         "version" : capabilities.version,
                         "request" : "GetLegendGraphic",
-                        "width" : 20,
                         "format" : "image/png",
                         "layer": mdLayer.name,
                         "style": layerstyle
                     };
+                    console.log(mdLayer);
+                    // title
+                    html = "<p><h3 class='mdTitle'>" +
+                        escHTML(mdLayer.title);
 
-                    html = "<h4 class='legendTitle'>" +
-                        $('<div/>').text(mdLayer.title).html() +
-                        "</h4><img class='legend' src='" +
+                    // attribution
+                    if (mdLayer.attribution) {
+                        html = html +
+                            "&nbsp;(<a target='_blank'class='mdAttrib' href='" +
+                            mdLayer.attribution.href +
+                            "'>" +
+                            escHTML(mdLayer.attribution.title) +
+                            "</a>)";
+                    };
+                    html = html + "</h3>";
+
+                    // abstract
+                    html = html +
+                        "<p class='mdAbstract'>" +
+                        escHTML(mdLayer.abstract);
+
+                    // metadata
+                    if (mdLayer.metadataURLs) {
+                        $.each(mdLayer.metadataURLs, function(i,md) {
+                            if (md.format === "text/html") {
+                                html = html +
+                                "&nbsp;<a target='_blank'class='mdMeta' href='" +
+                                md.href +
+                                "'>" +
+                                "[+]</a>";
+                            };
+                        });
+                    };
+                    html = html + "</p>";
+
+                    // legend
+                    html = html + "<img class='mdLegend' src='" +
                         Ol.Util.urlAppend(capabilities.service.href, Ol.Util.getParameterString(legendArgs)) +
                         "' />";
 
-                    if (mdLayer.attribution) {
-                        html = html +
-                            "<br /><a target='_blank'class='attribution' href='" +
-                            mdLayer.attribution.href +
-                            "'>" +
-                            $('<hr/>').text(mdLayer.attribution.title).html() +
-                            "</a>";
-                    };
-
-                    html = html + "</span>";
+                    html = html + "<hr />";
 
                     $("#legend").append(html);
                 }
@@ -569,12 +608,12 @@ function init() {
                         $("#frameLocate").popup("close");
                     }
                     else {
-                        $("#locateMsg").text("Geolocation failed :\nfound one place but it's off map");
+                        $("#locateMsg").text("All results are off map");
                         $.mobile.loading('hide');
                     }
                 }
                 else {
-                    $("#locateMsg").text("Geolocation failed :\nno result");
+                    $("#locateMsg").text("No result");
                     $.mobile.loading('hide');
                 }
             } catch(err) {
@@ -674,21 +713,20 @@ function init() {
         permalinkQuery = window.location.origin + window.location.pathname + "?" + jQuery.param(linkParams);
 
         // permalink, social links & QR code update only if frame is visible
-        if ($('#popupShare').css('display')==='block') {
+        if ($('#panelShare').css('display')==='block') {
             $('#socialLinks').empty();
             $.each(hardConfig.socialMedia, function(name, socialUrl) {
-                $('#socialLinks').append('<option value="' +
-                    socialUrl+encodeURIComponent(permalinkQuery) +
+                $('#socialLinks').append('<a data-role="button" class="socialBtn" target="_blank" href="' +
+                    socialUrl +
+                    encodeURIComponent(permalinkQuery) +
                     '">' +
                     name +
-                    '</option>'
+                    '</a>'
                 );
             });
-            $(".socialLink").buttonMarkup(
-            {
-                inline: true,
-                mini: true
-            });
+            $('.socialBtn').buttonMarkup(
+                { mini: true, icon: "arrow-r" }
+            );
             if ($('#qrcode').css("visibility")=="visible") {
             $('#qrcode').prop('src','http://chart.apis.google.com/chart?cht=qr&chs=160x160&chld=L&chl=' +
                 encodeURIComponent(permalinkQuery));
@@ -727,6 +765,7 @@ function init() {
                 };
             });
             $("#georchestraFormData").val(JSON.stringify(params));
+            console.log(params);
             return true;
         }
     };
@@ -762,7 +801,7 @@ function init() {
         ns_layer_style_list = (typeof config.layers == 'string') ? config.layers.split(',') : config.layers
         $.each(ns_layer_style_list, function(i,s) {
             var p = parseLayerParam(s);
-            config.layernames.push(p.name);
+            config.layernames.push(p.ns_name);
             config.stylenames.push(p.style);
             // using GS ability to deliver virtual layer services = fast on capabilities
             getWMSLegend(p.wms_layer, p.name, p.style);
@@ -858,16 +897,8 @@ function init() {
     });
 
     // permalinks
-    $("#frameShare").bind({
+    $(".popupPanel").bind({
         popupafteropen: function() { setPermalink(); }
-    });
-
-    // right panel
-    $( "#popupPanel" ).on({
-        popupbeforeposition: function() {
-            $( "#popupPanel" ).css( "height", $( window ).height() );
-            setPermalink();
-        }
     });
 
 
