@@ -151,6 +151,19 @@ a.mdMeta {
                 </div>
             </div>
 
+            <!-- content -->
+            <div data-role="content" id="frameMap">
+                <!-- map -->
+                <div id="map"></div>
+                <!-- map controls -->
+                <div data-role="controlgroup" data-type="horizontal" data-mini="true"  id="mapcontrols">
+                    <a id="zeBt" href="#" data-role="button" data-iconpos="notext" data-icon="home">initial view</a>
+                    <a id="ziBt" href="#" data-role="button" data-iconpos="notext" data-icon="plus">zoom +</a>
+                    <a id="zoBt" href="#" data-role="button" data-iconpos="notext" data-icon="minus">zoom -</a>
+                    <a id="bgBt" href="#" data-role="button" data-iconpos="notext" data-icon="grid">background map</a>
+                </div>
+            </div>
+
             <!-- legend panel -->
             <div id="panelLegend" class="popupPanel" data-role="popup" data-tolerance="0,0">
                 <div data-role="header" data-theme="b">
@@ -159,7 +172,7 @@ a.mdMeta {
                 </div>
                 <div data-role="content">
                     <div id="legend"></div>
-                    <p id="baseAttributions"></p>
+                    <span id="baseAttributions"></span>
                 </div>
             </div>
 
@@ -193,25 +206,24 @@ a.mdMeta {
                 </div>
 
                 <div data-role="content">
-                    <label for="setTitle">Title</label>
+                    <label for="setTitle" class="ui-hidden-accessible">Title</label>
                     <input type="text" name="setTitle" id="setTitle" data-mini="true" value="" />
 
-                    <label for="embedcode">Embed it in a web page</label>
-                    <textarea name="embedcode" id="embedcode" data-mini="true"></textarea>
-
-                    <label>Send to ...</label>
                     <div class="ui-grid-a">
                         <div class="ui-block-a">
                             <!-- permalink -->
-                            <a data-role="button" id="permalink" data-ajax="false" href="" data-mini="true" data-icon="link">Permalink</a>
+                            <a data-role="button" id="permalink" href="#" data-ajax="false" href="" data-mini="true" data-icon="link">Permalink</a>
+
                             <!-- social links -->
                             <span id="socialLinks"></span>
+
                             <!-- to georchestra viewer -->
                             <form id="georchestraForm" target="_blank" method="post" action="http://geobretagne.fr/mapfishapp/">
                                 <input type="hidden" id="georchestraFormData" name="data" value="" />
-                                <input type="submit" data-role="button" data-mini="true" data-icon="gear" value="geOrchestra" />
+                                <input type="submit" data-role="button" data-mini="true" data-icon="link" value="geOrchestra" />
                             </form>
                         </div>
+
                         <!-- QQR code -->
                         <div class="ui-block-b">
                             <img id="qrcode" src="" />
@@ -221,18 +233,6 @@ a.mdMeta {
             </div>
 
 
-            <!-- content -->
-            <div data-role="content" id="frameMap">
-                <!-- map -->
-                <div id="map"></div>
-                <!-- map controls -->
-                <div data-role="controlgroup" data-type="horizontal" data-mini="true"  id="mapcontrols">
-                    <a id="zeBt" href="#" data-role="button" data-iconpos="notext" data-icon="home">initial view</a>
-                    <a id="ziBt" href="#" data-role="button" data-iconpos="notext" data-icon="plus">zoom +</a>
-                    <a id="zoBt" href="#" data-role="button" data-iconpos="notext" data-icon="minus">zoom -</a>
-                    <a id="bgBt" href="#" data-role="button" data-iconpos="notext" data-icon="grid">background map</a>
-                </div>
-            </div>
 
         <!-- end page -->
         </div>

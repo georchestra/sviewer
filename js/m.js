@@ -82,7 +82,7 @@ var hardConfig = {
             "http://a.tile.geobretagne.fr/gwc02/service/wms",
             { layers: 'satellite', format: 'image/jpeg', transparent: false },
             {
-                attribution: "<br />Photographie aérienne partenaires GéoBretagne/IGN RGE/PlanetObserver",
+                attribution: "Photographie aérienne partenaires GéoBretagne/IGN RGE/PlanetObserver",
                 tileSize: new Ol.Size(256,256),
                 visibility: true
             }
@@ -96,7 +96,7 @@ var hardConfig = {
             ],
             { layers: 'imposm:default', format: 'image/png', transparent: false },
             {
-                attribution: "<br />Fond cartographique <a href='http://www.openstreetmap.org/'>OpenStreetMap CC-by-SA</a>",
+                attribution: "Fond cartographique <a href='http://www.openstreetmap.org/'>OpenStreetMap CC-by-SA</a>",
                 tileSize: new Ol.Size(256,256),
                 visibility: false
             }
@@ -898,7 +898,7 @@ function init() {
     });
 
     // permalinks
-    $(".popupPanel").bind({
+    $("#panelShare").bind({
         popupafteropen: function() { setPermalink(); }
     });
 
