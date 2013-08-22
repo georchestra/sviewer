@@ -869,7 +869,6 @@ function init() {
             setPermalink();
         }
     });
-    $("#popupPanel").popup("open");
 
 
 }

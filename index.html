@@ -116,8 +116,9 @@ body {
 
             <!-- header -->
             <div data-role="header" id="header" class="ui-bar-b">
+                <a href="#popupShare" data-rel="popup" data-role="button" data-position-to="window" data-mini="true" data-inline="true" class="ui-bt-left">Share</a>
                 <h2 id="title"></h2>
-                <a href="#popupPanel" data-rel="popup" data-role="button" data-transition="slide" data-position-to="window" data-mini="true" data-icon="arrow-l" class="ui-btn-right">Tools</a>
+                <a href="#popupPanel" data-rel="popup" data-role="button" data-transition="slide" data-position-to="window" data-mini="true" data-inline="true" data-icon="info" class="ui-bt-right">Info</a>
             </div>
 
             <!-- tool panel -->
@@ -135,11 +136,14 @@ body {
                     <form id="addressForm" method="POST" action="#">
                         <label for="addressInput" class="ui-hidden-accessible">enter address or place</label>
                         <input type="search" name="addressInput" id="addressInput" data-mini="true" data-inline="true" value="" placeholder="enter address or place" title="ex: rue Martenot, Rennes" />
+                        
                         <input type="submit" data-role="button" data-mini="true" data-inline="true" data-icon="search" value="Find" />
 
-                        <input type="button" data-role="button" data-inline="true" data-mini="true" value="Where am I ?" />
-                        <input type="button" data-role="button" data-inline="true" data-mini="true" value="Track" />
-
+                        <div data-role="controlgroup" data-type="horizontal">
+                            <input type="button" data-role="button" data-mini="true" value="Where am I ?" />
+                            <input type="button" data-role="button" data-mini="true" value="Track" />
+                        </div>
+                        
                         <span id="locateMsg"></span>
                     </form>
                     <hr />
