@@ -53,7 +53,7 @@ body {
     position: absolute;
     top: 50px;
     left: 10px;
-    z-index:8000;
+    z-index: 8000;
 }
 
 label {
@@ -92,7 +92,8 @@ a.mdMeta {
     border-bottom: none;
     background: rgba(255,255,255,1);
     margin: -1px 0;
-    z-index:8010;
+    z-index:8010 !important;
+    overflow-y: scroll;
 }
 #panelLegend-popup,#panelFind-popup,#panelShare-popup {
     top: 50px !important;
@@ -165,7 +166,7 @@ a.mdMeta {
             </div>
 
             <!-- legend panel -->
-            <div id="panelLegend" class="popupPanel" data-role="popup" data-tolerance="0,0">
+            <div id="panelLegend" class="popupPanel" data-role="popup" data-tolerance="0,0,0,180">
                 <div data-role="header" data-theme="b">
                     <h3>Legend</h3>
                     <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
@@ -177,7 +178,7 @@ a.mdMeta {
             </div>
 
             <!-- find panel -->
-            <div id="panelFind" class="popupPanel" data-role="popup" data-tolerance="0,0">
+            <div id="panelFind" class="popupPanel" data-role="popup" data-tolerance="0,0,0,180">
                 <div data-role="header" data-theme="b">
                     <h3>Find</h3>
                     <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
@@ -199,7 +200,7 @@ a.mdMeta {
             </div>
 
             <!-- share panel -->
-            <div id="panelShare" class="popupPanel" data-role="popup" data-tolerance="0,0">
+            <div id="panelShare" class="popupPanel" data-role="popup" data-tolerance="0,0,0,180">
                 <div data-role="header" data-theme="b">
                     <h3>Share</h3>
                     <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
