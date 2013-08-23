@@ -29,6 +29,7 @@ geOrchestra sviewer
         <script type="text/javascript" src="lib/LoadingPanel.js"></script>
 
         <!-- local -->
+        <script type="text/javascript" src="js/i18n.js"></script>
         <script type="text/javascript" src="js/m.js"></script>
 
         <style>
@@ -172,7 +173,7 @@ a.mdMeta {
             <!-- legend panel -->
             <div id="panelLegend" class="popupPanel" data-role="popup" data-corners="false" data-shadow="false">
                 <div data-role="header" data-theme="c">
-                    <h3>Legend</h3>
+                    <h3 class="i18n">Legend</h3>
                     <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
                 </div>
                 <div data-role="content">
@@ -184,13 +185,13 @@ a.mdMeta {
             <!-- find panel -->
             <div id="panelFind" class="popupPanel" data-role="popup" data-corners="false" data-shadow="false">
                 <div data-role="header" data-theme="c">
-                    <h3>Find</h3>
+                    <h3 class="i18n">Find</h3>
                     <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
                 </div>
                 <div data-role="content">
                     <form id="addressForm" method="POST" action="#">
                         <label for="addressInput" class="ui-hidden-accessible">search for address or place</label>
-                        <input type="search" name="addressInput" id="addressInput" data-mini="true" data-inline="true" value="" placeholder="enter address or place" title="ex: rue Martenot, Rennes" />
+                        <input type="search" name="addressInput" id="addressInput" data-mini="true" data-inline="true" value="" placeholder="enter address or place" title="address or place" />
 
                         <input type="submit" data-role="button" data-mini="true" data-inline="true" data-icon="search" value="Find" />
                         <span id="locateMsg"></span>
@@ -206,7 +207,7 @@ a.mdMeta {
             <!-- share panel -->
             <div id="panelShare" class="popupPanel" data-role="popup" data-corners="false" data-shadow="false">
                 <div data-role="header" data-theme="c">
-                    <h3>Share</h3>
+                    <h3 class="i18n">Share</h3>
                     <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
                 </div>
 
@@ -217,7 +218,7 @@ a.mdMeta {
                     <div class="ui-grid-a">
                         <div class="ui-block-a">
                             <!-- permalink -->
-                            <a data-role="button" id="permalink" href="#" data-ajax="false" href="" data-mini="true" data-icon="link">Permalink</a>
+                            <a data-role="button" id="permalink" href="#" data-ajax="false" href="#" data-mini="true" data-icon="link">Permalink</a>
 
                             <!-- social links -->
                             <span id="socialLinks"></span>

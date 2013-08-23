@@ -16,7 +16,7 @@ Proj4js.defs["EPSG:3857"] = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0
 // application hardcoded configuration
 var hardConfig = {
     // viewer title, may be overriden with &title=text
-    title: "geOrchestra sviewer",
+    title: Ol.i18n("geOrchestra mobile"),
 
     // geOrchestra URL &layers=layernames and advanced viewer
     geOrchestraURL: "http://geobretagne.fr/",
@@ -145,6 +145,7 @@ function init() {
 
 
 
+
     // defaultConfig may be overriden with querystring
     var defaultConfig = {
         title: hardConfig.title,
@@ -160,8 +161,6 @@ function init() {
     Ol.Util.applyDefaults(config, Ol.Util.getParameters("/" + window.location.search, { splitArgs: false }));
     Ol.Util.applyDefaults(config, Ol.Util.getParameters("/?" + window.location.hash.substring(1),  { splitArgs: false }));
     Ol.Util.applyDefaults(config, defaultConfig);
-
-    console.log(config);
 
     // document title handling
     document.title = config.title;
@@ -216,6 +215,29 @@ function init() {
      */
     function escHTML (s) {
         return $('<p/>').text(s).html();
+    };
+
+
+    /**
+     * Method: translateDOM
+     * translate DOM elements
+     *
+     * Parameters:
+     * selector {String} jQuery selector
+     * property {String} property to translate.
+     * If null or empty, text content will be translated.
+     */
+    function translateDOM(selector, property) {
+        if (!property) {
+            $.each($(selector), function(i,e) {
+                $(e).text(Ol.i18n($(e).text()));
+            });
+        }
+        else {
+            $.each($(selector), function(i,e) {
+                $(e).prop(property, Ol.i18n($(e).prop(property)));
+            })
+        };
     };
 
     /**
@@ -605,23 +627,23 @@ function init() {
                         $("#frameLocate").popup("close");
                     }
                     else {
-                        $("#locateMsg").text("All results are off map");
+                        $("#locateMsg").text(Ol.i18n("Results are off map"));
                         $.mobile.loading('hide');
                     }
                 }
                 else {
-                    $("#locateMsg").text("No result");
+                    $("#locateMsg").text(Ol.i18n("No result"));
                     $.mobile.loading('hide');
                 }
             } catch(err) {
-                $("#locateMsg").text("Geolocation failed");
+                $("#locateMsg").text(Ol.i18n("Geolocation failed"));
                 $.mobile.loading('hide');
                 console.log(err);
             }
         }
 
         function onOpenLSFailure (response) {
-            $("#locateMsg").text("Geolocation failed");
+            $("#locateMsg").text(Ol.i18n("Geolocation failed"));
                 $.mobile.loading('hide');
         }
 
@@ -883,7 +905,7 @@ function init() {
     $("#addressForm").on('submit', function(e) {
         try {
             $.mobile.loading('show', {
-                text: "searching"
+                text: Ol.i18n("searching...")
             });
             markGeoloc.clearMarkers();
             openLsRequest($("#addressInput").val());
@@ -911,4 +933,13 @@ function init() {
     $(".popupPanel").bind("popupbeforeposition popupafteropen", popupLayout);
     $(window).bind("orientationchange resize pageshow", popupLayout);
     $.each($(".popupPanel"), popupLayout);
+
+
+    // page translation
+    translateDOM('.i18n','');
+    translateDOM('span.ui-btn-text','');
+    translateDOM('a[data-role=button]','title');
+    translateDOM('input[data-role=button]','value');
+    translateDOM('input','placeholder');
+
 }

@@ -11,7 +11,7 @@ sViewer (simple Viewer) is a very simple web map viewer based on the OpenLayers 
 * export to the geOrchestra advanced viewer
 * easy to embed in a webpage through href
 * should work on small (phone), medium (tablet) and large (desktop) displays
-* i18n (TODO)
+* i18n support
 * geolocation and tracking (TODO)
 
 sViewer has two objectives : it's a code sample to build more advanced or specific apps, and it's a standalone application to be used as a service or installed locally. It was designed to work within the geOrchestra IDS, but it also may work with any OGC-enabled IDS with minimal changes. There's a user tutorial here : http://cms.geobretagne.fr/content/visualiseur-simple-g%C3%A9obretagne
@@ -116,7 +116,6 @@ TODO
 
 First item, highest priority
 
-* i18n
 * accessibility check
 * check the genericity of the openLS helper
 * GPS geocoding, tracking, events based on feature proximity
