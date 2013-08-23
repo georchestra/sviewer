@@ -16,12 +16,10 @@ Proj4js.defs["EPSG:3857"] = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0
 // application hardcoded configuration
 var hardConfig = {
     // viewer title, may be overriden with &title=text
-    title: "geOrchestra simple viewer",
+    title: "geOrchestra sviewer",
 
     // geOrchestra URL &layers=layernames and advanced viewer
     geOrchestraURL: "http://geobretagne.fr/",
-    wms: "http://geobretagne.fr/geoserver/ows",
-    geoserver: "http://geobretagne.fr/geoserver",
 
     // initial extent and zoom, may be overriden with &x=lon&y=lat&z=zoom
     initialExtent: new Ol.Bounds(-365446,6142287,-365446,6142287),
@@ -396,7 +394,6 @@ function init() {
                         "layer": mdLayer.name,
                         "style": layerstyle
                     };
-                    console.log(mdLayer);
                     // title
                     html = "<p><h3 class='mdTitle'>" +
                         escHTML(mdLayer.title);
@@ -845,45 +842,45 @@ function init() {
 
 
     // disables kbd map navigation when using text inputs
-    $("input").focus(function() {
+    $("input").focus(function(e) {
         keyboardNav.deactivate();
         return false;
     });
-    $("input").blur(function() {
+    $("input").blur(function(e) {
         keyboardNav.activate();
         return false;
     });
 
     // map buttons
-    $("#ziBt").click(function() {
+    $("#ziBt").click(function(e) {
         map.zoomIn();
     });
-    $("#zoBt").click(function() {
+    $("#zoBt").click(function(e) {
         map.zoomOut();
     });
-    $("#zeBt").click(function() {
+    $("#zeBt").click(function(e) {
         map.zoomToExtent(hardConfig.initialExtent);
         map.zoomTo(hardConfig.zinit);
     });
     $("#bgBt").click(switchBackground);
 
     // set title dialog
-    $("#setTitle").keypress(function() {
+    $("#setTitle").keypress(function(e) {
         config.title = $("#setTitle").val();
         document.title = config.title;
         $('#title').text(config.title);
     });
-    $("#setTitle").blur(function() {
+    $("#setTitle").blur(function(e) {
         setPermalink();
     });
 
     // sendto form
-    $("#georchestraForm").submit(function() {
+    $("#georchestraForm").submit(function(e) {
         sendMapTo("georchestra_viewer");
     });
 
     // geolocation
-    $("#addressForm").on('submit', function() {
+    $("#addressForm").on('submit', function(e) {
         try {
             $.mobile.loading('show', {
                 text: "searching"
@@ -899,8 +896,19 @@ function init() {
 
     // permalinks
     $("#panelShare").bind({
-        popupafteropen: function() { setPermalink(); }
+        popupafteropen: function(e) {
+            setPermalink();
+        }
     });
 
-
+    // popup size and placement to fit small screens
+    function popupLayout (e) {
+        var popup = $(this);
+        popup.css('top', $('#header').outerHeight()-29);
+        popup.css('max-width', Math.min($(window).width() - 44, 600) + 'px');
+        popup.css('max-height', $(window).height() - 60 + 'px');
+    };
+    $(".popupPanel").bind("popupbeforeposition popupafteropen", popupLayout);
+    $(window).bind("orientationchange resize pageshow", popupLayout);
+    $.each($(".popupPanel"), popupLayout);
 }

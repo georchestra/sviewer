@@ -1,10 +1,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr">
     <!--
-geOrchestra simple viewer
+geOrchestra sviewer
     -->
     <head>
-        <title>Visualiseur mobile geOrchestra</title>
+        <title>geOrchestra sviewer</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=100" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
@@ -42,6 +42,10 @@ body {
     font-size: 0.8em;
 }
 
+#header {
+    text-align: left !important;
+}
+
 #frameMap {
     padding: 0px;
 }
@@ -51,8 +55,9 @@ body {
 }
 #mapcontrols {
     position: absolute;
-    top: 50px;
+    top: 46px;
     left: 10px;
+    width: 32px;
     z-index: 8000;
 }
 
@@ -87,17 +92,16 @@ a.mdMeta {
 
 /* panels placement */
 .popupPanel {
-    max-width: 350px;
     border: 1px solid #333;
     border-bottom: none;
     background: rgba(255,255,255,1);
     margin: -1px 0;
     z-index:8010 !important;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 #panelLegend-popup,#panelFind-popup,#panelShare-popup {
-    top: 50px !important;
-    right: 5px !important;
+    top: 30px !important;
+    right: 0px !important;
     left: auto !important;
 }
 #panelLegend-screen, #panelFind-screen, #panelShare-screen {
@@ -157,19 +161,19 @@ a.mdMeta {
                 <!-- map -->
                 <div id="map"></div>
                 <!-- map controls -->
-                <div data-role="controlgroup" data-type="horizontal" data-mini="true"  id="mapcontrols">
-                    <a id="zeBt" href="#" data-role="button" data-iconpos="notext" data-icon="home">initial view</a>
-                    <a id="ziBt" href="#" data-role="button" data-iconpos="notext" data-icon="plus">zoom +</a>
-                    <a id="zoBt" href="#" data-role="button" data-iconpos="notext" data-icon="minus">zoom -</a>
-                    <a id="bgBt" href="#" data-role="button" data-iconpos="notext" data-icon="grid">background map</a>
+                <div id="mapcontrols">
+                    <a id="zeBt" href="#" data-role="button" data-iconpos="notext" data-icon="home" data-theme="b">initial view</a>
+                    <a id="ziBt" href="#" data-role="button" data-iconpos="notext" data-icon="plus" data-theme="b">zoom +</a>
+                    <a id="zoBt" href="#" data-role="button" data-iconpos="notext" data-icon="minus" data-theme="b">zoom -</a>
+                    <a id="bgBt" href="#" data-role="button" data-iconpos="notext" data-icon="grid" data-theme="b">background map</a>
                 </div>
             </div>
 
             <!-- legend panel -->
-            <div id="panelLegend" class="popupPanel" data-role="popup" data-tolerance="0,0,0,180">
-                <div data-role="header" data-theme="b">
+            <div id="panelLegend" class="popupPanel" data-role="popup" data-corners="false" data-shadow="false">
+                <div data-role="header" data-theme="c">
                     <h3>Legend</h3>
-                    <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
+                    <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
                 </div>
                 <div data-role="content">
                     <div id="legend"></div>
@@ -178,10 +182,10 @@ a.mdMeta {
             </div>
 
             <!-- find panel -->
-            <div id="panelFind" class="popupPanel" data-role="popup" data-tolerance="0,0,0,180">
-                <div data-role="header" data-theme="b">
+            <div id="panelFind" class="popupPanel" data-role="popup" data-corners="false" data-shadow="false">
+                <div data-role="header" data-theme="c">
                     <h3>Find</h3>
-                    <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
+                    <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
                 </div>
                 <div data-role="content">
                     <form id="addressForm" method="POST" action="#">
@@ -200,10 +204,10 @@ a.mdMeta {
             </div>
 
             <!-- share panel -->
-            <div id="panelShare" class="popupPanel" data-role="popup" data-tolerance="0,0,0,180">
-                <div data-role="header" data-theme="b">
+            <div id="panelShare" class="popupPanel" data-role="popup" data-corners="false" data-shadow="false">
+                <div data-role="header" data-theme="c">
                     <h3>Share</h3>
-                    <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
+                    <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
                 </div>
 
                 <div data-role="content">
