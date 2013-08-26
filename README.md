@@ -1,3 +1,13 @@
+Quick configuration
+===================
+
+1. Copy js/custom.DIST.js into js/custom.js
+2. Edit js/custom.js to fit your needs
+3. Upload the source tree to your web server
+
+
+
+
 sViewer
 =======
 

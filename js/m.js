@@ -1,5 +1,5 @@
 /***********************************************************************************************
- * configuration
+ * sviewer
  */
 
 // libraries configuration
@@ -13,19 +13,16 @@ Proj4js.defs["EPSG:3857"] = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0
 
 
 
-// application hardcoded configuration
+/**
+ * application hardcoded configuration.
+ * You'd better not edit this,
+ * put your local configuration in js/config.js instead.
+ */
 var hardConfig = {
-    // viewer title, may be overriden with &title=text
     title: Ol.i18n("geOrchestra mobile"),
-
-    // geOrchestra URL &layers=layernames and advanced viewer
     geOrchestraURL: "http://geobretagne.fr/",
-
-    // initial extent and zoom, may be overriden with &x=lon&y=lat&z=zoom
     initialExtent: new Ol.Bounds(-365446,6142287,-365446,6142287),
     zinit: 9,
-
-    // must match the TMS grid&scale if any
     maxExtent: new Ol.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
     maxResolution: 156543.0339,
     numZoomLevels: 21,
@@ -52,55 +49,14 @@ var hardConfig = {
         0.25,
         0.1
     ],
-
-    // map center restricted in this extent
     restrictedExtent: new Ol.Bounds(-700000,5700000,100000,6500000),
-
-    // map projection
     projMap: new Ol.Projection('EPSG:3857'),
-
-    // permalink and kml projection
     projDisplay: new Ol.Projection('EPSG:4326'),
-
-    // maximum features retrieved on getFeatureInfo
     maxFeatures: 3,
-
-    // string matching empty gfi response, use this in your template header and footer
     nodata: '<!--nodatadetect-->\n<!--nodatadetect-->',
-
-    // openLS geocoding service
     openLSGeocodeUrl: "http://geobretagne.fr/openls?",
     openLSMaxResponses: 4,
-
-    // array of background (opaque) map layers. Only one shall be visible on startup.
-    // The user can switch layers with a button.
     layersBackground: [
-        new Ol.Layer.WMS(
-            "Aerial photography",
-            "http://a.tile.geobretagne.fr/gwc02/service/wms",
-            { layers: 'satellite', format: 'image/jpeg', transparent: false },
-            {
-                attribution: "Photographie aérienne partenaires GéoBretagne/IGN RGE/PlanetObserver",
-                tileSize: new Ol.Size(256,256),
-                transitionEffect: "resize",
-                visibility: true
-            }
-        ),
-        new Ol.Layer.WMS(
-            "OpenStreetMap simple",
-            [
-                "http://a.osm.geobretagne.fr/gwc01/service/wms",
-                "http://b.osm.geobretagne.fr/gwc01/service/wms",
-                "http://c.osm.geobretagne.fr/gwc01/service/wms"
-            ],
-            { layers: 'imposm:default', format: 'image/png', transparent: false },
-            {
-                attribution: "Fond cartographique <a href='http://www.openstreetmap.org/'>OpenStreetMap CC-by-SA</a>",
-                tileSize: new Ol.Size(256,256),
-                transitionEffect: "resize",
-                visibility: false
-            }
-        ),
         new OpenLayers.Layer.XYZ(
             "OpenStreetMap MapQuest",
             [
@@ -115,15 +71,8 @@ var hardConfig = {
             }
         )
     ],
-
-
-    // array of overlay layers. They are always visible.
     layersOverlay: [],
-
-    // CQL filter applied to the overlay layers
     CQL_FILTER: null,
-
-    // social media links
     socialMedia: {
         "Twitter" : "https://twitter.com/intent/tweet?text=",
         "Google+" : "https://plus.google.com/share?url=",
@@ -131,13 +80,7 @@ var hardConfig = {
     }
 };
 
-//~ hardConfig.layersBackground = hardConfig.layersBackground.concat([]);
 
-
-/**
- * end configuration
- ***********************************************************************************************
- */
 
 var map;
 
@@ -145,23 +88,26 @@ var map;
 function init() {
     "use strict";
 
+    // config holds the viewer final configuration.
+    var config = {};
 
+    // customConfig in js/config.js holds the viewer static configuration.
+    // Default values are hardcoded in hardConfig.
+    Ol.Util.applyDefaults(customConfig, hardConfig);
 
-
-    // defaultConfig may be overriden with querystring
+    // defaultConfig is being overriden by querystring ...
     var defaultConfig = {
-        title: hardConfig.title,
-        CQL_FILTER: hardConfig.CQL_FILTER,
+        title: customConfig.title,
+        CQL_FILTER: customConfig.CQL_FILTER,
         layernames: [],
         stylenames: [],
         onlineresources: [],
         querylayers: []
     };
-
-    // config = defaultConfig + querystring + hashstring
-    var config = {};
     Ol.Util.applyDefaults(config, Ol.Util.getParameters("/" + window.location.search, { splitArgs: false }));
     Ol.Util.applyDefaults(config, Ol.Util.getParameters("/?" + window.location.hash.substring(1),  { splitArgs: false }));
+
+    // ... then applied to config
     Ol.Util.applyDefaults(config, defaultConfig);
 
     // document title handling
@@ -172,12 +118,12 @@ function init() {
     // map creation
     map = new Ol.Map('map', {
         allOverlays: true,
-        projection: hardConfig.projMap,
-        displayProjection: hardConfig.projDisplay,
-        maxExtent: hardConfig.maxExtent,
-        restrictedExtent: hardConfig.restrictedExtent,
-        maxResolution: hardConfig.maxResolution,
-        numZoomLevels: hardConfig.numZoomLevels,
+        projection: customConfig.projMap,
+        displayProjection: customConfig.projDisplay,
+        maxExtent: customConfig.maxExtent,
+        restrictedExtent: customConfig.restrictedExtent,
+        maxResolution: customConfig.maxResolution,
+        numZoomLevels: customConfig.numZoomLevels,
         units: "m",
         controls: [
             new Ol.Control.Navigation({
@@ -258,9 +204,9 @@ function init() {
         dic.style = (s.indexOf("*")>0) ? s.split('*',2)[1]:'';
         dic.ns = (dic.ns_name.indexOf(":")>0) ? s.split(':',2)[0]:'';
         dic.name = (dic.ns_name.indexOf(":")>0) ? s.split(':',2)[1]:'';
-        dic.wms_global = hardConfig.georchestraURL + "/geoserver/wms"
-        dic.wms_ns = hardConfig.geOrchestraURL + "/geoserver/" + dic.ns + "/wms";
-        dic.wms_layer = hardConfig.geOrchestraURL + "/geoserver/" + dic.ns + "/" + dic.name + "/wms";
+        dic.wms_global = customConfig.georchestraURL + "/geoserver/wms"
+        dic.wms_ns = customConfig.geOrchestraURL + "/geoserver/" + dic.ns + "/wms";
+        dic.wms_layer = customConfig.geOrchestraURL + "/geoserver/" + dic.ns + "/" + dic.name + "/wms";
         return dic;
     }
 
@@ -274,18 +220,18 @@ function init() {
      * {OpenLayers.Layer.Layer} the active background layer
      */
     function switchBackground () {
-        var n = hardConfig.layersBackground.length;
+        var n = customConfig.layersBackground.length;
         var lv = 0;
-        $.each(hardConfig.layersBackground, function(i, layer) {
+        $.each(customConfig.layersBackground, function(i, layer) {
             if (layer.getVisibility()) {
                 lv = i;
             }
             layer.setVisibility(false);
         });
         config.lb = (lv+1)%n;
-        hardConfig.layersBackground[config.lb].setVisibility(true);
+        customConfig.layersBackground[config.lb].setVisibility(true);
         setPermalink();
-        return hardConfig.layersBackground[config.lb];
+        return customConfig.layersBackground[config.lb];
     }
 
 
@@ -349,11 +295,11 @@ function init() {
             handlerOptions: {
                 "hover": { delay: 500 }
             },
-            maxFeatures: hardConfig.maxFeatures,
+            maxFeatures: customConfig.maxFeatures,
             layers: [layer_wms],
             eventListeners: {
                 "getfeatureinfo": function(e) {
-                    if (e.text.search(hardConfig.nodata)<0) {
+                    if (e.text.search(customConfig.nodata)<0) {
                         popup.destroy();
                         popup = new Ol.Popup.FramedCloud(
                             "wmsPopup",
@@ -523,7 +469,7 @@ function init() {
             config.title,
             {
                 strategies: [new Ol.Strategy.Fixed()],
-                projection: hardConfig.projDisplay,
+                projection: customConfig.projDisplay,
                 protocol: new Ol.Protocol.HTTP({
                     url: onlineresource,
                     format: new Ol.Format.KML({
@@ -612,7 +558,7 @@ function init() {
                 if (results.length>0) {
                     var position = format.getElementsByTagNameNS(results[0],"*","pos")[0];
                     var loc = (position.textContent) ? position.textContent.split(" ") : position.nodeTypedValue.split(" ");
-                    var ptResult = new Ol.LonLat(loc[1], loc[0]).transform(new Ol.Projection("EPSG:4326"), hardConfig.projMap);
+                    var ptResult = new Ol.LonLat(loc[1], loc[0]).transform(new Ol.Projection("EPSG:4326"), customConfig.projMap);
                     console.log(ptResult);
                     var matchType = results[0].getElementsByTagName("GeocodeMatchCode")[0].getAttribute("matchType");
                     switch (matchType) {
@@ -623,7 +569,7 @@ function init() {
                     }
 
                     // map move and zoom
-                    if (hardConfig.restrictedExtent.containsLonLat(ptResult)) {
+                    if (customConfig.restrictedExtent.containsLonLat(ptResult)) {
                         map.setCenter(ptResult, zoom);
                         markGeoloc.addMarker(new Ol.Marker(ptResult));
                         $("#locateMsg").text("");
@@ -674,7 +620,7 @@ function init() {
                 Ol.Request.issue({
                     method: 'POST',
                     headers: { "Content-Type": "application/xml" },
-                    url: hardConfig.openLSGeocodeUrl,
+                    url: customConfig.openLSGeocodeUrl,
                     data:[
                         '<?xml version="1.0" encoding="UTF-8"?>\n',
                         '<XLS xmlns:xls="http://www.opengis.net/xls" ',
@@ -685,7 +631,7 @@ function init() {
                         'xsi:schemaLocation="http://www.opengis.net/xls http://schemas.opengis.net/ols/1.2/olsAll.xsd">\n',
                         '<RequestHeader/>\n',
                         '<Request maximumResponses="',
-                        hardConfig.openLSMaxResponses,
+                        customConfig.openLSMaxResponses,
                         '" requestID="1" version="1.2" methodName="LocationUtilityService">\n',
                         '<GeocodeRequest returnFreeForm="false">\n',
                         '<Address countryCode="',
@@ -737,7 +683,7 @@ function init() {
         // permalink, social links & QR code update only if frame is visible
         if ($('#panelShare').css('display')==='block') {
             $('#socialLinks').empty();
-            $.each(hardConfig.socialMedia, function(name, socialUrl) {
+            $.each(customConfig.socialMedia, function(name, socialUrl) {
                 $('#socialLinks').append('<a data-role="button" class="socialBtn" target="_blank" href="' +
                     socialUrl +
                     encodeURIComponent(permalinkQuery) +
@@ -804,20 +750,20 @@ function init() {
 
 
     // background layers (opaque, non queryable, one at a time)
-    if (config.lb && config.lb<hardConfig.layersBackground.length) {
-        $.each(hardConfig.layersBackground, function(i,l) {
+    if (config.lb && config.lb<customConfig.layersBackground.length) {
+        $.each(customConfig.layersBackground, function(i,l) {
             l.setVisibility(false);}
         );
-        hardConfig.layersBackground[parseInt(config.lb, 10)].setVisibility(true);
+        customConfig.layersBackground[parseInt(config.lb, 10)].setVisibility(true);
     } else {
-        hardConfig.layersBackground[0].setVisibility(true);
+        customConfig.layersBackground[0].setVisibility(true);
         config.lb = 0;
     }
-    map.addLayers(hardConfig.layersBackground);
+    map.addLayers(customConfig.layersBackground);
 
     // overlays (non-queryable) layers
-    if (hardConfig.hasOwnProperty("layersOverlay")) {
-        map.addLayers(hardConfig.layersOverlay);
+    if (customConfig.hasOwnProperty("layersOverlay")) {
+        map.addLayers(customConfig.layersOverlay);
     }
 
     // WMC layers
@@ -838,7 +784,7 @@ function init() {
             getWMSLegend(p.wms_layer, p.name, p.style);
         });
         // we want grouped getMap, using the global service for getMaps & getFeatureInfo
-        addQueryLayer(hardConfig.geOrchestraURL + "/geoserver/ows", config.layernames, config.stylenames, config.CQL_FILTER);
+        addQueryLayer(customConfig.geOrchestraURL + "/geoserver/ows", config.layernames, config.stylenames, config.CQL_FILTER);
     }
 
     // KML layer
@@ -857,8 +803,8 @@ function init() {
 
     // reading map initial extent &x=&y=&z=
     if (!map.getCenter()) {
-        var center = hardConfig.initialExtent.getCenterLonLat();
-        var zoom = hardConfig.zinit;
+        var center = customConfig.initialExtent.getCenterLonLat();
+        var zoom = customConfig.zinit;
         Ol.Util.applyDefaults(config, {x:center.lon, y:center.lat, z:zoom});
         map.setCenter(new Ol.LonLat(config.x, config.y), config.z);
     }
@@ -892,8 +838,8 @@ function init() {
         map.zoomOut();
     });
     $("#zeBt").click(function(e) {
-        map.zoomToExtent(hardConfig.initialExtent);
-        map.zoomTo(hardConfig.zinit);
+        map.zoomToExtent(customConfig.initialExtent);
+        map.zoomTo(customConfig.zinit);
     });
     $("#bgBt").click(switchBackground);
 
