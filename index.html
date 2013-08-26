@@ -12,6 +12,9 @@ geOrchestra sviewer
 
         <!-- external libraries -->
         <script type="text/javascript" src="lib/jquery/jquery-1.10.2.min.js"></script>
+        <script type="text/javascript" src="lib/qrcode.js/qrcode.min.js"></script>
+
+        <!-- jquery mobile -->
         <script type="text/javascript">
             $(document).bind("mobileinit", function(){
                 $.mobile.hashListeningEnabled = false;
@@ -24,6 +27,8 @@ geOrchestra sviewer
         <link rel="stylesheet" href="lib/jquery/jquery.mobile-1.3.2.min.css" />
         <script src="lib/jquery/jquery.mobile-1.3.2.min.js"></script>
         <link rel="stylesheet" href="css/jqm-icon-pack-2.0-original.css"></script>
+
+        <!-- geo -->
         <script type="text/javascript" src="lib/openlayers/OpenLayers.js"></script>
         <script type="text/javascript" src="lib/proj4js/proj4js-compressed.js"></script>
         <script type="text/javascript" src="lib/LoadingPanel.js"></script>
@@ -93,15 +98,14 @@ a.mdMeta {
 
 /* panels placement */
 .popupPanel {
-    border: 1px solid #333;
-    border-bottom: none;
+    border-width: 0 0 1px 1px !important;
+    border-color: #666666 !important;
     background: rgba(255,255,255,1);
-    margin: -1px 0;
     z-index:8010 !important;
     overflow-y: auto;
 }
 #panelLegend-popup,#panelFind-popup,#panelShare-popup {
-    top: 30px !important;
+    top: 29px !important;
     right: 0px !important;
     left: auto !important;
 }
@@ -111,10 +115,9 @@ a.mdMeta {
 
 
 #qrcode {
-    display: block;
-    margin: 0 auto;
-    width: 160px;
-    height: 160px;
+    margin: 4px;
+    width: 168px;
+    height: 168px;
 }
 
         </style>
@@ -166,7 +169,7 @@ a.mdMeta {
                     <a id="zeBt" href="#" data-role="button" data-iconpos="notext" data-icon="home" data-theme="b">initial view</a>
                     <a id="ziBt" href="#" data-role="button" data-iconpos="notext" data-icon="plus" data-theme="b">zoom +</a>
                     <a id="zoBt" href="#" data-role="button" data-iconpos="notext" data-icon="minus" data-theme="b">zoom -</a>
-                    <a id="bgBt" href="#" data-role="button" data-iconpos="notext" data-icon="grid" data-theme="b">background map</a>
+                    <a id="bgBt" href="#" data-role="button" data-iconpos="notext" data-icon="arrow-r" data-theme="b">background map</a>
                 </div>
             </div>
 
@@ -174,7 +177,7 @@ a.mdMeta {
             <div id="panelLegend" class="popupPanel" data-role="popup" data-corners="false" data-shadow="false">
                 <div data-role="header" data-theme="c">
                     <h3 class="i18n">Legend</h3>
-                    <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
+                    <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-right" data-shadow="false">Close</a>
                 </div>
                 <div data-role="content">
                     <div id="legend"></div>
@@ -195,11 +198,12 @@ a.mdMeta {
 
                         <input type="submit" data-role="button" data-mini="true" data-inline="true" data-icon="search" value="Find" />
                         <span id="locateMsg"></span>
-
+<!-- still not active
                         <div data-role="controlgroup" data-type="horizontal">
                             <input type="button" data-role="button" data-mini="true" data-icon="mappin" value="Where am I ?" />
                             <input type="button" data-role="button" data-mini="true" data-icon="direction" value="Track my pos" />
                         </div>
+-->
                     </form>
                 </div>
             </div>
@@ -232,7 +236,8 @@ a.mdMeta {
 
                         <!-- QQR code -->
                         <div class="ui-block-b">
-                            <img id="qrcode" src="" />
+                            <!--<img id="qrcode" src="" />-->
+                            <div id="qrcode"></div>
                         </div>
                     </div>
                 </div>

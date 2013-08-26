@@ -748,9 +748,14 @@ function init() {
                 icon: "link"
             });
             if ($('#qrcode').css("visibility")=="visible") {
-            $('#qrcode').prop('src','http://chart.apis.google.com/chart?cht=qr&chs=160x160&chld=L&chl=' +
-                encodeURIComponent(permalinkQuery));
-            }
+                $('#qrcode').empty();
+                new QRCode("qrcode", {
+                    text: permalinkQuery,
+                    width: 160,
+                    height: 160,
+                    correctLevel: QRCode.CorrectLevel.L
+                })
+            };
             $('#permalink').prop('href',permalinkQuery);
             $('#embedcode').text('<iframe style="width: 600px; height: 400px;" src="' +
             permalinkQuery +
@@ -931,7 +936,7 @@ function init() {
         var popup = $(this);
         popup.css('top', $('#header').outerHeight()-29);
         popup.css('max-width', Math.min($(window).width() - 44, 600) + 'px');
-        popup.css('max-height', $(window).height() - 60 + 'px');
+        popup.css('max-height', $(window).height() - 44 + 'px');
     };
     $(".popupPanel").bind("popupbeforeposition popupafteropen", popupLayout);
     $(window).bind("orientationchange resize pageshow", popupLayout);
