@@ -115,11 +115,6 @@ var customConfig = {
     //~ openLSGeocodeUrl: "http://geobretagne.fr/openls?",
 
     /**
-     * constant : openLSMaxResponses
-     */
-    //~ openLSMaxResponses: 4,
-
-    /**
      * constant : layersBackground
      * array of OpenLayers backgrounds. Only one displayed at a time.
      * non queryable.

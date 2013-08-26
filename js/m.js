@@ -354,7 +354,7 @@ function init() {
                     }
                 });
                 if (mdLayer) {
-                    mdLayer = capabilities.capability.layers[0];
+                    console.log(mdLayer);
                     legendArgs = {
                         "service" : "WMS",
                         "version" : capabilities.version,
@@ -369,40 +369,47 @@ function init() {
 
                     // attribution
                     if (mdLayer.attribution) {
-                        html = html +
-                            "&nbsp;(<a target='_blank'class='mdAttrib' href='" +
-                            mdLayer.attribution.href +
-                            "'>" +
-                            escHTML(mdLayer.attribution.title) +
-                            "</a>)";
+                        if (mdLayer.attribution.logo) {
+                            html += "&nbsp;(<a target='_blank'class='mdAttrib' href='";
+                            html += mdLayer.attribution.href;
+                            html += "'>";
+                            html += "<img class='mdLogo'src='";
+                            html += mdLayer.attribution.logo.href;
+                            html += "'< /></a>)";
+                        }
+                        else {
+                            html += "&nbsp;(<a target='_blank'class='mdAttrib' href='";
+                            html += mdLayer.attribution.href;
+                            html += "'>";
+                            html += escHTML(mdLayer.attribution.title);
+                            html += "</a>)";
+                        }
                     };
-                    html = html + "</h3>";
+                    html += "</h3>";
 
                     // abstract
-                    html = html +
-                        "<p class='mdAbstract'>" +
-                        escHTML(mdLayer.abstract);
+                    html += "<p class='mdAbstract'>";
+                    html += escHTML(mdLayer.abstract);
 
                     // metadata
                     if (mdLayer.metadataURLs) {
                         $.each(mdLayer.metadataURLs, function(i,md) {
                             if (md.format === "text/html") {
-                                html = html +
-                                "&nbsp;<a target='_blank'class='mdMeta' href='" +
-                                md.href +
-                                "'>" +
-                                "[+]</a>";
+                                html += "&nbsp;<a target='_blank'class='mdMeta' href='";
+                                html += md.href;
+                                html += "'>";
+                                html += "[+]</a>";
                             };
                         });
                     };
-                    html = html + "</p>";
+                    html += "</p>";
 
                     // legend
-                    html = html + "<img class='mdLegend' src='" +
-                        Ol.Util.urlAppend(capabilities.service.href, Ol.Util.getParameterString(legendArgs)) +
-                        "' />";
+                    html += "<img class='mdLegend' src='";
+                    html += Ol.Util.urlAppend(capabilities.service.href, Ol.Util.getParameterString(legendArgs));
+                    html += "' />";
 
-                    html = html + "<hr />";
+                    html += "<hr />";
 
                     $("#legend").append(html);
                 }
@@ -734,7 +741,6 @@ function init() {
                 };
             });
             $("#georchestraFormData").val(JSON.stringify(params));
-            console.log(params);
             return true;
         }
     };
