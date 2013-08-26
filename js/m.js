@@ -797,6 +797,9 @@ function init() {
 
     // background layers (opaque, non queryable, one at a time)
     if (config.lb && config.lb<hardConfig.layersBackground.length) {
+        $.each(hardConfig.layersBackground, function(i,l) {
+            l.setVisibility(false);}
+        );
         hardConfig.layersBackground[parseInt(config.lb, 10)].setVisibility(true);
     } else {
         hardConfig.layersBackground[0].setVisibility(true);
