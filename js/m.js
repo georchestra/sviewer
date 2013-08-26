@@ -72,7 +72,6 @@ var hardConfig = {
         )
     ],
     layersOverlay: [],
-    CQL_FILTER: null,
     socialMedia: {
         "Twitter" : "https://twitter.com/intent/tweet?text=",
         "Google+" : "https://plus.google.com/share?url=",
@@ -98,7 +97,7 @@ function init() {
     // defaultConfig is being overriden by querystring ...
     var defaultConfig = {
         title: customConfig.title,
-        CQL_FILTER: customConfig.CQL_FILTER,
+        cql_filter: "",
         layernames: [],
         stylenames: [],
         onlineresources: [],
@@ -202,8 +201,8 @@ function init() {
         var dic = {};
         dic.ns_name = s.split('*')[0];
         dic.style = (s.indexOf("*")>0) ? s.split('*',2)[1]:'';
-        dic.ns = (dic.ns_name.indexOf(":")>0) ? s.split(':',2)[0]:'';
-        dic.name = (dic.ns_name.indexOf(":")>0) ? s.split(':',2)[1]:'';
+        dic.ns = (dic.ns_name.indexOf(":")>0) ? dic.ns_name.split(':',2)[0]:'';
+        dic.name = (dic.ns_name.indexOf(":")>0) ? dic.ns_name.split(':',2)[1]:'';
         dic.wms_global = customConfig.georchestraURL + "/geoserver/wms"
         dic.wms_ns = customConfig.geOrchestraURL + "/geoserver/" + dic.ns + "/wms";
         dic.wms_layer = customConfig.geOrchestraURL + "/geoserver/" + dic.ns + "/" + dic.name + "/wms";
@@ -249,7 +248,7 @@ function init() {
      * Returns:
      * {OpenLayers.Layer.WMS} the added Ol WMS layer
      */
-    function addQueryLayer (onlineresource, layernames, layerstyles, cql) {
+    function addQueryLayer (onlineresource, layernames, layerstyles, cql_filter) {
 
         var popup, layer_wms, getFeatureInfo;
 
@@ -278,9 +277,9 @@ function init() {
         });
 
         // optional CQL filter
-        if (cql) {
+        if (cql_filter) {
             layer_wms.mergeNewParams({
-                "CQL_FILTER": cql
+                "CQL_FILTER": cql_filter
             });
         }
 
@@ -559,7 +558,6 @@ function init() {
                     var position = format.getElementsByTagNameNS(results[0],"*","pos")[0];
                     var loc = (position.textContent) ? position.textContent.split(" ") : position.nodeTypedValue.split(" ");
                     var ptResult = new Ol.LonLat(loc[1], loc[0]).transform(new Ol.Projection("EPSG:4326"), customConfig.projMap);
-                    console.log(ptResult);
                     var matchType = results[0].getElementsByTagName("GeocodeMatchCode")[0].getAttribute("matchType");
                     switch (matchType) {
                         case "City": zoom = 15; break;
@@ -673,7 +671,7 @@ function init() {
         if (config.kml) { linkParams.kml = config.kml; }
         if (config.layers) { linkParams.layers = config.layers; }
         if (config.title) { linkParams.title = config.title; }
-        if (config.CQL_FILTER) { linkParams.CQL_FILTER = config.CQL_FILTER; }
+        if (config.cql_filter) { linkParams.cql = config.cql_filter; }
         if (config.wmc) { linkParams.wmc = config.wmc; }
 
 
@@ -784,7 +782,7 @@ function init() {
             getWMSLegend(p.wms_layer, p.name, p.style);
         });
         // we want grouped getMap, using the global service for getMaps & getFeatureInfo
-        addQueryLayer(customConfig.geOrchestraURL + "/geoserver/ows", config.layernames, config.stylenames, config.CQL_FILTER);
+        addQueryLayer(customConfig.geOrchestraURL + "/geoserver/ows", config.layernames, config.stylenames, config.cql_filter);
     }
 
     // KML layer
