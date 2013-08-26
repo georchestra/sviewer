@@ -55,7 +55,6 @@ var hardConfig = {
     maxFeatures: 3,
     nodata: '<!--nodatadetect-->\n<!--nodatadetect-->',
     openLSGeocodeUrl: "http://geobretagne.fr/openls?",
-    openLSMaxResponses: 4,
     layersBackground: [
         new OpenLayers.Layer.XYZ(
             "OpenStreetMap MapQuest",
@@ -628,9 +627,7 @@ function init() {
                         'version="1.2" ',
                         'xsi:schemaLocation="http://www.opengis.net/xls http://schemas.opengis.net/ols/1.2/olsAll.xsd">\n',
                         '<RequestHeader/>\n',
-                        '<Request maximumResponses="',
-                        customConfig.openLSMaxResponses,
-                        '" requestID="1" version="1.2" methodName="LocationUtilityService">\n',
+                        '<Request maximumResponses="1" requestID="1" version="1.2" methodName="LocationUtilityService">\n',
                         '<GeocodeRequest returnFreeForm="false">\n',
                         '<Address countryCode="',
                         countryCode,
