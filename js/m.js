@@ -82,6 +82,7 @@ var hardConfig = {
             {
                 attribution: "Photographie aérienne partenaires GéoBretagne/IGN RGE/PlanetObserver",
                 tileSize: new Ol.Size(256,256),
+                transitionEffect: "resize",
                 visibility: true
             }
         ),
@@ -96,6 +97,7 @@ var hardConfig = {
             {
                 attribution: "Fond cartographique <a href='http://www.openstreetmap.org/'>OpenStreetMap CC-by-SA</a>",
                 tileSize: new Ol.Size(256,256),
+                transitionEffect: "resize",
                 visibility: false
             }
         ),
@@ -320,6 +322,7 @@ function init() {
             {
                 isBaseLayer: false,
                 singleTile: true,
+                transitionEffect: "resize",
                 ratio: 1.2
             }
         );
