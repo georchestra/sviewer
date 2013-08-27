@@ -78,12 +78,14 @@ label {
 
 /* legend layout */
 #legend a {
-    font-weight: bold;
     text-decoration: none;
 }
 #legend h3,p {
     padding: 0 0 2px 0 !important;
     margin: 0;
+}
+#legend hr {
+    clear: both;
 }
 .mdTitle {
 }
@@ -91,6 +93,15 @@ label {
     color: #555555;
 }
 .mdAttrib {
+    display: block;
+    float: right;
+    text-align: right;
+    max-width: 80px;
+    font-size: x-small;
+}
+img.mdLogo {
+    max-height: 64px;
+    max-width: 64px;
 }
 img.mdLegend {
     padding: 4px;
@@ -99,11 +110,8 @@ img.mdLegend {
 a.mdMeta {
     text-decoration: none;
 }
-img.mdLogo {
-    max-height: 64px;
-    max-width: 64px;
-    float: right;
-}
+
+
 
 /* panels placement */
 .popupPanel {

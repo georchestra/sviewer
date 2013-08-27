@@ -16,7 +16,8 @@ var sviewerStrings = {
         'Permalink': 'Lien permanent',
         'initial view': 'Vue initiale',
         'background map': 'fond de plan',
-        'enter address or place': 'entrer adresse ou lieu'
+        'enter address or place': 'entrer adresse ou lieu',
+        'metadata': 'métadonnée'
     }
 }
 OpenLayers.Util.extend(OpenLayers.Lang, sviewerStrings);

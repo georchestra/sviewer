@@ -362,28 +362,28 @@ function init() {
                         "layer": mdLayer.name,
                         "style": layerstyle
                     };
-                    // title
-                    html = "<p><h3 class='mdTitle'>" +
-                        escHTML(mdLayer.title);
+
+                    html = "";
 
                     // attribution
                     if (mdLayer.attribution) {
+                        html += "<a target='_blank'class='mdAttrib' href='";
+                        html += mdLayer.attribution.href;
+                        html += "'>";
                         if (mdLayer.attribution.logo) {
-                            html += "&nbsp;(<a target='_blank'class='mdAttrib' href='";
-                            html += mdLayer.attribution.href;
-                            html += "'>";
-                            html += "<img class='mdLogo'src='";
-                            html += mdLayer.attribution.logo.href;
-                            html += "'< /></a>)";
-                        }
-                        else {
-                            html += "&nbsp;(<a target='_blank'class='mdAttrib' href='";
-                            html += mdLayer.attribution.href;
-                            html += "'>";
+                            html += "<img class='mdLogo' title='";
                             html += escHTML(mdLayer.attribution.title);
-                            html += "</a>)";
-                        }
+                            html += "' src='";
+                            html += mdLayer.attribution.logo.href;
+                            html += "' /><br />";
+                        };
+                        html += escHTML(mdLayer.attribution.title);
+                        html += "</a>";
                     };
+
+                    // title
+                    html += "<p><h3 class='mdTitle'>" +
+                        escHTML(mdLayer.title);
                     html += "</h3>";
 
                     // abstract
@@ -397,7 +397,8 @@ function init() {
                                 html += "&nbsp;<a target='_blank'class='mdMeta' href='";
                                 html += md.href;
                                 html += "'>";
-                                html += "[+]</a>";
+                                html += Ol.i18n('metadata');
+                                html += " ... </a>";
                             };
                         });
                     };
