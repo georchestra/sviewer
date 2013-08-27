@@ -18,6 +18,24 @@ var sviewerStrings = {
         'background map': 'fond de plan',
         'enter address or place': 'entrer adresse ou lieu',
         'metadata': 'métadonnée'
+    },
+    de: {
+        'geOrchestra mobile': 'geOrchestra mobile',
+        'Results are off map': 'Ergebnisse sind außerhalb der Karte',
+        'No result': 'kein Ergebnis',
+        'Geolocation failed': 'Geolocation failed',
+        'searching...': 'suche...',
+        'Legend': 'Beschriftung',
+        'Find': 'Finden',
+        'Share': 'Teilen',
+        'Where am I ?': 'Wo bin ich ?',
+        'Track my pos': 'verfolgen meine Position',
+        'Close': 'Schließen',
+        'Permalink': 'Permalink',
+        'initial view': 'Startansicht',
+        'background map': 'Basis Karte',
+        'enter address or place': 'Adresse eingeben',
+        'metadata': 'Metadaten'
     }
 }
 OpenLayers.Util.extend(OpenLayers.Lang, sviewerStrings);
