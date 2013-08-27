@@ -1,5 +1,8 @@
-Quick configuration
-===================
+sViewer - simple viewer for geOrchestra
+=======================================
+
+Quick start
+-----------
 
 1. Copy js/custom.DIST.js into js/custom.js
 2. Edit js/custom.js to fit your needs
@@ -8,8 +11,8 @@ Quick configuration
 
 
 
-sViewer
-=======
+What is sViewer ?
+-----------------
 
 sViewer (simple Viewer) is a very simple web map viewer based on the OpenLayers and jQuery mobile libraries. Sviewer offers :
 

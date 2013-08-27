@@ -3,8 +3,6 @@
  */
 
 // libraries configuration
-var Ol = OpenLayers;
-
 Ol.DOTS_PER_INCH = 90.71428571428572;
 Ol.Util.onImageLoadErrorColor = 'transparent';
 Ol.ProxyHost = '/proxy/?url=';
@@ -92,6 +90,7 @@ function init() {
     // customConfig in js/config.js holds the viewer static configuration.
     // Default values are hardcoded in hardConfig.
     Ol.Util.applyDefaults(customConfig, hardConfig);
+
 
     // defaultConfig is being overriden by querystring ...
     var defaultConfig = {

@@ -1,11 +1,7 @@
 /*
  * sViewer local configuration. Overrides the hardcoded configuration.
  */
-
-// Use the Ol shortcut
-var Ol = OpenLayers;
-
-var customConfig = {
+customConfig = {
 
     /**
      * constant : title
