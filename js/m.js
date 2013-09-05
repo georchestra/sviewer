@@ -616,7 +616,6 @@ function init() {
                 else
                 {
                     // municipality
-                    countryCode="PositionOfInterest";
                     countryCode="StreetAddress";
                     freeFormAddress = q;
                 }
@@ -626,26 +625,26 @@ function init() {
                     headers: { "Content-Type": "application/xml" },
                     url: customConfig.openLSGeocodeUrl,
                     data:[
-                        '<?xml version="1.0" encoding="UTF-8"?>\n',
-                        '<XLS xmlns:xls="http://www.opengis.net/xls" ',
-                        'xmlns:gml="http://www.opengis.net/gml" ',
-                        'xmlns="http://www.opengis.net/xls" ',
-                        'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ',
-                        'version="1.2" ',
-                        'xsi:schemaLocation="http://www.opengis.net/xls http://schemas.opengis.net/ols/1.2/olsAll.xsd">\n',
-                        '<RequestHeader/>\n',
-                        '<Request maximumResponses="1" requestID="1" version="1.2" methodName="LocationUtilityService">\n',
-                        '<GeocodeRequest returnFreeForm="false">\n',
-                        '<Address countryCode="',
+                        '<?xml version="1.0" encoding="UTF-8"?> \
+                        <XLS xmlns:xls="http://www.opengis.net/xls \
+                        xmlns:gml="http://www.opengis.net/gml" \
+                        xmlns="http://www.opengis.net/xls" \
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
+                        version="1.2" \
+                        xsi:schemaLocation="http://www.opengis.net/xls http://schemas.opengis.net/ols/1.2/olsAll.xsd"> \
+                        <RequestHeader/> \
+                        <Request maximumResponses="1" requestID="1" version="1.2" methodName="LocationUtilityService"> \
+                        <GeocodeRequest returnFreeForm="false"> \
+                        <Address countryCode="',
                         countryCode,
-                        '">\n',
-                        '<freeFormAddress>',
+                        '">\n \
+                        <freeFormAddress>',
                         freeFormAddress,
-                        '</freeFormAddress>\n',
-                        '</Address>\n',
-                        '</GeocodeRequest>\n',
-                        '</Request>\n',
-                        '</XLS>'].join(""),
+                        '</freeFormAddress> \
+                        </Address> \
+                        </GeocodeRequest> \
+                        </Request> \
+                        </XLS>'].join(""),
                     failure: onOpenLSFailure,
                     success: onOpenLSSuccess
                 });
@@ -887,11 +886,22 @@ function init() {
         popup.css('top', $('#header').outerHeight()-29);
         popup.css('max-width', Math.min($(window).width() - 44, 600) + 'px');
         popup.css('max-height', $(window).height() - 44 + 'px');
-    };
-    $(".popupPanel").bind("popupbeforeposition popupafteropen", popupLayout);
-    $(window).bind("orientationchange resize pageshow", popupLayout);
-    $.each($(".popupPanel"), popupLayout);
 
+    };
+
+    // visible popup = highlight button
+    function popupToggle(e) {
+        $.each($("#panelBtn a"), function(i,a) {
+            var id = a.href.split('#',2)[1];
+            $(a).buttonMarkup({
+                theme: ($("#"+id).css("visibility")=="visible")?"c":"b"
+             });
+        })
+    };
+    $(window).bind("orientationchange resize pageshow", popupLayout);
+    $(".popupPanel").bind("popupbeforeposition popupafteropen", popupLayout);
+    $(".popupPanel").bind("popupbeforeposition popupafterclose", popupToggle);
+    $.each($(".popupPanel"), popupLayout);
 
     // page translation
     translateDOM('.i18n','');
