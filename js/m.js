@@ -99,13 +99,20 @@ function init() {
         layernames: [],
         stylenames: [],
         onlineresources: [],
-        querylayers: []
+        querylayers: [],
+        lang: ""
     };
     Ol.Util.applyDefaults(config, Ol.Util.getParameters("/" + window.location.search, { splitArgs: false }));
     Ol.Util.applyDefaults(config, Ol.Util.getParameters("/?" + window.location.hash.substring(1),  { splitArgs: false }));
 
     // ... then applied to config
     Ol.Util.applyDefaults(config, defaultConfig);
+    
+    // ... i18n parameter
+    Ol.Util.extend(OpenLayers.Lang, sviewerStrings);
+    if (sviewerStrings[config["lang"]]) {
+        Ol.Lang.setCode(config["lang"]);
+    }
 
     // document title handling
     document.title = config.title;

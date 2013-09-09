@@ -74,4 +74,3 @@ var sviewerStrings = {
         'metadata': 'метаданные'
     }
 };
-OpenLayers.Util.extend(OpenLayers.Lang, sviewerStrings);
