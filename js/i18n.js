@@ -36,6 +36,42 @@ var sviewerStrings = {
         'background map': 'Basis Karte',
         'enter address or place': 'Adresse eingeben',
         'metadata': 'Metadaten'
+    },
+    es: {
+        'geOrchestra mobile': 'geOrchestra móvil',
+        'Results are off map': 'Los resultados están fuera de mapa',
+        'No result': 'no resultados',
+        'Geolocation failed': 'La geolocalización ha fracasado',
+        'searching...': 'búsqueda...',
+        'Legend': 'Leyenda',
+        'Find': 'Encontrar',
+        'Share': 'Compartir',
+        'Where am I ?': '¿ A dondé estoy ?',
+        'Track my pos': 'Seguir posición',
+        'Close': 'Cerrar',
+        'Permalink': 'Vínculo permanente',
+        'initial view': 'Vista inicial',
+        'background map': 'fondo de plano',
+        'enter address or place': 'Entrar dirección o lugar',
+        'metadata': 'Metadatos'
+    },
+    ru: {
+        'geOrchestra mobile': 'мобильная версия программы geOrchestra',
+        'Results are off map': 'результаты вне карты',
+        'No result': 'Результаты отсутствуют ou bien результатов нет',
+        'Geolocation failed': 'Геолокализация провалилась',
+        'searching...': 'поиск',
+        'Legend': 'экспликация',
+        'Find': 'найти',
+        'Share': 'делиться',
+        'Where am I ?': 'Где я?',
+        'Track my pos': 'придерживаться местоположения, не менять позиции, следовать позиции',
+        'Close': 'закрыть',
+        'Permalink': 'постоянная ссылка',
+        'initial view': 'изначальный вид',
+        'background map': 'плановый фон',
+        'enter address or place': 'внести адрес или место',
+        'metadata': 'метаданные'
     }
-}
+};
 OpenLayers.Util.extend(OpenLayers.Lang, sviewerStrings);
