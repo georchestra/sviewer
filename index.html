@@ -228,12 +228,23 @@ a.mdMeta {
 
                         <input type="submit" data-role="button" data-mini="true" data-inline="true" data-icon="search" value="Find" />
                         <span id="locateMsg"></span>
-<!-- still not active
                         <div data-role="controlgroup" data-type="horizontal">
-                            <input type="button" data-role="button" data-mini="true" data-icon="mappin" value="Where am I ?" />
-                            <input type="button" data-role="button" data-mini="true" data-icon="direction" value="Track my pos" />
+                            <input type="button" id="locateDeviceBtn" data-role="button" data-mini="true" data-icon="mappin" value="Where am I ?" />
+                            <input type="button" id="trackDeviceBtn" data-role="button" data-mini="true" data-icon="direction" value="Track my pos" />
                         </div>
--->
+
+                        <label for="longitude" class="ui-hidden-accessible">longitude</label>
+                        <input type="text" id="locLong" data-mini="true" placeholder="longitude" value="" />
+
+                        <label for="latitude" class="ui-hidden-accessible">latitude</label>
+                        <input type="text" id="locLat" data-mini="true" placeholder="latitude" value=""/>
+
+                        <label for="altitude" class="ui-hidden-accessible">altitude</label>
+                        <input type="text" id="locAlt" data-mini="true" placeholder="altitude" value=""/>
+
+                        <label for="altitude" class="ui-hidden-accessible">accuracy</label>
+                        <input type="text" id="locAcc" data-mini="true" placeholder="accuracy" value=""/>
+
                     </form>
                 </div>
             </div>

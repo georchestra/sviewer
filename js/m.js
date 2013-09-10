@@ -1,6 +1,25 @@
-/***********************************************************************************************
- * sviewer
+/*
+ * Copyright (C) GeoBretagne
+ *
+ * This file is part of geOrchestra
+ *
+ * geOrchestra is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with geOrchestra.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+/*
+ * @include ../lib/jquery/jquery-1.10.2.min.js
+ * @include ../lib/qrcode.js/qrcode.min.js
+ * @include ../lib/openlayers/OpenLayers.js
+ * @include ../lib/proj4js/proj4js-compressed.js
+ * @include ../lib/LoadingPanel.js
+ */
+
 
 // libraries configuration
 Ol.DOTS_PER_INCH = 90.71428571428572;
@@ -107,7 +126,7 @@ function init() {
 
     // ... then applied to config
     Ol.Util.applyDefaults(config, defaultConfig);
-    
+
     // ... i18n parameter
     Ol.Util.extend(OpenLayers.Lang, sviewerStrings);
     if (sviewerStrings[config["lang"]]) {
@@ -142,7 +161,7 @@ function init() {
             }}),
             new Ol.Control.ZoomBox(),
             new Ol.Control.Attribution({div:Ol.Util.getElement("baseAttributions")}),
-            new Ol.Control.LoadingPanel()
+            new Ol.Control.LoadingPanel(),
         ],
         layers: [new Ol.Layer("fake", {isBaseLayer: true, displayInLayerSwitcher: false})]
     });
@@ -151,6 +170,7 @@ function init() {
     // keyboard navigation
     var keyboardNav = new Ol.Control.KeyboardDefaults();
     map.addControls([keyboardNav]);
+
 
 
     // ----- methods ------------------------------------------------------------------------------------
@@ -213,7 +233,6 @@ function init() {
         dic.wms_layer = customConfig.geOrchestraURL + "/geoserver/" + dic.ns + "/" + dic.name + "/wms";
         return dic;
     }
-
 
 
     /**
@@ -360,7 +379,6 @@ function init() {
                     }
                 });
                 if (mdLayer) {
-                    console.log(mdLayer);
                     legendArgs = {
                         "service" : "WMS",
                         "version" : capabilities.version,
@@ -666,6 +684,59 @@ function init() {
 
 
 
+    // device position
+    var geolocNav = new OpenLayers.Control.Geolocate({
+        bind: true,
+        watch: true,
+        geolocationOptions: {
+            enableHighAccuracy: true,
+            maximumAge: 0,
+            timeout: 500
+        }
+    });
+    map.addControl(geolocNav);
+    geolocNav.events.register("locationupdated", this, function(e) {
+        var accuracy = e.position.coords.accuracy;
+        var altitude = e.position.coords.altitude;
+        var altitudeAccuracy = e.position.coords.altitudeAccuracy;
+        var heading = e.position.coords.heading;
+        var latitude = e.position.coords.latitude;
+        var longitude = e.position.coords.longitude;
+        var speed = e.position.coords.speed;
+        $.mobile.loading('hide');
+        $('#locLong').val(longitude);
+        $('#locLat').val(latitude);
+        $('#locAlt').val(altitude);
+        $('#locAcc').val(accuracy);
+        map.panTo(new Ol.Geometry.Point(e.point.x,e.point.y));
+    });
+    geolocNav.events.register("locationfailed", this, function(e) {
+        $.mobile.loading('hide');
+        console.log(e);
+    });
+
+    /**
+     * Method: locateDevice
+     */
+    function locateDevice() {
+        $.mobile.loading('show');
+        map.zoomTo(18);
+        geolocNav.watch = true;
+        geolocNav.track = false;
+        geolocNav.activate();
+    }
+
+    /**
+     * Method: trackDevice
+     */
+    function trackDevice() {
+        $.mobile.loading('show');
+        geolocNav.watch = true;
+        geolocNav.track = true;
+        geolocNav.activate();
+    }
+
+
     /**
      * Method: setPermalink
      * keeps permalinks synchronized with the map extent
@@ -750,6 +821,10 @@ function init() {
             return true;
         }
     };
+
+    /**
+     * browser geolocation
+     */
 
 
 
@@ -878,6 +953,13 @@ function init() {
             console.log(err.message);
         }
         return false;
+    });
+    $('#locateDeviceBtn').click(function(e) {
+        locateDevice();
+    });
+    trackDeviceBtn
+    $('#trackDeviceBtn').click(function(e) {
+        trackDevice();
     });
 
     // permalinks
