@@ -29,6 +29,7 @@ geOrchestra sviewer
                 $.mobile.loader.prototype.options.textVisible = false;
                 $.mobile.loader.prototype.options.theme = "a";
                 $.mobile.loader.prototype.options.html = "";
+                $.mobile.activeBtnClass = 'unused';
             });
         </script>
         <link rel="stylesheet" href="lib/jquery/jquery.mobile-1.3.2.min.css" />
@@ -111,7 +112,9 @@ a.mdMeta {
     text-decoration: none;
 }
 
-
+#trackBt2 {
+    visibility: hidden;
+}
 
 /* panels placement */
 .popupPanel {
@@ -200,6 +203,7 @@ a.mdMeta {
                     <a id="ziBt" href="#" data-role="button" data-iconpos="notext" data-icon="plus" data-theme="b">zoom +</a>
                     <a id="zoBt" href="#" data-role="button" data-iconpos="notext" data-icon="minus" data-theme="b">zoom -</a>
                     <a id="bgBt" href="#" data-role="button" data-iconpos="notext" data-icon="arrow-r" data-theme="b">background map</a>
+                    <a id="trackBt2" href="#" data-role="button" data-iconpos="notext" data-icon="play" data-theme="c">Track my pos</a>
                 </div>
             </div>
 
@@ -225,14 +229,13 @@ a.mdMeta {
                     <form id="addressForm" method="POST" action="#">
                         <label for="addressInput" class="ui-hidden-accessible">search for address or place</label>
                         <input type="search" name="addressInput" id="addressInput" data-mini="true" data-inline="true" value="" placeholder="enter address or place" title="address or place" />
-
-                        <input type="submit" data-role="button" data-mini="true" data-inline="true" data-icon="search" value="Find" />
                         <span id="locateMsg"></span>
-                        <div data-role="controlgroup" data-type="horizontal">
-                            <input type="button" id="locateDeviceBtn" data-role="button" data-mini="true" data-icon="mappin" value="Where am I ?" />
-                            <input type="button" id="trackDeviceBtn" data-role="button" data-mini="true" data-icon="direction" value="Track my pos" />
-                        </div>
 
+                        <div data-role="controlgroup" data-type="horizontal">
+                            <input type="submit" data-role="button" data-mini="true" data-inline="true" data-icon="search" value="Find" />
+                            <input type="button" id="locateBtn" data-role="button" data-mini="true" data-icon="mappin" value="Where am I ?" />
+                            <input type="button" id="trackBtn" data-role="button" data-mini="true" data-icon="play" value="Track my pos" />
+                        </div>
                         <label for="longitude" class="ui-hidden-accessible">longitude</label>
                         <input type="text" id="locLong" data-mini="true" placeholder="longitude" value="" />
 
@@ -263,7 +266,7 @@ a.mdMeta {
                     <div class="ui-grid-a">
                         <div class="ui-block-a">
                             <!-- permalink -->
-                            <a data-role="button" id="permalink" href="#" data-ajax="false" href="#" data-mini="true" data-icon="link">Permalink</a>
+                            <a data-role="button" id="permalink" href="#" data-ajax="false" href="#" data-mini="true" data-iconpos="right">Permalink</a>
 
                             <!-- social links -->
                             <span id="socialLinks"></span>
@@ -271,7 +274,7 @@ a.mdMeta {
                             <!-- to georchestra viewer -->
                             <form id="georchestraForm" target="_blank" method="post" action="http://geobretagne.fr/mapfishapp/">
                                 <input type="hidden" id="georchestraFormData" name="data" value="" />
-                                <input type="submit" data-role="button" data-mini="true" data-icon="link" value="geOrchestra" />
+                                <input type="submit" data-role="button" data-mini="true" data-iconpos="right" value="geOrchestra" />
                             </form>
                         </div>
 

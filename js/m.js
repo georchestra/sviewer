@@ -12,14 +12,6 @@
  * along with geOrchestra.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * @include ../lib/jquery/jquery-1.10.2.min.js
- * @include ../lib/qrcode.js/qrcode.min.js
- * @include ../lib/openlayers/OpenLayers.js
- * @include ../lib/proj4js/proj4js-compressed.js
- * @include ../lib/LoadingPanel.js
- */
-
 
 // libraries configuration
 Ol.DOTS_PER_INCH = 90.71428571428572;
@@ -91,7 +83,7 @@ var hardConfig = {
     socialMedia: {
         "Twitter" : "https://twitter.com/intent/tweet?text=",
         "Google+" : "https://plus.google.com/share?url=",
-        "Facebook": "http://www.facebook.com/sharer/sharer.php?u=",
+        "Facebook": "http://www.facebook.com/sharer/sharer.php?u="
     }
 };
 
@@ -129,8 +121,8 @@ function init() {
 
     // ... i18n parameter
     Ol.Util.extend(OpenLayers.Lang, sviewerStrings);
-    if (sviewerStrings[config["lang"]]) {
-        Ol.Lang.setCode(config["lang"]);
+    if (sviewerStrings[config.lang]) {
+        Ol.Lang.setCode(config.lang);
     }
 
     // document title handling
@@ -161,7 +153,7 @@ function init() {
             }}),
             new Ol.Control.ZoomBox(),
             new Ol.Control.Attribution({div:Ol.Util.getElement("baseAttributions")}),
-            new Ol.Control.LoadingPanel(),
+            new Ol.Control.LoadingPanel()
         ],
         layers: [new Ol.Layer("fake", {isBaseLayer: true, displayInLayerSwitcher: false})]
     });
@@ -187,7 +179,7 @@ function init() {
      */
     function escHTML (s) {
         return $('<p/>').text(s).html();
-    };
+    }
 
 
     /**
@@ -208,9 +200,9 @@ function init() {
         else {
             $.each($(selector), function(i,e) {
                 $(e).prop(property, Ol.i18n($(e).prop(property)));
-            })
-        };
-    };
+            });
+        }
+    }
 
     /**
      * Method: parseLayerParam
@@ -228,7 +220,7 @@ function init() {
         dic.style = (s.indexOf("*")>0) ? s.split('*',2)[1]:'';
         dic.ns = (dic.ns_name.indexOf(":")>0) ? dic.ns_name.split(':',2)[0]:'';
         dic.name = (dic.ns_name.indexOf(":")>0) ? dic.ns_name.split(':',2)[1]:'';
-        dic.wms_global = customConfig.georchestraURL + "/geoserver/wms"
+        dic.wms_global = customConfig.georchestraURL + "/geoserver/wms";
         dic.wms_ns = customConfig.geOrchestraURL + "/geoserver/" + dic.ns + "/wms";
         dic.wms_layer = customConfig.geOrchestraURL + "/geoserver/" + dic.ns + "/" + dic.name + "/wms";
         return dic;
@@ -401,10 +393,10 @@ function init() {
                             html += "' src='";
                             html += mdLayer.attribution.logo.href;
                             html += "' /><br />";
-                        };
+                        }
                         html += escHTML(mdLayer.attribution.title);
                         html += "</a>";
-                    };
+                    }
 
                     // title
                     html += "<p><h3 class='mdTitle'>" +
@@ -413,7 +405,7 @@ function init() {
 
                     // abstract
                     html += "<p class='mdAbstract'>";
-                    html += escHTML(mdLayer.abstract);
+                    html += escHTML(mdLayer['abstract']);
 
                     // metadata
                     if (mdLayer.metadataURLs) {
@@ -424,9 +416,9 @@ function init() {
                                 html += "'>";
                                 html += Ol.i18n('metadata');
                                 html += " ... </a>";
-                            };
+                            }
                         });
-                    };
+                    }
                     html += "</p>";
 
                     // legend
@@ -461,7 +453,7 @@ function init() {
 
         function onPopupClose(e) {
             selectControl.unselectAll();
-        };
+        }
 
         function onFeatureSelect(e) {
             var f, content, popup;
@@ -484,7 +476,7 @@ function init() {
             popup.maxSize = new Ol.Size(300,200);
             f.popup = popup;
             map.addPopup(popup);
-        };
+        }
 
         function onFeatureUnselect(e) {
             var f = e.feature;
@@ -493,7 +485,7 @@ function init() {
                 f.popup.destroy();
                 delete f.popup;
             }
-        };
+        }
 
         layer_kml = new Ol.Layer.Vector(
             config.title,
@@ -550,7 +542,7 @@ function init() {
                 var layers = [];
                 if (!doc || !doc.documentElement) {
                     doc = request.responseText;
-                };
+                }
                 context = format_WMC.read(doc);
                 $.each(context.layersContext, function(i, layer) {
                     if (layer.visibility&&layer.queryable) {
@@ -602,7 +594,7 @@ function init() {
                         map.setCenter(ptResult, zoom);
                         markGeoloc.addMarker(new Ol.Marker(ptResult));
                         $("#locateMsg").text("");
-                        $("#frameLocate").popup("close");
+                        disableTracking();
                     }
                     else {
                         $("#locateMsg").text(Ol.i18n("Results are off map"));
@@ -686,8 +678,8 @@ function init() {
 
     // device position
     var geolocNav = new OpenLayers.Control.Geolocate({
-        bind: true,
-        watch: true,
+        bind: false,
+        watch: false,
         geolocationOptions: {
             enableHighAccuracy: true,
             maximumAge: 0,
@@ -695,46 +687,81 @@ function init() {
         }
     });
     map.addControl(geolocNav);
+
+
     geolocNav.events.register("locationupdated", this, function(e) {
-        var accuracy = e.position.coords.accuracy;
-        var altitude = e.position.coords.altitude;
-        var altitudeAccuracy = e.position.coords.altitudeAccuracy;
-        var heading = e.position.coords.heading;
-        var latitude = e.position.coords.latitude;
-        var longitude = e.position.coords.longitude;
-        var speed = e.position.coords.speed;
+        var coords = e.position.coords;
+        var p = new Ol.LonLat(e.point.x,e.point.y);
+        var marker = new Ol.Marker(p);
+
         $.mobile.loading('hide');
-        $('#locLong').val(longitude);
-        $('#locLat').val(latitude);
-        $('#locAlt').val(altitude);
-        $('#locAcc').val(accuracy);
-        map.panTo(new Ol.Geometry.Point(e.point.x,e.point.y));
+        markGeoloc.clearMarkers();
+        markGeoloc.addMarker(marker);
+        $('#locLong').val(coords.longitude);
+        $('#locLat').val(coords.latitude);
+        $('#locAlt').val(coords.altitude);
+        $('#locAcc').val(coords.accuracy);
+        if (!marker.onScreen()) {
+            map.panTo(p);
+        }
     });
     geolocNav.events.register("locationfailed", this, function(e) {
         $.mobile.loading('hide');
-        console.log(e);
+        geolocNav.deactivate();
+        disableTracking();
     });
+    geolocNav.events.register("locationuncapable", this, function(e) {
+        $.mobile.loading('hide');
+        console.log("locationuncapable error");
+        disableTracking();
+    });
+
 
     /**
      * Method: locateDevice
      */
     function locateDevice() {
         $.mobile.loading('show');
-        map.zoomTo(18);
-        geolocNav.watch = true;
-        geolocNav.track = false;
+        disableTracking();
         geolocNav.activate();
+        geolocNav.watch = false;
+        geolocNav.bind = false;
+        map.zoomTo(18);
+    }
+    /**
+     * Method: enableTracking
+     */
+    function enableTracking() {
+        geolocNav.watch = true;
+        geolocNav.bind = false;
+        geolocNav.activate();
+        $('#trackBt2').css('visibility','visible');
+        $('#trackBtn').buttonMarkup({ theme: 'e', icon: 'pause' });
+        $('#trackBt2').buttonMarkup({ theme: 'e', icon: 'pause' });
+    }
+    /**
+     * Method: disableTracking
+     */
+    function disableTracking() {
+        geolocNav.deactivate();
+        geolocNav.watch = false;
+        geolocNav.bind = false;
+        $('#trackBtn').buttonMarkup({ theme: 'c', icon: 'play' });
+        $('#trackBt2').buttonMarkup({ theme: 'c', icon: 'play' });
+    }
+    /**
+     * Method: toggleTracking
+     */
+    function toggleTracking() {
+        if (!geolocNav.watch) {
+            enableTracking();
+        }
+        else {
+            disableTracking();
+        }
     }
 
-    /**
-     * Method: trackDevice
-     */
-    function trackDevice() {
-        $.mobile.loading('show');
-        geolocNav.watch = true;
-        geolocNav.track = true;
-        geolocNav.activate();
-    }
+
 
 
     /**
@@ -773,23 +800,24 @@ function init() {
             });
             $('.socialBtn').buttonMarkup({
                 mini: true,
-                icon: "link"
+                icon: null,
+                iconpos: "right"
             });
-            if ($('#qrcode').css("visibility")=="visible") {
+            if ($('#qrcode').css("visibility")==="visible") {
                 $('#qrcode').empty();
                 new QRCode("qrcode", {
                     text: permalinkQuery,
                     width: 160,
                     height: 160,
                     correctLevel: QRCode.CorrectLevel.L
-                })
-            };
+                });
+            }
             $('#permalink').prop('href',permalinkQuery);
             $('#embedcode').text('<iframe style="width: 600px; height: 400px;" src="' +
             permalinkQuery +
             '"></iframe>');
         }
-    };
+    }
 
 
 
@@ -815,12 +843,12 @@ function init() {
                         "owstype" : "WMS",
                         "owsurl" : layer.url
                     });
-                };
+                }
             });
             $("#georchestraFormData").val(JSON.stringify(params));
             return true;
         }
-    };
+    }
 
     /**
      * browser geolocation
@@ -857,7 +885,7 @@ function init() {
     if (config.layers) {
         var ns_layer_style_list = [], getFeatureInfo;
         // parser to retrieve namespaces, names and styles
-        ns_layer_style_list = (typeof config.layers == 'string') ? config.layers.split(',') : config.layers
+        ns_layer_style_list = (typeof config.layers === 'string') ? config.layers.split(',') : config.layers
         $.each(ns_layer_style_list, function(i,s) {
             var p = parseLayerParam(s);
             config.layernames.push(p.ns_name);
@@ -931,9 +959,7 @@ function init() {
         document.title = config.title;
         $('#title').text(config.title);
     });
-    $("#setTitle").blur(function(e) {
-        setPermalink();
-    });
+    $("#setTitle").blur(setPermalink);
 
     // sendto form
     $("#georchestraForm").submit(function(e) {
@@ -954,20 +980,15 @@ function init() {
         }
         return false;
     });
-    $('#locateDeviceBtn').click(function(e) {
-        locateDevice();
-    });
-    trackDeviceBtn
-    $('#trackDeviceBtn').click(function(e) {
-        trackDevice();
-    });
+
+    // tracking
+    $('#locateBtn').click(locateDevice);
+    $('#trackBtn').click(toggleTracking);
+    $('#trackBt2').click(toggleTracking);
+
 
     // permalinks
-    $("#panelShare").bind({
-        popupafteropen: function(e) {
-            setPermalink();
-        }
-    });
+    $("#panelShare").bind({popupafteropen: setPermalink});
 
     // popup size and placement to fit small screens
     function popupLayout (e) {
@@ -975,18 +996,17 @@ function init() {
         popup.css('top', $('#header').outerHeight()-29);
         popup.css('max-width', Math.min($(window).width() - 44, 600) + 'px');
         popup.css('max-height', $(window).height() - 44 + 'px');
-
-    };
+    }
 
     // visible popup = highlight button
     function popupToggle(e) {
         $.each($("#panelBtn a"), function(i,a) {
             var id = a.href.split('#',2)[1];
             $(a).buttonMarkup({
-                theme: ($("#"+id).css("visibility")=="visible")?"c":"b"
+                theme: ($("#"+id).css("visibility")==="visible")?"c":"b"
              });
-        })
-    };
+        });
+    }
     $(window).bind("orientationchange resize pageshow", popupLayout);
     $(".popupPanel").bind("popupbeforeposition popupafteropen", popupLayout);
     $(".popupPanel").bind("popupbeforeposition popupafterclose", popupToggle);
