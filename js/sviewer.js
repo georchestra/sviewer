@@ -206,7 +206,7 @@ function initmap() {
     function getWMSLegend(onlineresource, layername, stylename) {
         var parser = new ol.parser.ogc.WMSCapabilities();
         $.ajax({
-            url: '/proxy/?url=' + onlineresource + '?SERVICE=WMS&REQUEST=GetCapabilities',
+            url: '/proxy/?url=' + encodeURIComponent(onlineresource + '?SERVICE=WMS&REQUEST=GetCapabilities'),
             type: 'GET',
             success: function(response) {
                 var html = '';
@@ -433,7 +433,7 @@ function initmap() {
                 }
 
                 $.ajax({
-                    url: "/proxy/?url=" + config.openLSGeocodeUrl,
+                    url: "/proxy/?url=" + encodeURIComponent(config.openLSGeocodeUrl),
                     type: 'POST',
                     data: [
 '<?xml version="1.0" encoding="UTF-8"?> \
@@ -508,7 +508,7 @@ freeFormAddress,
             // ajax request
             $.mobile.loading('show');
             $.ajax({
-                url: '/proxy/?url=' + url,
+                url: '/proxy/?url=' + encodeURIComponent(url),
                 type: 'GET',
                 dataType: 'html',
                 context: domResponse,
