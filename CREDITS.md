@@ -1,13 +1,12 @@
 Credits
 =======
 
-OpenLayers
+OpenLayers3
 ==========
-http://openlayers.org/ under FreeBSD Licence
+http://ol3js.org/ under 2-Clause BSD
+http://www.tldrlegal.com/license/bsd-2-clause-license-(freebsd)
+Many thanks to the OpenLayers3 team
 
-proj4js
-=======
-http://trac.osgeo.org/proj4js/
 
 JQuery
 ======

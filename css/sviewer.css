@@ -1,0 +1,136 @@
+html, body {
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    background-color: #333333;
+    font-size: 0.8em;
+
+}
+
+/* page structure */
+#header {
+    text-align: left !important;
+}
+
+#frameMap {
+    padding: 0px;
+}
+#map {
+    width: 100%;
+    height: 100%;
+}
+#mapcontrols {
+    position: absolute;
+    top: 46px;
+    left: 10px;
+    width: 32px;
+    z-index: 8000;
+}
+
+label {
+    color: #555555 !important;
+    font-size: small !important;
+}
+
+/* legend layout */
+#legend a {
+    text-decoration: none;
+}
+#legend h3,p {
+    padding: 0 0 2px 0 !important;
+    margin: 0;
+}
+#legend hr {
+    clear: both;
+}
+.mdTitle {
+}
+.mdAbstract {
+    color: #555555;
+}
+.mdAttrib {
+    display: block;
+    float: right;
+    text-align: right;
+    max-width: 80px;
+    font-size: x-small;
+}
+img.mdLogo {
+    max-height: 64px;
+    max-width: 64px;
+}
+img.mdLegend {
+    padding: 4px;
+    max-width: 320px;
+}
+a.mdMeta {
+	text-decoration: underline;
+}
+
+/* panels placement */
+.popupPanel {
+    border-width: 0 0 1px 1px !important;
+    border-color: #666666 !important;
+    background: rgba(255,255,255,1);
+    z-index:8010 !important;
+    overflow-y: auto;
+}
+#panelInfo-popup,#panelLocate-popup,#panelShare-popup, #panelQuery-popup {
+    top: 29px !important;
+    right: 0px !important;
+    left: auto !important;
+}
+#panelInfo-screen, #panelLocate-screen, #panelShare-screen, #panelQuery-screen {
+    display: none;
+}
+
+
+
+#qrcode {
+    width: 130px;
+    height: 130px;
+}
+
+
+/* ol controls */
+
+#map .ol-zoom a.ol-zoom-in {
+    display: none;
+}
+#map .ol-zoom a.ol-zoom-out {
+    display: none;
+}
+
+#map .ol-zoomslider {
+	top: auto;
+    bottom: 8px;
+    left: 10px;
+    width: 20px;
+    height: 200px;
+    padding: 0;
+	background-color: rgba(0, 60, 136, 0.3);
+	border: 1px solid rgba(255, 255, 255, 1);
+	border-radius: 4px;
+}
+
+#map .ol-zoomslider-thumb {
+    width: 14px;
+    height: 14px;
+    margin: 1px;
+    background-color: rgba(255, 255, 255, 1);
+	border: 2px solid #ffffff;
+}
+#map .ol-zoomslider-thumb:hover {
+    background-color: #30526d;
+}
+
+.ol-attribution, .ol-attribution a {
+    color: #333333;
+    background-color: transparent;
+}
+.ol-attribution a {
+    text-decoration: underline;
+}
+.ol-scale-line {
+	left: 40px;
+}

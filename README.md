@@ -1,18 +1,21 @@
 sViewer - simple viewer for geOrchestra
 =======================================
 
-Quick start
------------
+This branch is a complete rewrite of sviewer based on OpenLayers3.
+Work in progress.
 
-1. Copy js/custom.DIST.js into js/custom.js
-2. Edit js/custom.js to fit your needs
+Quick start
+----------------
+
+1. Copy js/custom.DIST.js into js/custom.js [SOON]
+2. Edit js/custom.js to fit your needs [SOON]
 3. Upload the source tree to your web server
 
 
 
 
 What is sViewer ?
------------------
+--------------------------
 
 sViewer (simple Viewer) is a very simple web map viewer based on the OpenLayers and jQuery mobile libraries. Sviewer offers :
 
@@ -24,8 +27,8 @@ sViewer (simple Viewer) is a very simple web map viewer based on the OpenLayers 
 * export to the geOrchestra advanced viewer
 * easy to embed in a webpage through href
 * should work on small (phone), medium (tablet) and large (desktop) displays
-* i18n support
-* geolocation and tracking (TODO)
+* i18n support [TODO]
+* geolocation and tracking [TODO]
 
 sViewer has two objectives : it's a code sample to build more advanced or specific apps, and it's a standalone application to be used as a service or installed locally. It was designed to work within the geOrchestra IDS, but it also may work with any OGC-enabled IDS with minimal changes. There's a user tutorial here : http://cms.geobretagne.fr/content/visualiseur-simple-g%C3%A9obretagne
 
@@ -43,24 +46,24 @@ KVP parameters
 
 x {integer}
 y {integer}
-z {integer}
------------
+z {integer} [WORKING]
+----------------
 Center the map on x,y (EPSG:3857 units) and set the z zoom factor
 example :
 
     x=-365446&y=6142287&z=9&
 
 
-lb {integer}
-------------
+lb {integer} [WORKING]
+-----------------
 Displays the #lb background layer. ie lb=0 displays the first preset background layer
 example :
 
     lb=3
 
 
-layers {string}
----------------
+layers {string} [WORKING]
+---------------------
 Comma-separated list of geOrchestra layer names with namespace extension. This is the fastest way to set up a map because the WMS url is hardcoded (hardConfig.geOrchestraURL) and sViewer will perform grouped getMap. This assumes that :
 
 * layers are delivered by the hardcoded geOrchestra (or geoserver) platform
@@ -77,32 +80,32 @@ example :
     layers=geob_loc:DEPARTEMENT*style_yellow,geob_loc:REGION
 
 
-cql_filter {string}
--------------------
+cql_filter {string} [TODO]
+-------------------------
 Semicolon (%3B) separated list of CQL filters to filter the layers specified by layers=. This can be used to select a specific feature. Use the keyword INCLUDE with unfiltered layers.
 example :
 
     cql_filter=CODE%3D56%3BINCLUDE
 
 
-wmc {string}
-------------
+wmc {string} [TODO]
+-------------------
 Url of a Web Map Context. Only visible and queryables layers will be loaded. Warning, there's no extent or projection check.
 Example :
 
     wmc=http%3A%2F%2Fsdi.georchestra.org%2Fcontexts%2F01.wmc
 
 
-title {string}
---------------
+title {string} [WORKING]
+------------------
 Map title. This can be changed in the interface. Use short titles for small devices.
 Example :
 
     title=my%20first%20sViewer%20map
 
 
-kml {string}
-------------
+kml {string} [TODO]
+-----------------
 Url of a plain (non zipped) KML file to load as queryable layer. This KML must use EPSG:4326 coordinates.
 Example :
 
@@ -114,7 +117,7 @@ geOrchestra integration
 
 * sViewer displays metadata text/html links, attribution, attributionURL from the WMS capabilities
 * sViewer can POST the map layout to the geOrchestra advanced viewer for edit, analysis, print purposes.
-* sViewer can read WMC from the geOrchestra advanced viewer. Waiting for a nice addon...
+* sViewer can read WMC from the geOrchestra advanced viewer. Waiting for a nice addon... [TODO]
 
 
 
@@ -129,15 +132,15 @@ TODO
 
 First item, highest priority
 
+* implement pending TODOs
+* support i18n
 * accessibility check
 * check the genericity of the openLS helper
 * GPS geocoding, tracking, events based on feature proximity
-* sviewer->geOrchestra through the global service, inefficient. Use virtual services
 * build system to automatically configure the geOrchestra url
-* geOrchestra incubation
 * compress js and external libs
 * mobile OS manifest
 
 Before using this project, read the LICENSE.en terms.
 
-(c) 2011-2013 geOrchestra http://www.georchestra.org/
+(c) 2011-2014 geOrchestra http://www.georchestra.org/
