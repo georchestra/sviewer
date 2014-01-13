@@ -13,7 +13,7 @@
     <script type="text/javascript" src="lib/qrcode.js/qrcode.min.js"></script>
     <!-- OpenLayers -->
     <link rel="stylesheet" href="lib/ol/build/ol.css" type="text/css" />
-    <script src="lib/ol/build/ol.js" type="text/javascript"></script>
+    <script src="lib/ol/build/ol-whitespace.js" type="text/javascript"></script>
     <!-- jquery mobile -->
     <script type="text/javascript">
 //<![CDATA[
@@ -34,6 +34,8 @@ $(document).bind("mobileinit", function(){
     <!-- local -->
     <link rel="stylesheet" href="css/sviewer.css" type="text/css" />
     <script src="js/sviewer.js" type="text/javascript"></script>
+    <script src="etc/customConfig.js" type="text/javascript"></script>
+
     <script type="text/javascript">
 //<![CDATA[
             $(document).ready(function() {
@@ -70,7 +72,7 @@ $(document).bind("mobileinit", function(){
           Interroger</a>
           <a href="#panelInfo" id="#panelInfoBtn" data-rel="popup" data-role="button" data-position-to="window" data-mini="true" data-icon="page" data-iconpos="notext">
           Comprendre</a>
-          <a href="#panelLocate" id="#panelLocateBtn" data-rel="popup" data-role="button" data-position-to="window" data-mini="true" data-icon="mappin" data-iconpos="notext">Localiser</a>
+          <a href="#panelLocate" id="#panelLocateBtn" data-rel="popup" data-role="button" data-position-to="window" data-mini="true" data-icon="search" data-iconpos="notext">Localiser</a>
           <a href="#panelShare" id="#panelShareBtn" data-rel="popup" data-role="button" data-position-to="window" data-mini="true" data-icon="link" data-iconpos="notext">
           Partager</a>
         </div>
@@ -78,7 +80,9 @@ $(document).bind("mobileinit", function(){
       <!-- content -->
       <div data-role="content" id="frameMap">
         <!-- map -->
-        <div id="map" tabindex="0"></div>
+        <div id="map" tabindex="0">
+            <div id="marker"></div>
+        </div>
         <!-- map controls -->
         <div id="mapcontrols">
           <a id="zeBt" href="#" accesskey="i" data-role="button" data-iconpos="notext" data-icon="home" data-theme="b">vue initiale</a>
@@ -107,7 +111,7 @@ $(document).bind("mobileinit", function(){
         </div>
         <div data-role="content">
           <div id="legend"></div>
-          fond de plan <div id="baseAttributions"></div>
+          <div id="baseAttributions"></div>
         </div>
       </div>
       <!-- locate panel -->
@@ -159,8 +163,6 @@ $(document).bind("mobileinit", function(){
           </div>
         </div>
       </div>
-
-
       <!-- end page -->
     </div>
   </body>

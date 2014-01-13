@@ -91,6 +91,12 @@ a.mdMeta {
     height: 130px;
 }
 
+#marker {
+	width: 30px;
+	height: 30px;
+	background: transparent url('images/pin-blue.png') no-repeat center center;
+}
+
 
 /* ol controls */
 
@@ -100,30 +106,6 @@ a.mdMeta {
 #map .ol-zoom a.ol-zoom-out {
     display: none;
 }
-
-#map .ol-zoomslider {
-	top: auto;
-    bottom: 8px;
-    left: 10px;
-    width: 20px;
-    height: 200px;
-    padding: 0;
-	background-color: rgba(0, 60, 136, 0.3);
-	border: 1px solid rgba(255, 255, 255, 1);
-	border-radius: 4px;
-}
-
-#map .ol-zoomslider-thumb {
-    width: 14px;
-    height: 14px;
-    margin: 1px;
-    background-color: rgba(255, 255, 255, 1);
-	border: 2px solid #ffffff;
-}
-#map .ol-zoomslider-thumb:hover {
-    background-color: #30526d;
-}
-
 .ol-attribution, .ol-attribution a {
     color: #333333;
     background-color: transparent;
@@ -131,6 +113,4 @@ a.mdMeta {
 .ol-attribution a {
     text-decoration: underline;
 }
-.ol-scale-line {
-	left: 40px;
-}
+
