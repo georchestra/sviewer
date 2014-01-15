@@ -221,13 +221,14 @@ function initmap() {
             });
         };
         // wmc comes from a geOrchestra map id
-        if (wmc.match(wmc.match(/[a-z\d]{32}/))) {
+        if (wmc.match(wmc.match(/^[a-z\d]{32}$/))) {
             url = config.geOrchestraBaseUrl + 'mapfishapp/ws/wmc/geodoc' + wmc + '.wmc';
         }
         // wmc with absolute url
-        else if (wmc.match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/)) {
+        else if (wmc.match(/^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/)) {
             url = wmc;
         };
+        console.log(url);
 
         if (url!='') {
             $.mobile.loading('show');
@@ -558,7 +559,6 @@ freeFormAddress,
                 'I': Math.round(p[0]),
                 'J': Math.round(p[1])
             };
-            console.log(p);
             var url = onlineresource + '?' + $.param(gfiparams);
             // response order = layer order
             var domResponse =  $('<div></div>');
