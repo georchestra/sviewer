@@ -3,8 +3,6 @@ html, body {
     padding: 0px;
     width: 100%;
     background-color: #333333;
-    font-size: 0.8em;
-
 }
 
 /* page structure */
@@ -36,7 +34,7 @@ label {
 #legend a {
     text-decoration: none;
 }
-#legend h3,p {
+#legend h4,p {
     padding: 0 0 2px 0 !important;
     margin: 0;
 }
@@ -76,25 +74,26 @@ a.mdMeta {
     overflow-y: auto;
 }
 #panelInfo-popup,#panelLocate-popup,#panelShare-popup, #panelQuery-popup {
-    top: 29px !important;
+    top: 30px !important;
     right: 0px !important;
     left: auto !important;
+	min-width: 250px;
 }
 #panelInfo-screen, #panelLocate-screen, #panelShare-screen, #panelQuery-screen {
     display: none;
 }
 
-
-
 #qrcode {
-    width: 130px;
-    height: 130px;
+	margin-left: 6px;
+	margin-top: 6px;
+    width: 160px;
+    height: 160px;
 }
 
 #marker {
-	width: 30px;
+	width: 24px;
 	height: 30px;
-	background: transparent url('images/pin-blue.png') no-repeat center center;
+	background: transparent url('images/arrow.png') no-repeat bottom left;
 }
 
 
@@ -113,4 +112,6 @@ a.mdMeta {
 .ol-attribution a {
     text-decoration: underline;
 }
+
+
 

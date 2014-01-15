@@ -28,9 +28,10 @@ $(document).bind("mobileinit", function(){
 });
 //]]>
 </script>
-    <link rel="stylesheet" href="lib/jquery/jquery.mobile-1.3.2.min.css" />
-    <script src="lib/jquery/jquery.mobile-1.3.2.min.js"></script>
-    <link rel="stylesheet" href="css/jqm-icon-pack-2.0-original.css" />
+    <link rel="stylesheet" href="lib/jquery/theme/sviewer.min.css" />
+    <link rel="stylesheet" href="lib/jquery/theme/jquery.mobile.icons.min.css" />
+    <link rel="stylesheet" href="lib/jquery/jquery.mobile.structure-1.4.0.min.css" />
+    <script src="lib/jquery/jquery.mobile-1.4.0.min.js"></script>
     <!-- local -->
     <link rel="stylesheet" href="css/sviewer.css" type="text/css" />
     <script src="js/sviewer.js" type="text/javascript"></script>
@@ -65,18 +66,16 @@ $(document).bind("mobileinit", function(){
   <body>
     <div data-role="page">
       <!-- header -->
-      <div data-role="header" id="header" class="ui-bar-b">
-        <h2 id="title"></h2>
+      <div data-role="header" id="header" data-theme="a">
+        <h1 id="title"></h1>
         <div id="panelBtn" data-role="controlgroup" data-type="horizontal" class="ui-btn-right">
-          <a href="#panelQuery" id="#panelQueryBtn" data-rel="popup" data-role="button" data-position-to="window" data-mini="true" data-icon="question" data-iconpos="notext">
-          Interroger</a>
-          <a href="#panelInfo" id="#panelInfoBtn" data-rel="popup" data-role="button" data-position-to="window" data-mini="true" data-icon="page" data-iconpos="notext">
-          Comprendre</a>
-          <a href="#panelLocate" id="#panelLocateBtn" data-rel="popup" data-role="button" data-position-to="window" data-mini="true" data-icon="search" data-iconpos="notext">Localiser</a>
-          <a href="#panelShare" id="#panelShareBtn" data-rel="popup" data-role="button" data-position-to="window" data-mini="true" data-icon="link" data-iconpos="notext">
-          Partager</a>
+          <a href="#panelQuery" id="panelQueryBtn" class="ui-btn ui-icon-info ui-btn-icon-notext ui-mini ui-corner-all" data-rel="popup" data-position-to="window">Interroger</a>
+          <a href="#panelInfo" id="panelInfoBtn" class="ui-btn ui-icon-bullets ui-btn-icon-notext ui-mini ui-corner-all" data-rel="popup" data-position-to="window">Comprendre</a>
+          <a href="#panelLocate" id="panelLocateBtn" class="ui-btn ui-icon-location ui-btn-icon-notext ui-mini ui-corner-all" data-rel="popup" data-position-to="window">Localiser</a>
+          <a href="#panelShare" id="panelShareBtn" class="ui-btn ui-icon-star ui-btn-icon-notext ui-mini ui-corner-all" data-rel="popup" data-position-to="window">Partager</a>
         </div>
       </div>
+
       <!-- content -->
       <div data-role="content" id="frameMap">
         <!-- map -->
@@ -85,29 +84,29 @@ $(document).bind("mobileinit", function(){
         </div>
         <!-- map controls -->
         <div id="mapcontrols">
-          <a id="zeBt" href="#" accesskey="i" data-role="button" data-iconpos="notext" data-icon="home" data-theme="b">vue initiale</a>
-          <a id="ziBt" href="#" accesskey="p" data-role="button" data-iconpos="notext" data-icon="plus" data-theme="b">zoom +</a>
-          <a id="zoBt" href="#" accesskey="m" data-role="button" data-iconpos="notext" data-icon="minus" data-theme="b">zoom -</a>
-          <a id="bgBt" href="#" accesskey="f" data-role="button" data-iconpos="notext" data-icon="arrow-r" data-theme="b">fond de plan</a>
+          <a id="zeBt" href="#" accesskey="i" class="ui-btn ui-icon-home ui-btn-icon-notext ui-corner-all">vue initiale</a>
+          <a id="ziBt" href="#" accesskey="p" class="ui-btn ui-icon-plus ui-btn-icon-notext ui-corner-all">zoom +</a>
+          <a id="zoBt" href="#" accesskey="m" class="ui-btn ui-icon-minus ui-btn-icon-notext ui-corner-all">zoom -</a>
+          <a id="bgBt" href="#" accesskey="f" class="ui-btn ui-icon-carat-r ui-btn-icon-notext ui-corner-all">fond de plan</a>
         </div>
       </div>
       <!-- getfeatureinfo panel -->
-      <div id="panelQuery" class="popupPanel" data-role="popup" data-corners="false" data-shadow="false">
-        <div data-role="header" data-theme="c">
+      <div id="panelQuery" class="popupPanel" data-role="popup" data-corners="false" data-theme="b">
+        <div data-role="header">
           <h3 class="i18n">Interroger</h3>
-          <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Fermer</a>
+          <a href="#header" data-rel="back" class="ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-icon-notext ui-corner-all ui-btn-right">Fermer</a>
         </div>
           <div data-role="content">
             <div id="querycontent">
-            Cliquez ou touchez la carte pour l'interroger
+            Interrogez la carte
             </div>
           </div>
       </div>
       <!-- info panel -->
-      <div id="panelInfo" class="popupPanel" data-role="popup" data-corners="false" data-shadow="false">
-        <div data-role="header" data-theme="c">
+      <div id="panelInfo" class="popupPanel" data-role="popup" data-corners="false"  data-theme="b">
+        <div data-role="header">
           <h3 class="i18n">Comprendre</h3>
-          <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-right" data-shadow="false">Fermer</a>
+          <a href="#header" data-rel="back" class="ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-icon-notext ui-corner-all ui-btn-right">Fermer</a>
         </div>
         <div data-role="content">
           <div id="legend"></div>
@@ -115,10 +114,10 @@ $(document).bind("mobileinit", function(){
         </div>
       </div>
       <!-- locate panel -->
-      <div id="panelLocate" class="popupPanel" data-role="popup" data-corners="false" data-shadow="false">
-        <div data-role="header" data-theme="c">
+      <div id="panelLocate" class="popupPanel" data-role="popup" data-corners="false"  data-theme="b">
+        <div data-role="header">
           <h3 class="i18n">Localiser</h3>
-          <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Fermer</a>
+          <a href="#header" data-rel="back" class="ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-icon-notext ui-corner-all ui-btn-right">Fermer</a>
         </div>
         <div data-role="content">
           <form id="addressForm" method="POST" action="#">
@@ -128,18 +127,16 @@ $(document).bind("mobileinit", function(){
             <span id="locateMsg"></span>
             <div data-role="controlgroup" data-type="horizontal">
               <input type="submit" data-role="button" data-mini="true" data-inline="true" data-icon="search" value="Localiser" />
-              <!--
-              <input type="button" id="locateBtn" data-role="button" data-mini="true" data-icon="mappin" value="Where am I ?" />
-              -->
+              <input type="button" id="locateBtn" data-role="button" data-mini="true" data-icon="location" value="Où suis-je ?" />
             </div>
           </form>
         </div>
       </div>
       <!-- share panel -->
-      <div id="panelShare" class="popupPanel" data-role="popup" data-corners="false" data-shadow="false">
-        <div data-role="header" data-theme="c">
+      <div id="panelShare" class="popupPanel" data-role="popup" data-corners="false" data-theme="b">
+        <div data-role="header">
           <h3 class="i18n">Partager</h3>
-          <a href="#" data-rel="back" data-role="button" data-mini="true" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Fermer</a>
+          <a href="#header" data-rel="back" class="ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-icon-notext ui-corner-all ui-btn-right">Fermer</a>
         </div>
         <div data-role="content">
           <label for="setTitle" class="ui-hidden-accessible">Title</label>
@@ -147,13 +144,15 @@ $(document).bind("mobileinit", function(){
           <div class="ui-grid-a">
             <div class="ui-block-a">
               <!-- permalink -->
-              <a data-role="button" id="permalink" data-ajax="false" href="#" data-mini="true" data-iconpos="right">Permalien</a>
+              <span>
+                <a data-role="button" id="permalink" data-ajax="false" href="#" data-mini="true">Permalien</a>
+              </span>
               <!-- social links -->
               <span id="socialLinks"></span>
               <!-- to georchestra viewer -->
               <form id="georchestraForm" target="_blank" method="post" action="http://geobretagne.fr/mapfishapp/">
                 <input type="hidden" id="georchestraFormData" name="data" value="" />
-                <input type="submit" data-role="button" data-mini="true" data-iconpos="right" value="geOrchestra" />
+                <input type="submit" data-role="button" data-mini="true" value="geOrchestra" />
               </form>
             </div>
             <!-- QQR code -->

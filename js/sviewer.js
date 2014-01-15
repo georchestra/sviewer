@@ -21,7 +21,7 @@ var hardConfig = {
     initialExtent: [-584909, 5968136, 2126, 6287643],
     maxExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
     restrictedExtent: [-540000, 5880000,30000, 6297000],
-    maxFeatures: 3,
+    maxFeatures: 10,
     nodata: '<!--nodatadetect-->\n<!--nodatadetect-->',
     openLSGeocodeUrl: "http://geobretagne.fr/openls?",
     layersBackground: [
@@ -285,7 +285,7 @@ function initmap() {
                     }
 
                     // title
-                    html.push('<p><h3 class="mdTitle">' + escHTML(mdLayer.title) + '</h3>');
+                    html.push('<p><h4 class="mdTitle">' + escHTML(mdLayer.title) + '</h4>');
 
                     // abstract
                     html.push("<p class='mdAbstract'>" + escHTML(mdLayer['abstract']));
@@ -354,8 +354,7 @@ function initmap() {
             });
             $('.socialBtn').buttonMarkup({
                 mini: true,
-                icon: null,
-                iconpos: "right"
+                icon: null
             });
             if ($('#qrcode').css("visibility")==="visible") {
                 $('#qrcode').empty();
@@ -525,18 +524,21 @@ freeFormAddress,
     function queryMap(e) {
         var p = e.getPixel();
         var coord = e.getCoordinate();
+        var width = map.getSize()[0];
+        var height = map.getSize()[1];
+        var bbox = view.calculateExtent(map.getSize()).join(',');
+
         marker.setPosition(coord);
         $('#marker').show();
-        // anime
+        //~ // recenter anime
         var pan = ol.animation.pan({
             duration: 1000,
             source: view.getCenter()
         });
         map.beforeRender(pan);
         view.setCenter(coord);
-
-
         $('#panelInfo').popup('close');
+
         $('#querycontent').empty();
         $.each(config.layersQueryable, function(i, layer) {
             var onlineresource = layer.wmsurl_ns;
@@ -545,16 +547,18 @@ freeFormAddress,
                 'VERSION': '1.3.0',
                 'REQUEST': 'GetFeatureInfo',
                 'LAYERS': layer.nslayername,
-                'WIDTH': map.getSize()[0],
-                'HEIGHT': map.getSize()[1],
-                'BBOX': view.calculateExtent(map.getSize()).join(','),
+                'WIDTH': width,
+                'HEIGHT': height,
+                'BBOX': bbox,
                 'CRS': projcode,
                 'FORMAT': 'image/png',
-                'QUERY_LAYERS':  layer.nslayername,
+                'QUERY_LAYERS':  layer.layername,
                 'INFO_FORMAT': 'text/html',
+                'maxFeatures': config.maxFeatures,
                 'I': Math.round(p[0]),
                 'J': Math.round(p[1])
             };
+            console.log(p);
             var url = onlineresource + '?' + $.param(gfiparams);
             // response order = layer order
             var domResponse =  $('<div></div>');
@@ -576,7 +580,8 @@ freeFormAddress,
                         $('#panelQuery').popup('open');
                     }
                     else {
-                        $('#panelQuery').popup('close');
+                        $('#panelQuery').popup('open');
+                        $(this).append('aucun objet n\'a été trouvé');
                     };
                     $.mobile.loading('hide');
 
@@ -603,23 +608,37 @@ freeFormAddress,
         return false;
     };
 
-    // popup size and placement to fit small screens
-    function popupLayout (e) {
-        var popup = $(this);
-        popup.css('top', $('#header').outerHeight()-29);
-        popup.css('max-width', Math.min($(window).width() - 44, 450) + 'px');
-        popup.css('max-height', $(window).height() - 44 + 'px');
+    // panel size and placement to fit small screens
+    function panelLayout (e) {
+        var panel = $(this);
+        var h = $('#header').outerHeight();
+        panel.css('top', $('#header').outerHeight()-30);
+        panel.css('max-width', Math.min($(window).width() - 44, 450) + 'px');
+        panel.css('max-height', $(window).height() - 44 + 'px');
     }
 
     // visible popup = highlight button
-    function popupToggle(e) {
+    function panelToggle(e) {
         $.each($("#panelBtn a"), function(i, a) {
             var id = a.href.split('#', 2)[1];
-            $(a).buttonMarkup({
-                theme: ($("#"+id).css("visibility")==="visible")?"c":"b"
-             });
+            $(a).toggleClass('ui-btn-active', ($("#"+id).css('visibility')=='visible'));
         });
     }
+
+    // bypass popup behavior
+    function panelButton(e) {
+        var idOn = e.target.href.split('#',2)[1];
+        $.each($('#panelBtn a'), function(i, a) {
+            var id = a.href.split('#',2)[1];
+            if (id!=idOn) {
+                $('#'+id).popup('close');
+            }
+            else {
+                $('#'+id).popup('open');
+            }
+        });
+    }
+
 
     // updates title on keypress
     function setTitle(e) {
@@ -714,7 +733,6 @@ freeFormAddress,
         map = new ol.Map({
             controls: [
                 new ol.control.ScaleLine(),
-                new ol.control.FullScreen(),
                 new ol.control.Attribution({target: $('#baseAttributions')[0] })
             ],
             layers: [],
@@ -762,6 +780,10 @@ freeFormAddress,
 
 
 
+
+
+
+
     // ------ Main ------------------------------------------------------------------------------------------
 
     doConfiguration();
@@ -783,7 +805,7 @@ freeFormAddress,
     $('#addressForm').on('submit', searchPlace);
 
     // set title dialog
-    $('#setTitle').keypress(setTitle);
+    $('#setTitle').keyup(setTitle);
     $('#setTitle').blur(setPermalink);
 
     // sendto form
@@ -792,11 +814,12 @@ freeFormAddress,
     });
 
     // dynamic resize
-    $(window).bind('orientationchange resize pageshow', popupLayout);
-    $('.popupPanel').bind('popupbeforeposition popupafteropen', popupLayout);
+    $(window).bind('orientationchange resize pageshow', panelLayout);
+    $('.popupPanel').bind('popupbeforeposition popupafteropen', panelLayout);
+    $.each($('.popupPanel'), panelLayout);
     $('.popupPanel').bind('popupafteropen', setPermalink);
-    $('.popupPanel').bind('popupbeforeposition popupafterclose', popupToggle);
-    $.each($('.popupPanel'), popupLayout);
+    $('.popupPanel').bind('popupafterclose popupafteropen', panelToggle);
+    $('#panelBtn a').bind('click', panelButton);
 }
 
 
