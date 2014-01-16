@@ -184,6 +184,9 @@ function initmap() {
             },
             extent: config.maxExtent
         }
+        if (layerDescriptor.sldurl) {
+            wms_params.params['SLD'] = layerDescriptor.sldurl;
+        }
         wmslayer = new ol.layer.Tile({
             source: new ol.source.TileWMS(wms_params)
         });
@@ -200,20 +203,22 @@ function initmap() {
         var url = '';
         // todo : missing ol3 WMC native support
         function parseWMCResponse(response) {
+                                console.log(response);
+
             var wmc = $('ViewContext', response);
             $(wmc).find('LayerList > Layer').each(function() {
                 // we only consider visible and queryable layers
                 if ($(this).attr('hidden')!='1' && $(this).attr('queryable')=='1') {
                     var layerDesc = {};
                     layerDesc.nslayername = $(this).children('Name').text();
-                    layerDesc.stylename = $(this).find("StyleList  > Style[current='1'] > Name").text();
                     layerDesc.namespace = '';
                     layerDesc.layername = $(this).children('Name').text();
                     layerDesc.wmsurl_global = $(this).find('Server > OnlineResource').attr('xlink:href');
                     layerDesc.wmsurl_ns = layerDesc.wmsurl_global;
                     layerDesc.wmsurl_layer = layerDesc.wmsurl_global;
                     layerDesc.format = $(this).find("FormatList  > Format[current='1']").text();
-
+                    layerDesc.sldurl = ($(this).find("StyleList  > Style[current='1'] > SLD > OnlineResource").attr('xlink:href'));
+                    layerDesc.stylename = $(this).find("StyleList  > Style[current='1'] > Name").text();
                     config.layersQueryable.push(layerDesc);
                     map.addLayer(parseLayerQueryable(layerDesc));
                     $.mobile.loading('hide');
