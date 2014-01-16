@@ -1,19 +1,75 @@
-var hardConfig = {
+customConfig = {
     title: 'geOrchestra mobile',
-    geOrchestraBaseUrl: 'http://dev.geobretagne.fr/',
-    projection: projection,
-    initialExtent: [-584909, 5968136, 2126, 6287643],
+
+    /**
+     * base url of the geOrchetra SDI. Layers coming from this SDI
+     * will have enhanced features.
+     */
+    geOrchestraBaseUrl: 'http://sdi.georchestra.org/',
+
+    /**
+     * map bounds
+     */
+    initialExtent: [-12885509,-1089321,5899654,7549896],
     maxExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
-    restrictedExtent: [-540000, 5880000,30000, 6297000],
+    restrictedExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+
+    /**
+     * getFeatureInfo control
+     */
     maxFeatures: 10,
     nodata: '<!--nodatadetect-->\n<!--nodatadetect-->',
+
+    /**
+     * openLS control
+     */
     openLSGeocodeUrl: "http://geobretagne.fr/openls?",
+
+    /**
+     * background layers (EPSG:3857)
+     */
     layersBackground: [
         new ol.layer.Tile({
-            source: new ol.source.OSM()
+              source: new ol.source.OSM()
+        }),
+        new ol.layer.Tile({
+            source: new ol.source.TileWMS({
+                url: 'http://sdi.georchestra.org/geoserver/dem/wms',
+                params: {
+                    'LAYERS': 'altitude',
+                    'TILED': true
+                },
+                extent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+                attributions: [new ol.Attribution({ html: 'tiles from geOrchestra, data <a href="http://www.cgiar-csi.org/data/srtm-90m-digital-elevation-database-v4-1">(c) CGIAR-CSI</a>'})],
+            })
+        }),
+        new ol.layer.Tile({
+            source: new ol.source.TileWMS({
+                url: 'http://sdi.georchestra.org/geoserver/unearthedoutdoors/wms',
+                params: {
+                    'LAYERS': 'truemarble',
+                    'TILED': true
+                },
+                extent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+                attributions: [new ol.Attribution({ html: 'tiles from geOrchestra, data <a href="http://www.unearthedoutdoors.net/global_data/true_marble/">(c) Unearthed Outdoors</a>'})],
+            })
+        }),
+        new ol.layer.Tile({
+            source: new ol.source.TileWMS({
+                url: 'http://sdi.georchestra.org/geoserver/nasa/wms',
+                params: {
+                    'LAYERS': 'night_2012',
+                    'TILED': true
+                },
+                extent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+                attributions: [new ol.Attribution({ html: 'tiles from geOrchestra, data <a href="http://earthobservatory.nasa.gov/Features/NightLights/page3.php">(c) NASA</a>'})],
+            })
         })
     ],
-    layersOverlay: [],
+
+    /**
+     * social media links (prefixes)
+     */
     socialMedia: {
         'Twitter' : 'https://twitter.com/intent/tweet?text=',
         'Google+' : 'https://plus.google.com/share?url=',

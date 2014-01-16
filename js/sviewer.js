@@ -12,54 +12,55 @@ for (var z = 0; z < 20; ++z) {
 var map;
 var view;
 var config = {};
-
+var customConfig = {};
 var hardConfig = {
-    lang: 'fr',
     title: 'geOrchestra mobile',
-    geOrchestraBaseUrl: 'http://dev.geobretagne.fr/',
+    geOrchestraBaseUrl: 'http://sdi.georchestra.org/',
     projection: projection,
-    initialExtent: [-584909, 5968136, 2126, 6287643],
+    initialExtent: [-12885509,-1089321,5899654,7549896],
     maxExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
-    restrictedExtent: [-540000, 5880000,30000, 6297000],
+    restrictedExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
     maxFeatures: 10,
     nodata: '<!--nodatadetect-->\n<!--nodatadetect-->',
     openLSGeocodeUrl: "http://geobretagne.fr/openls?",
     layersBackground: [
         new ol.layer.Tile({
-            source: new ol.source.WMTS({
-                url: 'http://osm.geobretagne.fr/gwc01/service/wmts',
-                layer: 'osm:map',
-                attributions: [ol.source.OSM.DATA_ATTRIBUTION],
-                matrixSet: projcode,
-                format: 'image/png',
-                projection: projection,
-                tileGrid: new ol.tilegrid.WMTS({
-                    origin: ol.extent.getTopLeft(projectionExtent),
-                    resolutions: resolutions,
-                    matrixIds: matrixIds
-                })
+              source: new ol.source.OSM()
+        }),
+        new ol.layer.Tile({
+            source: new ol.source.TileWMS({
+                url: 'http://sdi.georchestra.org/geoserver/dem/wms',
+                params: {
+                    'LAYERS': 'altitude',
+                    'TILED': true
+                },
+                extent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+                attributions: [new ol.Attribution({ html: 'tiles from geOrchestra, data <a href="http://www.cgiar-csi.org/data/srtm-90m-digital-elevation-database-v4-1">(c) CGIAR-CSI</a>'})],
             })
         }),
         new ol.layer.Tile({
-            source: new ol.source.WMTS({
-                url: 'http://tile.geobretagne.fr/gwc02/service/wmts',
-                layer: 'satellite',
-                attributions: [new ol.Attribution({ html: '<a href="http://geobretagne.fr/geonetwork/apps/georchestra/?uuid=3a0ac2e3-7af1-4dec-9f36-dae6b5a8c731">(c) NASA, PlanetObserver, IGN RGE, partenariat GéoBretagne</a>'})],
-                matrixSet: projcode,
-                format: 'image/png',
-                projection: projection,
-                tileGrid: new ol.tilegrid.WMTS({
-                    origin: ol.extent.getTopLeft(projectionExtent),
-                    resolutions: resolutions,
-                    matrixIds: matrixIds
-                })
+            source: new ol.source.TileWMS({
+                url: 'http://sdi.georchestra.org/geoserver/unearthedoutdoors/wms',
+                params: {
+                    'LAYERS': 'truemarble',
+                    'TILED': true
+                },
+                extent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+                attributions: [new ol.Attribution({ html: 'tiles from geOrchestra, data <a href="http://www.unearthedoutdoors.net/global_data/true_marble/">(c) Unearthed Outdoors</a>'})],
             })
         }),
         new ol.layer.Tile({
-            source: new ol.source.OSM()
+            source: new ol.source.TileWMS({
+                url: 'http://sdi.georchestra.org/geoserver/nasa/wms',
+                params: {
+                    'LAYERS': 'night_2012',
+                    'TILED': true
+                },
+                extent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+                attributions: [new ol.Attribution({ html: 'tiles from geOrchestra, data <a href="http://earthobservatory.nasa.gov/Features/NightLights/page3.php">(c) NASA</a>'})],
+            })
         })
     ],
-    layersOverlay: [],
     socialMedia: {
         'Twitter' : 'https://twitter.com/intent/tweet?text=',
         'Google+' : 'https://plus.google.com/share?url=',
@@ -196,15 +197,13 @@ function initmap() {
 
     /**
      * Loads, parses a Web Map Context and instanciates layers
-     * ol3 does dot support a WMC format for now
-     * @param {String} id of the map or URL of the web map context
+     * ol3 does dot support WMC format for now
+     * @param {String} wmc id of the map or URL of the web map context
      */
     function parseWMC(wmc) {
         var url = '';
         // todo : missing ol3 WMC native support
         function parseWMCResponse(response) {
-                                console.log(response);
-
             var wmc = $('ViewContext', response);
             $(wmc).find('LayerList > Layer').each(function() {
                 // we only consider visible and queryable layers
@@ -233,7 +232,6 @@ function initmap() {
         else if (wmc.match(/^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/)) {
             url = wmc;
         };
-        console.log(url);
 
         if (url!='') {
             $.mobile.loading('show');
@@ -403,7 +401,6 @@ function initmap() {
         }
     }
 
-    // ----- geolocation ------------------------------------------------------------------------------------
     /**
      * Queries the OpenLS service and recenters the map
      * @param text {String} the OpenLS plain text query
@@ -682,12 +679,12 @@ freeFormAddress,
             layersQueryable: [],
             layersQueryString: ''
         };
-        $.extend(config, customConfig);
         $.extend(config, hardConfig);
+        $.extend(config, customConfig);
 
         // querystring param: title
         if (qs['title']) {
-            config.title = qs['title'];
+            config.title = qs['title'] ;
             document.title = config.title;
             $('#title').text(config.title);
             $('#setTitle').val(config.title);
