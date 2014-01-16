@@ -514,12 +514,6 @@ freeFormAddress,
         }
     }
 
-
-
-
-
-
-
     /**
      * getFeatureInfo
      * @todo how's this is supposed to work ?
@@ -733,10 +727,10 @@ freeFormAddress,
         // map creation
         view = new ol.View2D();
         map = new ol.Map({
-            controls: [
+            controls: ol.control.defaults().extend([
                 new ol.control.ScaleLine(),
                 new ol.control.Attribution({target: $('#baseAttributions')[0] })
-            ],
+            ]),
             layers: [],
             overlays: [],
             target: 'map',
