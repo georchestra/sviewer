@@ -2,6 +2,11 @@ customConfig = {
     title: 'geOrchestra mobile',
 
     /**
+     * default language, see etc/i18n.js
+     */
+    lang: 'fr',
+
+    /**
      * base url of the geOrchetra SDI. Layers coming from this SDI
      * will have enhanced features.
      */
@@ -10,7 +15,7 @@ customConfig = {
     /**
      * map bounds
      */
-    initialExtent: [-12885509,-1089321,5899654,7549896],
+    initialExtent: [-12880000,-1080000,5890000,7540000],
     maxExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
     restrictedExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
 

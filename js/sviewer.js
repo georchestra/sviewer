@@ -5,7 +5,6 @@ var size = ol.extent.getWidth(projectionExtent) / 256;
 var resolutions = new Array(20);
 var matrixIds = new Array(20);
 for (var z = 0; z < 20; ++z) {
-    // generate resolutions and matrixIds arrays for this WMTS
     resolutions[z] = size / Math.pow(2, z);
     matrixIds[z] =projcode + ':' + z;
 }
@@ -14,10 +13,11 @@ var view;
 var config = {};
 var customConfig = {};
 var hardConfig = {
+    lang: 'en',
     title: 'geOrchestra mobile',
     geOrchestraBaseUrl: 'http://sdi.georchestra.org/',
     projection: projection,
-    initialExtent: [-12885509,-1089321,5899654,7549896],
+    initialExtent: [-12880000,-1080000,5890000,7540000],
     maxExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
     restrictedExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
     maxFeatures: 10,
@@ -25,40 +25,12 @@ var hardConfig = {
     openLSGeocodeUrl: "http://geobretagne.fr/openls?",
     layersBackground: [
         new ol.layer.Tile({
-              source: new ol.source.OSM()
+            preload: 2,
+            source: new ol.source.MapQuestOSM()
         }),
         new ol.layer.Tile({
-            source: new ol.source.TileWMS({
-                url: 'http://sdi.georchestra.org/geoserver/dem/wms',
-                params: {
-                    'LAYERS': 'altitude',
-                    'TILED': true
-                },
-                extent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
-                attributions: [new ol.Attribution({ html: 'tiles from geOrchestra, data <a href="http://www.cgiar-csi.org/data/srtm-90m-digital-elevation-database-v4-1">(c) CGIAR-CSI</a>'})],
-            })
-        }),
-        new ol.layer.Tile({
-            source: new ol.source.TileWMS({
-                url: 'http://sdi.georchestra.org/geoserver/unearthedoutdoors/wms',
-                params: {
-                    'LAYERS': 'truemarble',
-                    'TILED': true
-                },
-                extent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
-                attributions: [new ol.Attribution({ html: 'tiles from geOrchestra, data <a href="http://www.unearthedoutdoors.net/global_data/true_marble/">(c) Unearthed Outdoors</a>'})],
-            })
-        }),
-        new ol.layer.Tile({
-            source: new ol.source.TileWMS({
-                url: 'http://sdi.georchestra.org/geoserver/nasa/wms',
-                params: {
-                    'LAYERS': 'night_2012',
-                    'TILED': true
-                },
-                extent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
-                attributions: [new ol.Attribution({ html: 'tiles from geOrchestra, data <a href="http://earthobservatory.nasa.gov/Features/NightLights/page3.php">(c) NASA</a>'})],
-            })
+            preload: 2,
+            source: new ol.source.MapQuestOpenAerial()
         })
     ],
     socialMedia: {
@@ -84,23 +56,29 @@ function initmap() {
         return $('<p/>').text(s).html();
     }
 
+    /**
+     * Translates strings
+     * @param {String} s input string
+     * @return {String} translated string
+     */
+    function tr(s) {
+        return i18n[config.lang][s];
+    }
 
     /**
      * DOM elements i18n
      * @param selector {String} jQuery selector
-     * @param property {String} property to translate.
+     * @param propnames {Array} array of property names
      */
-    function translateDOM(selector, property) {
-        if (!property) {
-            $.each($(selector), function(i,e) {
-                $(e).text(Ol.i18n($(e).text()));
+    function translateDOM(selector, propnames) {
+        $.each($(selector), function(i,e) {
+            // text translation
+            $(e).text(tr($(e).text()));
+            // properties translation
+            $.each(propnames, function(j, p) {
+                $(e).prop(p, tr($(e).prop(p)));
             });
-        }
-        else {
-            $.each($(selector), function(i,e) {
-                $(e).prop(property, Ol.i18n($(e).prop(property)));
-            });
-        }
+        });
     }
 
     /**
@@ -351,6 +329,9 @@ function initmap() {
                 $('#socialLinks').append('<a data-role="button" class="socialBtn" target="_blank" href="' +
                     socialUrl +
                     encodeURIComponent(permalinkQuery) +
+                    '" title="' +
+                    tr('share on ') +
+                    name +
                     '">' +
                     name +
                     '</a>'
@@ -437,7 +418,7 @@ function initmap() {
                         view.setZoom(zoom);
                     }
                     else {
-                        $('#locateMsg').text('Results are off map');
+                        $('#locateMsg').text(tr('Results are off map'));
                         $.mobile.loading('hide');
                     }
                 }
@@ -446,14 +427,14 @@ function initmap() {
                     $.mobile.loading('hide');
                 }
             } catch(err) {
-                $('#locateMsg').text('Geolocation failed');
+                $('#locateMsg').text(tr('Geolocation failed'));
                 $.mobile.loading('hide');
                 console.log(err.message);
             }
         }
 
         function onOpenLSFailure (response) {
-            $('#locateMsg').text('Geolocation failed');
+            $('#locateMsg').text(tr('Geolocation failed'));
                 $.mobile.loading('hide');
         }
 
@@ -504,7 +485,7 @@ freeFormAddress,
                     success: onOpenLSSuccess
                 });
                 $.mobile.loading('show', {
-                    text: "searching..."
+                    text: tr("searching...")
                 });
             }
         }
@@ -577,7 +558,7 @@ freeFormAddress,
                     }
                     else {
                         $('#panelQuery').popup('open');
-                        $(this).append('aucun objet n\'a été trouvé');
+                        $(this).append(tr('no item found'));
                     };
                     $.mobile.loading('hide');
 
@@ -816,6 +797,9 @@ freeFormAddress,
     $('.popupPanel').bind('popupafteropen', setPermalink);
     $('.popupPanel').bind('popupafterclose popupafteropen', panelToggle);
     $('#panelBtn a').bind('click', panelButton);
+
+    // i18n
+    translateDOM('.i18n', ['title', 'placeholder', 'value']);
 }
 
 
