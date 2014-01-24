@@ -83,4 +83,4 @@ var i18n = {
         'Permalink': 'Permalink',
         'address and/or city': 'Adresse eingeben'
     }
-}
+};

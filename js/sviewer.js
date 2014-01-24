@@ -88,7 +88,7 @@ function initmap() {
      * @return {String} param value
      */
      var qs = (function(s) {
-        if (s == "") return {};
+        if (s === "") return {};
         var b = {};
         for (var i = 0; i < s.length; ++i)
         {
@@ -143,7 +143,7 @@ function initmap() {
             config.layersBackground[config.lb].setVisible(true);
         }
         return config.layersBackground[config.lb];
-    };
+    }
 
 
     /**
@@ -162,9 +162,9 @@ function initmap() {
                 'STYLES': layerDescriptor.stylename
             },
             extent: config.maxExtent
-        }
+        };
         if (layerDescriptor.sldurl) {
-            wms_params.params['SLD'] = layerDescriptor.sldurl;
+            wms_params.params.SLD = layerDescriptor.sldurl;
         }
         wmslayer = new ol.layer.Tile({
             source: new ol.source.TileWMS(wms_params)
@@ -201,7 +201,7 @@ function initmap() {
                     $.mobile.loading('hide');
                 }
             });
-        };
+        }
         // wmc comes from a geOrchestra map id
         if (wmc.match(wmc.match(/^[a-z\d]{32}$/))) {
             url = config.geOrchestraBaseUrl + 'mapfishapp/ws/wmc/geodoc' + wmc + '.wmc';
@@ -209,18 +209,18 @@ function initmap() {
         // wmc with absolute url
         else if (wmc.match(/^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/)) {
             url = wmc;
-        };
+        }
 
-        if (url!='') {
+        if (url!=='') {
             $.mobile.loading('show');
             $.ajax({
                 url: '/proxy/?url=' + encodeURIComponent(url),
                 type: 'GET',
                 dataType: 'XML',
                 success: parseWMCResponse
-            })
-        };
-    };
+            });
+        }
+    }
 
     /**
      * Queries the layer capabilities to display its legend and metadata.:
@@ -270,7 +270,7 @@ function initmap() {
                     html.push('<p><h4 class="mdTitle">' + escHTML(mdLayer.title) + '</h4>');
 
                     // abstract
-                    html.push("<p class='mdAbstract'>" + escHTML(mdLayer['abstract']));
+                    html.push("<p class='mdAbstract'>" + escHTML(mdLayer.abstract));
 
                     // metadata
                     if (mdLayer.metadataURLs) {
@@ -349,7 +349,7 @@ function initmap() {
                     height: 130,
                     correctLevel: QRCode.CorrectLevel.L
                 });
-            };
+            }
             $('#permalink').prop('href',permalinkQuery);
             $('#embedcode').text('<iframe style="width: 600px; height: 400px;" src="' +
             permalinkQuery +
@@ -406,10 +406,10 @@ function initmap() {
                     }
                     var ptResult = ol.proj.transform(lonlat, 'EPSG:4326', projcode);
                     // map move and zoom
-                    if (ptResult[0]>config.restrictedExtent[0]
-                        &ptResult[1]>config.restrictedExtent[1]
-                        &ptResult[0]<config.restrictedExtent[2]
-                        &ptResult[1]<config.restrictedExtent[3]
+                    if (ptResult[0]>config.restrictedExtent[0] &&
+                        ptResult[1]>config.restrictedExtent[1] &&
+                        ptResult[0]<config.restrictedExtent[2] &&
+                        ptResult[1]<config.restrictedExtent[3]
                     ) {
                         marker.setPosition(ptResult);
                         $('#marker').show();
@@ -461,6 +461,7 @@ function initmap() {
                     url: "/proxy/?url=" + encodeURIComponent(config.openLSGeocodeUrl),
                     type: 'POST',
                     data: [
+/*jshint multistr: true */
 '<?xml version="1.0" encoding="UTF-8"?> \
 <XLS xmlns:xls="http://www.opengis.net/xls" \
 xmlns:gml="http://www.opengis.net/gml" \
@@ -559,7 +560,7 @@ freeFormAddress,
                     else {
                         $('#panelQuery').popup('open');
                         $(this).append(tr('no item found'));
-                    };
+                    }
                     $.mobile.loading('hide');
 
                 },
@@ -567,7 +568,7 @@ freeFormAddress,
                     $.mobile.loading('hide');
                     console.log(response);
                 }
-            })
+            });
         });
     }
 
@@ -583,7 +584,7 @@ freeFormAddress,
             console.log(err.message);
         }
         return false;
-    };
+    }
 
     // panel size and placement to fit small screens
     function panelLayout (e) {
@@ -627,18 +628,18 @@ freeFormAddress,
     // Zoom +
     function zoomIn() {
         view.setZoom(view.getZoom()+1);
-    };
+    }
 
     //Zoom -
     function zoomOut() {
         view.setZoom(view.getZoom()-1);
-    };
+    }
 
     // Back to initial extent
     function zoomInit() {
         view.fitExtent(config.initialExtent, map.getSize());
         view.setRotation(0);
-    };
+    }
 
         // ----- configuration --------------------------------------------------------------------------------
 
@@ -658,47 +659,47 @@ freeFormAddress,
         $.extend(config, customConfig);
 
         // querystring param: title
-        if (qs['title']) {
-            config.title = qs['title'] ;
+        if (qs.title) {
+            config.title = qs.title ;
             document.title = config.title;
             $('#title').text(config.title);
             $('#setTitle').val(config.title);
-        };
+        }
 
         // querystring param: xyz
-        if (qs['x']&qs['y']&qs['z']) {
-            config['x'] = parseFloat(qs['x']);
-            config['y'] = parseFloat(qs['y']);
-            config['z'] = parseInt(qs['z']);
-        };
+        if (qs.x&&qs.y&&qs.z) {
+            config.x = parseFloat(qs.x);
+            config.y = parseFloat(qs.y);
+            config.z = parseInt(qs.z);
+        }
 
         // querystring param: lb (selected background)
-        if (qs['lb']) {
-            config.lb = parseInt(qs['lb']) % config.layersBackground.length;
-        };
+        if (qs.lb) {
+            config.lb = parseInt(qs.lb) % config.layersBackground.length;
+        }
 
         // querystring param: layers
-        if (qs['layers']) {
-            config.layersQueryString = qs['layers'];
+        if (qs.layers) {
+            config.layersQueryString = qs.layers;
             var ns_layer_style_list = [];
             // parser to retrieve serialized namespace:name[*style] and store the description in config
-            ns_layer_style_list = (typeof qs['layers'] === 'string') ? qs['layers'].split(',') : qs['layers']
+            ns_layer_style_list = (typeof qs.layers === 'string') ? qs.layers.split(',') : qs.layers;
             $.each(ns_layer_style_list, function(i,s) {
                 config.layersQueryable.push(parseLayerParam(s));
             });
-        };
-
-        // querystring param: map id
-        if (qs['wmc']) {
-            config.wmc = qs['wmc'];
-        };
-
-        // querystring param: kml
-        if (qs['kml']) {
-            config.kml = qs['kml'];
         }
 
-    };
+        // querystring param: map id
+        if (qs.wmc) {
+            config.wmc = qs.wmc;
+        }
+
+        // querystring param: kml
+        if (qs.kml) {
+            config.kml = qs.kml;
+        }
+
+    }
 
 
     /**
@@ -720,7 +721,7 @@ freeFormAddress,
         });
 
         // map recentering
-        if (config.x&config.y&config.z) {
+        if (config.x&&config.y&&config.z) {
             view.setCenter([config.x, config.y]);
             view.setZoom(config.z);
         }
@@ -753,7 +754,7 @@ freeFormAddress,
             stopEvent: false
         });
         map.addOverlay(marker);
-    };
+    }
 
 
 
@@ -769,7 +770,7 @@ freeFormAddress,
     // map events
     map.on('click', queryMap);
     map.on('moveend', setPermalink);
-    $('#marker').click(function(e) { $(e.target).hide('fast') });
+    $('#marker').click(function(e) { $(e.target).hide('fast'); });
 
 
     // map buttons
@@ -801,6 +802,3 @@ freeFormAddress,
     // i18n
     translateDOM('.i18n', ['title', 'placeholder', 'value']);
 }
-
-
-
