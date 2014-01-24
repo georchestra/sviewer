@@ -169,7 +169,7 @@ function initmap() {
         wmslayer = new ol.layer.Tile({
             source: new ol.source.TileWMS(wms_params)
         });
-        getWMSLegend(layerDescriptor.wmsurl_ns, layerDescriptor.layername, layerDescriptor.stylename);
+        getWMSLegend(layerDescriptor);
         return wmslayer;
     }
 
@@ -224,14 +224,13 @@ function initmap() {
 
     /**
      * Queries the layer capabilities to display its legend and metadata.:
-     * @param {String} onlineresource the WMS service URL
-     * @param {String} layername
-     * @param {String} stylename
+     * @param {Object} ld layerDescriptor describes the WMS layer
      */
-    function getWMSLegend(onlineresource, layername, stylename) {
+    function getWMSLegend(ld) {
+        //.wmsurl_ns, layerDescriptor.layername, layerDescriptor.stylename
         var parser = new ol.parser.ogc.WMSCapabilities();
         $.ajax({
-            url: '/proxy/?url=' + encodeURIComponent(onlineresource + '?SERVICE=WMS&REQUEST=GetCapabilities'),
+            url: '/proxy/?url=' + encodeURIComponent(ld.wmsurl_ns + '?SERVICE=WMS&REQUEST=GetCapabilities'),
             type: 'GET',
             success: function(response) {
                 var html = '';
@@ -240,7 +239,7 @@ function initmap() {
 
                 // searching for the layer
                 $.each(capabilities.capability.layers, function(i, layer) {
-                    if (layer.name === layername) {
+                    if (layer.name === ld.layername) {
                         mdLayer = layer;
                     }
                 });
@@ -251,8 +250,11 @@ function initmap() {
                         'REQUEST' : 'GetLegendGraphic',
                         'FORMAT' : 'image/png',
                         'LAYER': mdLayer.name,
-                        'STYLE': stylename
+                        'STYLE': ld.stylename
                     };
+                    if (ld.sldurl) {
+                        legendArgs['SLD'] = ld.sldurl;
+                    }
 
                     html = [];
 
@@ -286,7 +288,7 @@ function initmap() {
 
                     // legend
                     html.push('<img class="mdLegend" src="');
-                    html.push(onlineresource + '?' + $.param(legendArgs));
+                    html.push(ld.wmsurl_ns + '?' + $.param(legendArgs));
                     html.push('" />');
 
                     html.push('<hr />');
