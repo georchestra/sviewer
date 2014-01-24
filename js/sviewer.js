@@ -62,7 +62,12 @@ function initmap() {
      * @return {String} translated string
      */
     function tr(s) {
-        return i18n[config.lang][s];
+        if (config.lang !== 'en') {
+            return i18n[config.lang][s];
+        }
+        else {
+            return s;
+        }
     }
 
     /**
@@ -196,7 +201,6 @@ function initmap() {
                     layerDesc.format = $(this).find("FormatList  > Format[current='1']").text();
                     layerDesc.sldurl = ($(this).find("StyleList  > Style[current='1'] > SLD > OnlineResource").attr('xlink:href'));
                     layerDesc.stylename = $(this).find("StyleList  > Style[current='1'] > Name").text();
-                    config.layersQueryable.push(layerDesc);
                     map.addLayer(parseLayerQueryable(layerDesc));
                     $.mobile.loading('hide');
                 }
@@ -279,7 +283,7 @@ function initmap() {
                         $.each(mdLayer.metadataURLs, function(i,md) {
                             if (md.format === "text/html") {
                                 html.push('&nbsp;<a target="_blank" class="mdMeta" href="' + md.href + '">');
-                                html.push('voir fiche');
+                                html.push(tr('metadata'));
                                 html.push(" ... </a>");
                             }
                         });

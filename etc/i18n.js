@@ -17,6 +17,8 @@ var i18n = {
         'Query the map': 'Interrogez la carte',
         'no item found': 'aucun objet n\'a été trouvé',
 
+        'metadata': 'voir métadonnée',
+
         'Results are off map': 'Résultats hors carte',
         'No result': 'Aucun résultat',
         'Geolocation failed': 'Localisation impossible',
