@@ -55,6 +55,20 @@ function initmap() {
     function escHTML (s) {
         return $('<p/>').text(s).html();
     }
+    
+    /**
+     * Returns a proxified URL for Ajax XSS
+     * @param {String} url
+     * @return {String} Ajax url
+     */
+    function ajaxURL (url) {
+        if (url.indexOf(location.protocol + '//' + location.host)===0) {
+            return url;
+        }
+        else {
+            return  '/proxy/?url=' + encodeURIComponent(url);
+        }
+    }
 
     /**
      * Translates strings
@@ -210,15 +224,15 @@ function initmap() {
         if (wmc.match(wmc.match(/^[a-z\d]{32}$/))) {
             url = config.geOrchestraBaseUrl + 'mapfishapp/ws/wmc/geodoc' + wmc + '.wmc';
         }
-        // wmc with absolute url
-        else if (wmc.match(/^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/)) {
+        // wmc is an url
+        else {
             url = wmc;
         }
 
         if (url!=='') {
             $.mobile.loading('show');
             $.ajax({
-                url: '/proxy/?url=' + encodeURIComponent(url),
+                url: ajaxURL(url),
                 type: 'GET',
                 dataType: 'XML',
                 success: parseWMCResponse
@@ -234,7 +248,7 @@ function initmap() {
         //.wmsurl_ns, layerDescriptor.layername, layerDescriptor.stylename
         var parser = new ol.parser.ogc.WMSCapabilities();
         $.ajax({
-            url: '/proxy/?url=' + encodeURIComponent(ld.wmsurl_ns + '?SERVICE=WMS&REQUEST=GetCapabilities'),
+            url: ajaxURL(ld.wmsurl_ns + '?SERVICE=WMS&REQUEST=GetCapabilities'),
             type: 'GET',
             success: function(response) {
                 var html = '';
@@ -464,7 +478,7 @@ function initmap() {
                 }
 
                 $.ajax({
-                    url: "/proxy/?url=" + encodeURIComponent(config.openLSGeocodeUrl),
+                    url: ajaxURL(config.openLSGeocodeUrl),
                     type: 'POST',
                     data: [
 /*jshint multistr: true */
@@ -550,7 +564,7 @@ freeFormAddress,
             // ajax request
             $.mobile.loading('show');
             $.ajax({
-                url: '/proxy/?url=' + encodeURIComponent(url),
+                url: ajaxURL(url),
                 type: 'GET',
                 dataType: 'html',
                 context: domResponse,
