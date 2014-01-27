@@ -272,9 +272,9 @@ function initmap() {
                 capabilities = parser.read(response);
 
                 // searching for the layer
-                $.each(capabilities.capability.layers, function(i, layer) {
-                    if (layer.name === ld.layername) {
-                        mdLayer = layer;
+                $.each(capabilities.capability.layers, function() {
+                    if (this.name === ld.layername) {
+                        mdLayer = this;
                     }
                 });
                 if (mdLayer) {
@@ -310,9 +310,9 @@ function initmap() {
 
                     // metadata
                     if (mdLayer.metadataURLs) {
-                        $.each(mdLayer.metadataURLs, function(i,md) {
-                            if (md.format === "text/html") {
-                                html.push('&nbsp;<a target="_blank" class="mdMeta" href="' + md.href + '">');
+                        $.each(mdLayer.metadataURLs, function() {
+                            if (this.format === "text/html") {
+                                html.push('&nbsp;<a target="_blank" class="mdMeta" href="' + this.href + '">');
                                 html.push(tr('metadata'));
                                 html.push(" ... </a>");
                             }
@@ -406,11 +406,11 @@ function initmap() {
                 "services": [],
                 "layers" : []
             };
-            $.each(config.layersQueryable, function(i, layer) {
+            $.each(config.layersQueryable, function() {
                 params.layers.push({
-                    "layername" : layer.layername,
+                    "layername" : this.layername,
                     "owstype" : "WMS",
-                    "owsurl" : layer.wmsurl_ns
+                    "owsurl" : this.wmsurl_ns
                 });
             });
             $("#georchestraFormData").val(JSON.stringify(params));
@@ -555,19 +555,19 @@ freeFormAddress,
         $('#panelInfo').popup('close');
 
         $('#querycontent').empty();
-        $.each(config.layersQueryable, function(i, layer) {
-            var onlineresource = layer.wmsurl_ns;
+        $.each(config.layersQueryable, function() {
+            var onlineresource = this.wmsurl_ns;
             var gfiparams = {
                 'SERVICE': 'WMS',
                 'VERSION': '1.3.0',
                 'REQUEST': 'GetFeatureInfo',
-                'LAYERS': layer.nslayername,
+                'LAYERS': this.nslayername,
                 'WIDTH': width,
                 'HEIGHT': height,
                 'BBOX': bbox,
                 'CRS': projcode,
                 'FORMAT': 'image/png',
-                'QUERY_LAYERS':  layer.layername,
+                'QUERY_LAYERS':  this.layername,
                 'INFO_FORMAT': 'text/html',
                 'maxFeatures': config.maxFeatures,
                 'I': Math.round(p[0]),
@@ -633,17 +633,17 @@ freeFormAddress,
 
     // visible popup = highlight button
     function panelToggle(e) {
-        $.each($("#panelBtn a"), function(i, a) {
-            var id = a.href.split('#', 2)[1];
-            $(a).toggleClass('ui-btn-active', ($("#"+id).css('visibility')=='visible'));
+        $.each($("#panelBtn a"), function() {
+            var id = this.href.split('#', 2)[1];
+            $(this).toggleClass('ui-btn-active', ($("#"+id).css('visibility')=='visible'));
         });
     }
 
     // bypass popup behavior
     function panelButton(e) {
         var idOn = e.target.href.split('#',2)[1];
-        $.each($('#panelBtn a'), function(i, a) {
-            var id = a.href.split('#',2)[1];
+        $.each($('#panelBtn a'), function() {
+            var id = this.href.split('#',2)[1];
             if (id!=idOn) {
                 $('#'+id).popup('close');
             }
@@ -722,8 +722,8 @@ freeFormAddress,
             var ns_layer_style_list = [];
             // parser to retrieve serialized namespace:name[*style] and store the description in config
             ns_layer_style_list = (typeof qs.layers === 'string') ? qs.layers.split(',') : qs.layers;
-            $.each(ns_layer_style_list, function(i,s) {
-                config.layersQueryable.push(parseLayerParam(s));
+            $.each(ns_layer_style_list, function() {
+                config.layersQueryable.push(parseLayerParam(this));
             });
         }
 
@@ -768,16 +768,16 @@ freeFormAddress,
         }
 
         // adding background layers (opaque, non queryable, mutually exclusive)
-        $.each(config.layersBackground, function(i, layer) {
-                layer.setVisible(false);
-                map.addLayer(layer);
+        $.each(config.layersBackground, function() {
+                this.setVisible(false);
+                map.addLayer(this);
             }
         );
         switchBackground(config.lb);
 
         // adding queryable WMS layers from querystring
-        $.each(config.layersQueryable, function(i, layer) {
-            map.addLayer(parseLayerQueryable(layer));
+        $.each(config.layersQueryable, function() {
+            map.addLayer(parseLayerQueryable(this));
         });
 
         // adding WMS layers from georchestra map (WMC)
