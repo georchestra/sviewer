@@ -211,8 +211,8 @@ function initmap() {
         function parseWMCResponse(response) {
             var wmc = $('ViewContext', response);
             // recenter on  WMC extent
-            var srs = vgb.attr('SRS');
             var vgb = $(wmc).children('General').children('BoundingBox');
+            var srs = vgb.attr('SRS');
             var extent = [vgb.attr('minx'), vgb.attr('miny'), vgb.attr('maxx'), vgb.attr('maxy')];
             var transf = ol.proj.getTransform(srs, projcode);
             view.fitExtent(ol.extent.transform(extent, transf), map.getSize());
