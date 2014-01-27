@@ -216,6 +216,7 @@ function initmap() {
                     layerDesc.sldurl = ($(this).find("StyleList  > Style[current='1'] > SLD > OnlineResource").attr('xlink:href'));
                     layerDesc.stylename = $(this).find("StyleList  > Style[current='1'] > Name").text();
                     map.addLayer(parseLayerQueryable(layerDesc));
+                    config.layersQueryable.push(layerDesc);
                     $.mobile.loading('hide');
                 }
             });
@@ -752,6 +753,7 @@ freeFormAddress,
 
         // adding background layers (opaque, non queryable, mutually exclusive)
         $.each(config.layersBackground, function(i, layer) {
+                layer.setVisible(false);
                 map.addLayer(layer);
             }
         );
