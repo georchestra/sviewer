@@ -748,8 +748,7 @@ freeFormAddress,
         view = new ol.View2D();
         map = new ol.Map({
             controls: ol.control.defaults().extend([
-                new ol.control.ScaleLine(),
-                new ol.control.Attribution({target: $('#baseAttributions')[0] })
+                new ol.control.ScaleLine()
             ]),
             layers: [],
             overlays: [],

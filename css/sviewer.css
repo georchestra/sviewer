@@ -7,7 +7,6 @@ html, body {
 
 /* page structure */
 #header {
-    text-align: left !important;
 }
 
 #frameMap {
@@ -16,7 +15,7 @@ html, body {
 #map {
     width: 100%;
     height: 100%;
-	background: transparent url('images/bgpaper.jpg');
+    background: transparent url('images/bgpaper.jpg');
 }
 #mapcontrols {
     position: absolute;
@@ -46,6 +45,7 @@ label {
 }
 .mdAbstract {
     color: #555555;
+    font-size: small;
 }
 .mdAttrib {
     display: block;
