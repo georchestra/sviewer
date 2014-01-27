@@ -1,3 +1,10 @@
+// supported (re)projections. add more in customConfig.js
+Proj4js.defs["EPSG:4326"] = "+title=WGS 84, +proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+Proj4js.defs["EPSG:3857"] = "+title=Web Spherical Mercator, +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs";
+Proj4js.defs["EPSG:900913"] = "+title=Web Spherical Mercator, +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs";
+Proj4js.defs["EPSG:2154"] = "+title=RGF-93/Lambert 93, +proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs";
+
+// map projection and grids
 var projcode = 'EPSG:3857';
 var projection = ol.proj.get(projcode);
 var projectionExtent = projection.getExtent();
@@ -8,6 +15,7 @@ for (var z = 0; z < 20; ++z) {
     resolutions[z] = size / Math.pow(2, z);
     matrixIds[z] =projcode + ':' + z;
 }
+
 var map;
 var view;
 var config = {};
@@ -202,9 +210,16 @@ function initmap() {
         // todo : missing ol3 WMC native support
         function parseWMCResponse(response) {
             var wmc = $('ViewContext', response);
-            $(wmc).find('LayerList > Layer').each(function() {
-                // we only consider visible and queryable layers
-                if ($(this).attr('hidden')!='1' && $(this).attr('queryable')=='1') {
+            // recenter on  WMC extent
+            var srs = vgb.attr('SRS');
+            var vgb = $(wmc).children('General').children('BoundingBox');
+            var extent = [vgb.attr('minx'), vgb.attr('miny'), vgb.attr('maxx'), vgb.attr('maxy')];
+            var transf = ol.proj.getTransform(srs, projcode);
+            view.fitExtent(ol.extent.transform(extent, transf), map.getSize());
+
+            // we only consider visible and queryable layers
+            $(wmc).find('LayerList > Layer[queryable=1]').each(function() {
+                if ($(this).attr('hidden')!='1') {
                     var layerDesc = {};
                     layerDesc.nslayername = $(this).children('Name').text();
                     layerDesc.namespace = '';
@@ -638,12 +653,17 @@ freeFormAddress,
         });
     }
 
-
-    // updates title on keypress
-    function setTitle(e) {
-        config.title = $("#setTitle").val();
+    
+   // updates title
+   function setTitle(title) {
+        config.title = title;
         document.title = config.title;
         $('#title').text(config.title);
+   }
+
+    // updates title on keypress
+    function onTitle(e) {
+        setTitle($("#setTitle").val());
     }
 
     // Zoom +
@@ -681,10 +701,7 @@ freeFormAddress,
 
         // querystring param: title
         if (qs.title) {
-            config.title = qs.title ;
-            document.title = config.title;
-            $('#title').text(config.title);
-            $('#setTitle').val(config.title);
+            setTitle(qs.title);
         }
 
         // querystring param: xyz
@@ -740,7 +757,7 @@ freeFormAddress,
             renderer: ol.RendererHint.CANVAS,
             view: view
         });
-
+        
         // map recentering
         if (config.x&&config.y&&config.z) {
             view.setCenter([config.x, config.y]);
@@ -776,6 +793,7 @@ freeFormAddress,
             stopEvent: false
         });
         map.addOverlay(marker);
+
     }
 
 
@@ -805,7 +823,7 @@ freeFormAddress,
     $('#addressForm').on('submit', searchPlace);
 
     // set title dialog
-    $('#setTitle').keyup(setTitle);
+    $('#setTitle').keyup(onTitle);
     $('#setTitle').blur(setPermalink);
 
     // sendto form
