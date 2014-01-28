@@ -30,6 +30,10 @@ label {
     font-size: small !important;
 }
 
+.ui-content {
+    font-size: small !important;
+}
+
 /* legend layout */
 #legend a {
     text-decoration: none;
@@ -45,7 +49,6 @@ label {
 }
 .mdAbstract {
     color: #555555;
-    font-size: small;
 }
 .mdAttrib {
     display: block;

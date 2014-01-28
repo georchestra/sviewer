@@ -216,12 +216,17 @@ function initmap() {
         // todo : missing ol3 WMC native support
         function parseWMCResponse(response) {
             var wmc = $('ViewContext', response);
-            // recenter on  WMC extent
-            var vgb = $(wmc).children('General').children('BoundingBox');
-            var srs = vgb.attr('SRS');
-            var extent = [vgb.attr('minx'), vgb.attr('miny'), vgb.attr('maxx'), vgb.attr('maxy')];
-            var transf = ol.proj.getTransform(srs, projcode);
-            view.fitExtent(ol.extent.transform(extent, transf), map.getSize());
+            config.wmctitle = $(wmc).children('General').children('Title').text();
+            setTitle(config.wmctitle);
+
+            // recenter on  WMC extent if xyz not specified
+            if (isNaN(config.x)) {
+                var vgb = $(wmc).children('General').children('BoundingBox');
+                var srs = vgb.attr('SRS');
+                var extent = [vgb.attr('minx'), vgb.attr('miny'), vgb.attr('maxx'), vgb.attr('maxy')];
+                var transf = ol.proj.getTransform(srs, projcode);
+                view.fitExtent(ol.extent.transform(extent, transf), map.getSize());
+            }
 
             // we only consider visible and queryable layers
             $(wmc).find('LayerList > Layer[queryable=1]').each(function() {
@@ -362,7 +367,7 @@ function initmap() {
             linkParams.lb = encodeURIComponent(config.lb);
             if (config.kml) { linkParams.kml = config.kml; }
             if (config.layersQueryString) { linkParams.layers = config.layersQueryString; }
-            if (config.title) { linkParams.title = config.title; }
+            if (config.title&&config.wmctitle!=config.title) { linkParams.title = config.title; }
             if (config.wmc) { linkParams.wmc = config.wmc; }
             permalinkHash = window.location.origin + window.location.pathname + "#" + jQuery.param(linkParams);
             permalinkQuery = window.location.origin + window.location.pathname + "?" + jQuery.param(linkParams);
@@ -656,13 +661,15 @@ freeFormAddress,
         });
     }
 
-    
    // updates title
    function setTitle(title) {
         config.title = title;
         document.title = config.title;
         $('#title').text(config.title);
-   }
+        if ($("#setTitle").val()==='') {
+            $("#setTitle").val(config.title);
+        }
+    }
 
     // updates title on keypress
     function onTitle(e) {
@@ -702,23 +709,16 @@ freeFormAddress,
         $.extend(config, hardConfig);
         $.extend(config, customConfig);
 
-        // querystring param: title
-        if (qs.title) {
-            setTitle(qs.title);
-        }
-
-        // querystring param: xyz
-        if (qs.x&&qs.y&&qs.z) {
-            config.x = parseFloat(qs.x);
-            config.y = parseFloat(qs.y);
-            config.z = parseInt(qs.z);
-        }
-
         // querystring param: lb (selected background)
         if (qs.lb) {
             config.lb = parseInt(qs.lb) % config.layersBackground.length;
         }
-
+        
+        // querystring param: map id
+        if (qs.wmc) {
+            config.wmc = qs.wmc;
+        }
+        
         // querystring param: layers
         if (qs.layers) {
             config.layersQueryString = qs.layers;
@@ -730,14 +730,16 @@ freeFormAddress,
             });
         }
 
-        // querystring param: map id
-        if (qs.wmc) {
-            config.wmc = qs.wmc;
+        // querystring param: xyz
+        if (qs.x&&qs.y&&qs.z) {
+            config.x = parseFloat(qs.x);
+            config.y = parseFloat(qs.y);
+            config.z = parseInt(qs.z);
         }
-
-        // querystring param: kml
-        if (qs.kml) {
-            config.kml = qs.kml;
+        
+        // querystring param: title
+        if (qs.title) {
+            setTitle(qs.title);
         }
         
         // querystring param: kml
@@ -763,16 +765,6 @@ freeFormAddress,
             renderer: ol.RendererHint.CANVAS,
             view: view
         });
-        
-        // map recentering
-        if (config.x&&config.y&&config.z) {
-            view.setCenter([config.x, config.y]);
-            view.setZoom(config.z);
-        }
-         else {
-            view.fitExtent(config.initialExtent, map.getSize());
-            view.setRotation(0);
-        }
 
         // adding background layers (opaque, non queryable, mutually exclusive)
         $.each(config.layersBackground, function() {
@@ -782,14 +774,24 @@ freeFormAddress,
         );
         switchBackground(config.lb);
 
+        // adding WMS layers from georchestra map (WMC)
+        if (config.wmc) {
+            parseWMC(config.wmc);
+        }
+
         // adding queryable WMS layers from querystring
         $.each(config.layersQueryable, function() {
             map.addLayer(parseLayerQueryable(this));
         });
-
-        // adding WMS layers from georchestra map (WMC)
-        if (config.wmc) {
-            parseWMC(config.wmc);
+        
+        // map recentering
+        if (config.x&&config.y&&config.z) {
+            view.setCenter([config.x, config.y]);
+            view.setZoom(config.z);
+        }
+         else {
+            view.fitExtent(config.initialExtent, map.getSize());
+            view.setRotation(0);
         }
 
         // marker overlay for geoloc and queries

@@ -1,1 +1,4 @@
 etc/customConfig.js
+*~
+*.swp
+*.swo
