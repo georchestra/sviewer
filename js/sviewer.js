@@ -115,12 +115,16 @@ function initmap() {
      * @return {String} param value
      */
      var qs = (function(s) {
-        if (s === "") return {};
+        if (s === "") {
+            return {};
+        }
         var b = {};
         for (var i = 0; i < s.length; ++i)
         {
             var p=s[i].split('=');
-            if (p.length != 2) continue;
+            if (p.length != 2) {
+                continue;
+            }
             b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
         }
         return b;
@@ -290,7 +294,7 @@ function initmap() {
                         'STYLE': ld.stylename
                     };
                     if (ld.sldurl) {
-                        legendArgs['SLD'] = ld.sldurl;
+                        legendArgs.SLD = ld.sldurl;
                     }
 
                     html = [];
@@ -370,10 +374,8 @@ function initmap() {
                     encodeURIComponent(permalinkQuery) +
                     '" title="' +
                     tr('share on ') +
-                    name +
-                    '">' +
-                    name +
-                    '</a>'
+                    name + '">' +
+                    name + '</a>'
                 );
             });
             $('.socialBtn').buttonMarkup({
