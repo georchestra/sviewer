@@ -141,6 +141,7 @@ function initmap() {
         layerDesc.wmsurl_ns = config.geOrchestraBaseUrl + '/geoserver/' + layerDesc.namespace + '/wms'; // virtual getcap namespace
         layerDesc.wmsurl_layer = config.geOrchestraBaseUrl + '/geoserver/' + layerDesc.namespace + '/' + layerDesc.layername + '/wms'; // virtual getcap layer
         layerDesc.format = 'image/png';
+        layerDesc.opacity = 1;
         return layerDesc;
     }
 
@@ -194,6 +195,7 @@ function initmap() {
             wms_params.params.SLD = layerDescriptor.sldurl;
         }
         wmslayer = new ol.layer.Tile({
+            opacity: isNaN(layerDescriptor.opacity)?1:layerDescriptor.opacity,
             source: new ol.source.TileWMS(wms_params)
         });
         getWMSLegend(layerDescriptor);
@@ -230,6 +232,7 @@ function initmap() {
                     layerDesc.format = $(this).find("FormatList  > Format[current='1']").text();
                     layerDesc.sldurl = ($(this).find("StyleList  > Style[current='1'] > SLD > OnlineResource").attr('xlink:href'));
                     layerDesc.stylename = $(this).find("StyleList  > Style[current='1'] > Name").text();
+                    layerDesc.opacity = parseFloat($(this).find("opacity").text());
                     map.addLayer(parseLayerQueryable(layerDesc));
                     config.layersQueryable.push(layerDesc);
                     $.mobile.loading('hide');
