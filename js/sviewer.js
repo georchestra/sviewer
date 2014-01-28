@@ -356,7 +356,7 @@ function initmap() {
             if (config.kml) { linkParams.kml = config.kml; }
             if (config.layersQueryString) { linkParams.layers = config.layersQueryString; }
             if (config.title) { linkParams.title = config.title; }
-            if (config.id) { linkParams.id = config.id; }
+            if (config.wmc) { linkParams.wmc = config.wmc; }
             permalinkHash = window.location.origin + window.location.pathname + "#" + jQuery.param(linkParams);
             permalinkQuery = window.location.origin + window.location.pathname + "?" + jQuery.param(linkParams);
 
@@ -608,8 +608,6 @@ freeFormAddress,
         });
     }
 
-
-
     // search form submit
     function searchPlace() {
         try {
@@ -736,7 +734,11 @@ freeFormAddress,
         if (qs.kml) {
             config.kml = qs.kml;
         }
-
+        
+        // querystring param: kml
+        if (qs.kml) {
+            config.kml = qs.kml;
+        }
     }
 
 
@@ -805,6 +807,12 @@ freeFormAddress,
 
     doConfiguration();
     doMap();
+    
+    // opens permalink tab if required
+    if (qs.qr) {
+        setPermalink();
+        $('#panelShare').popup('open');
+    }
 
     // map events
     map.on('click', queryMap);
