@@ -17,13 +17,30 @@ html, body {
     height: 100%;
     background: transparent url('images/bgpaper.jpg');
 }
+
+/* map buttons */
 #mapcontrols {
     position: absolute;
-    top: 46px;
-    left: 10px;
+    top: 0px;
+    left: 4px;
     width: 32px;
     z-index: 8000;
 }
+#mapcontrols .ui-btn {
+    width: 44px;
+    height: 44px;
+	border-radius: 8px;
+    background-size: 44px 44px !important;
+}
+
+#panelBtn {
+    position: absolute;
+    top: 0px;
+    right: 4px;
+    z-index: 8000;
+}
+
+
 
 label {
     color: #555555 !important;
@@ -71,15 +88,14 @@ a.mdMeta {
 
 /* panels placement */
 .popupPanel {
-    border-width: 0 0 1px 1px !important;
     border-color: #666666 !important;
     background: rgba(255,255,255,1);
     z-index:8010 !important;
     overflow-y: auto;
 }
 #panelInfo-popup,#panelLocate-popup,#panelShare-popup, #panelQuery-popup {
-    top: 30px !important;
-    right: 0px !important;
+    top: 36px !important;
+    right: 4px !important;
     left: auto !important;
 	min-width: 250px;
 }

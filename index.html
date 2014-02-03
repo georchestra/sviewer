@@ -68,14 +68,9 @@ $(document).bind("mobileinit", function(){
   <body>
     <div data-role="page">
       <!-- header -->
-      <div data-role="header" id="header" data-theme="a">
+      <div data-role="header" id="header" data-theme="a" style="display: none;">
         <h1 id="title"></h1>
-        <div id="panelBtn" data-role="controlgroup" data-type="horizontal" class="ui-mini ui-btn-right">
-          <a href="#panelQuery" id="panelQueryBtn" class="i18n ui-btn ui-icon-info ui-btn-icon-notext" data-rel="popup" data-position-to="window" title="Query">Query</a>
-          <a href="#panelInfo" id="panelInfoBtn" class="i18n ui-btn ui-icon-bullets ui-btn-icon-notext" data-rel="popup" data-position-to="window" title="Legend">Legend</a>
-          <a href="#panelLocate" id="panelLocateBtn" class="i18n ui-btn ui-icon-location ui-btn-icon-notext" data-rel="popup" data-position-to="window" title="Locate">Locate</a>
-          <a href="#panelShare" id="panelShareBtn" class="i18n ui-btn ui-icon-star ui-btn-icon-notext" data-rel="popup" data-position-to="window" title="Share">Share</a>
-        </div>
+
       </div>
 
       <!-- content -->
@@ -91,9 +86,17 @@ $(document).bind("mobileinit", function(){
           <a id="zoBt" href="#" accesskey="m" class="i18n ui-btn ui-icon-minus ui-btn-icon-notext ui-corner-all" title="zoom -">zoom -</a>
           <a id="bgBt" href="#" accesskey="f" class="i18n ui-btn ui-icon-carat-r ui-btn-icon-notext ui-corner-all" title="background">background</a>
         </div>
+
+        <div id="panelBtn" data-role="controlgroup" data-type="horizontal" class="ui-mini ui-btn-right">
+          <a href="#panelQuery" id="panelQueryBtn" class="i18n ui-btn ui-icon-info ui-btn-icon-notext" data-rel="popup" data-position-to="window" title="Query">Query</a>
+          <a href="#panelInfo" id="panelInfoBtn" class="i18n ui-btn ui-icon-bullets ui-btn-icon-notext" data-rel="popup" data-position-to="window" title="Legend">Legend</a>
+          <a href="#panelLocate" id="panelLocateBtn" class="i18n ui-btn ui-icon-location ui-btn-icon-notext" data-rel="popup" data-position-to="window" title="Locate">Locate</a>
+          <a href="#panelShare" id="panelShareBtn" class="i18n ui-btn ui-icon-star ui-btn-icon-notext" data-rel="popup" data-position-to="window" title="Share">Share</a>
+        </div>
+
       </div>
       <!-- getfeatureinfo panel -->
-      <div id="panelQuery" class="popupPanel" data-role="popup" data-corners="false" data-theme="b">
+      <div id="panelQuery" class="popupPanel" data-role="popup" data-theme="b">
         <div data-role="header">
           <h3 class="i18n">Query</h3>
           <a href="#header" data-rel="back" class="i18n ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-icon-notext ui-corner-all ui-btn-right" title="Close">Close</a>
@@ -103,7 +106,7 @@ $(document).bind("mobileinit", function(){
           </div>
       </div>
       <!-- info panel -->
-      <div id="panelInfo" class="popupPanel" data-role="popup" data-corners="false"  data-theme="b">
+      <div id="panelInfo" class="popupPanel" data-role="popup" data-theme="b">
         <div data-role="header">
           <h3 class="i18n">Legend</h3>
           <a href="#header" data-rel="back" class="i18n ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-icon-notext ui-corner-all ui-btn-right" title="Close">Close</a>
@@ -113,7 +116,7 @@ $(document).bind("mobileinit", function(){
         </div>
       </div>
       <!-- locate panel -->
-      <div id="panelLocate" class="popupPanel" data-role="popup" data-corners="false"  data-theme="b">
+      <div id="panelLocate" class="popupPanel" data-role="popup" data-theme="b">
         <div data-role="header">
           <h3 class="i18n">Locate</h3>
           <a href="#header" data-rel="back" class="i18n ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-icon-notext ui-corner-all ui-btn-right" title="Close">Close</a>
@@ -131,7 +134,7 @@ $(document).bind("mobileinit", function(){
         </div>
       </div>
       <!-- share panel -->
-      <div id="panelShare" class="popupPanel" data-role="popup" data-corners="false" data-theme="b">
+      <div id="panelShare" class="popupPanel" data-role="popup" data-theme="b">
         <div data-role="header">
           <h3 class="i18n">Share</h3>
           <a href="#header" data-rel="back" class="i18n ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-icon-notext ui-corner-all ui-btn-right" title="Close">Close</a>

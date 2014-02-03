@@ -80,10 +80,10 @@ function initmap() {
             abstract: ''
         }
         this.wmslayer = null;
-            
+
         // to allow usage of this. in jquery statements
         var self = this;
-    
+
         /**
          * Parses a wms layer descriptor, calls the legend, returns the wms layer
          * @param {String} s the querystring describing the layer
@@ -97,7 +97,7 @@ function initmap() {
            self.options.wmsurl_ns = config.geOrchestraBaseUrl + '/geoserver/' + self.options.namespace + '/wms'; // virtual getcap namespace
            self.options.wmsurl_layer = config.geOrchestraBaseUrl + '/geoserver/' + self.options.namespace + '/' + self.options.layername + '/wms'; // virtual getcap layer
         };
-    
+
         /**
          * Creates the ol3 WMS layer
          */
@@ -120,7 +120,7 @@ function initmap() {
                 source: new ol.source.TileWMS(wms_params)
             });
         };
-    
+
         /**
          * Queries the layer capabilities to display its legend and metadata
          */
@@ -133,7 +133,7 @@ function initmap() {
                     var html = [];
                     var capabilities, mdLayer, legendArgs;
                     capabilities = parser.read(response);
-    
+
                     // searching for the layer in the capabilities
                     $.each(capabilities.capability.layers, function() {
                         if (this.name === self.options.layername) {
@@ -152,7 +152,7 @@ function initmap() {
                         if (self.options.sldurl) {
                             legendArgs.SLD = self.options.sldurl;
                         }
-        
+
                         // attribution
                         if (mdLayer.attribution) {
                             html.push('<a target="_blank" class="mdAttrib" href="' + mdLayer.attribution.href + '" >');
@@ -162,11 +162,11 @@ function initmap() {
                             html.push(escHTML(mdLayer.attribution.title));
                             html.push('</a>');
                         }
-    
+
                         // title
                         html.push('<p><h4 class="mdTitle">' + escHTML(mdLayer.title) + '</h4>');
                         self.md.title = mdLayer.title;
-    
+
                         // abstract
                         html.push("<p class='mdAbstract'>" + escHTML(mdLayer.abstract));
                         self.md.abstract = mdLayer.abstract;
@@ -182,14 +182,14 @@ function initmap() {
                             });
                         }
                         html.push("</p>");
-    
+
                         // legend
                         html.push('<img class="mdLegend" src="');
                         html.push(self.options.wmsurl_ns + '?' + $.param(legendArgs));
                         html.push('" />');
-    
+
                         html.push('<hr />');
-    
+
                         $('#legend').append(html.join(''));
                     }
                 },
@@ -198,7 +198,7 @@ function initmap() {
                 }
             });
         };
-        
+
         /**
          * constructor
          */
@@ -213,10 +213,10 @@ function initmap() {
             createLayer();
             getMetadata(self);
         };
-        
+
         this.construct(options);
     };
-        
+
     // ----- methods ------------------------------------------------------------------------------------
 
     /**
@@ -227,7 +227,7 @@ function initmap() {
     function escHTML (s) {
         return $('<p/>').text(s).html();
     }
-    
+
     /**
      * Returns a proxified URL for Ajax XSS
      * @param {String} url
@@ -463,7 +463,7 @@ function initmap() {
         }
     }
 
-    
+
     /**
      * Queries the OpenLS service and recenters the map
      * @param text {String} the OpenLS plain text query
@@ -749,12 +749,12 @@ freeFormAddress,
         if (qs.lb) {
             config.lb = parseInt(qs.lb) % config.layersBackground.length;
         }
-        
+
         // querystring param: map id
         if (qs.wmc) {
             config.wmc = qs.wmc;
         }
-        
+
         // querystring param: layers
         if (qs.layers) {
             config.layersQueryString = qs.layers;
@@ -762,7 +762,7 @@ freeFormAddress,
             // parser to retrieve serialized namespace:name[*style] and store the description in config
             ns_layer_style_list = (typeof qs.layers === 'string') ? qs.layers.split(',') : qs.layers;
             $.each(ns_layer_style_list, function() {
-                config.layersQueryable.push(new layerQueryable(this));
+                config.layersQueryable.push(new LayerQueryable(this));
             });
         }
 
@@ -772,12 +772,12 @@ freeFormAddress,
             config.y = parseFloat(qs.y);
             config.z = parseInt(qs.z);
         }
-        
+
         // querystring param: title
         if (qs.title) {
             setTitle(qs.title);
         }
-        
+
         // querystring param: kml
         if (qs.kml) {
             config.kml = qs.kml;
@@ -819,7 +819,7 @@ freeFormAddress,
         $.each(config.layersQueryable, function() {
             map.addLayer(this.wmslayer);
         });
-        
+
         // map recentering
         if (config.x&&config.y&&config.z) {
             view.setCenter([config.x, config.y]);
@@ -850,7 +850,7 @@ freeFormAddress,
 
     doConfiguration();
     doMap();
-    
+
     // opens permalink tab if required
     if (qs.qr) {
         setPermalink();
