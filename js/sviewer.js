@@ -714,16 +714,41 @@ freeFormAddress,
 
     // Zoom +
     function zoomIn() {
+        var zoom = ol.animation.zoom({
+            duration: 500,
+            source: view.getCenter(),
+            resolution: view.getResolution()
+        });
+        map.beforeRender(zoom);
         view.setZoom(view.getZoom()+1);
     }
 
     //Zoom -
     function zoomOut() {
+        var zoom = ol.animation.zoom({
+            duration: 500,
+            source: view.getCenter(),
+            resolution: view.getResolution()
+        });
+        map.beforeRender(zoom);
         view.setZoom(view.getZoom()-1);
     }
 
     // Back to initial extent
     function zoomInit() {
+        var start = +new Date();
+        var pan = ol.animation.pan({
+            duration: 500,
+            source: view.getCenter(),
+            start: start
+        });
+        var zoom = ol.animation.zoom({
+            duration: 500,
+            source: view.getCenter(),
+            resolution: view.getResolution(),
+            start: start
+        });
+        map.beforeRender(pan, zoom);
         view.fitExtent(config.initialExtent, map.getSize());
         view.setRotation(0);
     }
