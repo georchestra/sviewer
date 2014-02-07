@@ -25,7 +25,7 @@ var i18n = {
         'searching...': 'recherche...',
 
         'change title': 'changer le titre',
-        'Permalink': 'Permalien',
+        'Permalink': 'Lien permanent',
         'Permalink to this map': 'Lien permanent vers cette carte',
         'address and/or city': 'adresse et/ou commune',
         'share on ' : 'partager sur ',

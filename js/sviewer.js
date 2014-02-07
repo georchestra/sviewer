@@ -267,7 +267,12 @@ function initmap() {
             $(e).text(tr($(e).text()));
             // properties translation
             $.each(propnames, function(j, p) {
-                $(e).prop(p, tr($(e).prop(p)));
+                if (p !== "value") {
+                    $(e).prop(p, tr($(e).prop(p)));
+                }
+                else {
+                    $(e).val(tr($(e).prop(p)));
+                }
             });
         });
     }
@@ -672,7 +677,7 @@ freeFormAddress,
         var h = $('#header').outerHeight();
         panel.css('top', $('#header').outerHeight()-30);
         panel.css('max-width', Math.min($(window).width() - 44, 450) + 'px');
-        panel.css('max-height', $(window).height() - 44 + 'px');
+        panel.css('max-height', $(window).height() - 90 + 'px');
     }
 
     // visible popup = highlight button
@@ -714,16 +719,39 @@ freeFormAddress,
 
     // Zoom +
     function zoomIn() {
+        var zoom = ol.animation.zoom({
+            duration: 500,
+            source: view.getCenter(),
+            resolution: view.getResolution()
+        });
+        map.beforeRender(zoom);
         view.setZoom(view.getZoom()+1);
     }
 
     //Zoom -
     function zoomOut() {
+        var zoom = ol.animation.zoom({
+            duration: 500,
+            source: view.getCenter(),
+            resolution: view.getResolution()
+        });
+        map.beforeRender(zoom);
         view.setZoom(view.getZoom()-1);
     }
 
     // Back to initial extent
     function zoomInit() {
+        var zoom = ol.animation.zoom({
+            duration: 500,
+            source: view.getCenter(),
+            resolution: view.getResolution()
+        });
+        var pan = ol.animation.pan({
+            duration: 500,
+            source: view.getCenter()
+        });
+        map.beforeRender(zoom);
+        map.beforeRender(pan);
         view.fitExtent(config.initialExtent, map.getSize());
         view.setRotation(0);
     }

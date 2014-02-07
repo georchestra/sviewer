@@ -7,6 +7,7 @@ html, body {
 
 /* page structure */
 #header {
+	display: none;
 }
 
 #frameMap {
@@ -23,15 +24,32 @@ html, body {
     position: absolute;
     top: 0px;
     left: 4px;
-    width: 32px;
+    width: 44px;
     z-index: 8000;
 }
-#mapcontrols .ui-btn {
+
+#mapcontrols .ui-btn{
     width: 44px;
     height: 44px;
-	border-radius: 8px;
-    background-size: 44px 44px !important;
+    border-radius: 6px;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    border: 2px solid #fff;
 }
+
+#mapcontrols .ui-icon-home-c {
+    background-image: url('images/home.png');
+}
+#mapcontrols .ui-icon-plus-c {
+    background-image: url('images/plus.png');
+}
+#mapcontrols .ui-icon-minus-c {
+    background-image: url('images/minus.png');
+}
+#mapcontrols .ui-icon-layer-c {
+    background-image: url('images/layer.png');
+}
+
 
 #panelBtn {
     position: absolute;
@@ -41,14 +59,21 @@ html, body {
 }
 
 
-
 label {
-    color: #555555 !important;
     font-size: small !important;
+}
+
+p.center {
+	text-align: center;
 }
 
 .ui-content {
     font-size: small !important;
+}
+
+.controlgroup-textinput{
+    padding-top:.22em;
+    padding-bottom:.22em;
 }
 
 /* legend layout */
@@ -65,7 +90,6 @@ label {
 .mdTitle {
 }
 .mdAbstract {
-    color: #555555;
 }
 .mdAttrib {
     display: block;
@@ -91,10 +115,11 @@ a.mdMeta {
     border-color: #666666 !important;
     background: rgba(255,255,255,1);
     z-index:8010 !important;
+	min-width: 300px;
     overflow-y: auto;
 }
 #panelInfo-popup,#panelLocate-popup,#panelShare-popup, #panelQuery-popup {
-    top: 36px !important;
+    top: 88px !important;
     right: 4px !important;
     left: auto !important;
 	min-width: 250px;
