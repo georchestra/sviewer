@@ -741,17 +741,19 @@ freeFormAddress,
 
     // Back to initial extent
     function zoomInit() {
+        var start = +new Date();
+        var pan = ol.animation.pan({
+            duration: 500,
+            source: view.getCenter(),
+            start: start
+        });
         var zoom = ol.animation.zoom({
             duration: 500,
             source: view.getCenter(),
-            resolution: view.getResolution()
+            resolution: view.getResolution(),
+            start: start
         });
-        var pan = ol.animation.pan({
-            duration: 500,
-            source: view.getCenter()
-        });
-        map.beforeRender(zoom);
-        map.beforeRender(pan);
+        map.beforeRender(pan, zoom);
         view.fitExtent(config.initialExtent, map.getSize());
         view.setRotation(0);
     }
