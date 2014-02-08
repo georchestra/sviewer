@@ -66,36 +66,36 @@ $(document).bind("mobileinit", function(){
   <body>
     <div data-role="page">
       <!-- header -->
-      <!--div data-role="header" id="header" data-theme="a">
+      <!--div data-role="header" id="header" class="sv-header" data-theme="a">
         <h1 id="title"></h1>
       </div-->
 
       <!-- content -->
-      <div data-role="content" id="frameMap">
+      <div data-role="content" id="frameMap" class="sv-framemap">
         <!-- map -->
-        <div id="map" tabindex="0">
+        <div id="map" class="sv-map" tabindex="0">
             <div id="marker"></div>
         </div>
         <!-- map controls -->
-        <div id="mapcontrols" class="ui-nodisc-icon">
+        <div id="mapcontrols" class="sv-map-controls ui-nodisc-icon">
           <a id="zeBt" href="#" accesskey="i" class="i18n ui-btn ui-icon-home-c ui-btn-icon-notext ui-corner-all ui-btn-b" title="initial view">initial view</a>
           <a id="ziBt" href="#" accesskey="p" class="i18n ui-btn ui-icon-plus-c ui-btn-icon-notext ui-corner-all ui-btn-b" title="zoom +">zoom +</a>
           <a id="zoBt" href="#" accesskey="m" class="i18n ui-btn ui-icon-minus-c ui-btn-icon-notext ui-corner-all ui-btn-b" title="zoom -">zoom -</a>
           <a id="bgBt" href="#" accesskey="f" class="i18n ui-btn ui-icon-layer-c ui-btn-icon-notext ui-corner-all ui-btn-b" title="background">background</a>
         </div>
 
-        <div id="panelBtn" data-role="controlgroup" data-type="horizontal" class="ui-btn-right">
-          <a href="#panelQuery" id="panelQueryBtn" class="i18n ui-btn ui-icon-info ui-btn-icon-notext ui-btn-b" data-rel="popup" data-position-to="window" title="Query">Query</a>
-          <a href="#panelInfo" id="panelInfoBtn" class="i18n ui-btn ui-icon-bullets ui-btn-icon-notext ui-btn-b" data-rel="popup" data-position-to="window" title="Legend">Legend</a>
-          <a href="#panelLocate" id="panelLocateBtn" class="i18n ui-btn ui-icon-search ui-btn-icon-notext ui-btn-b" data-rel="popup" data-position-to="window" title="Locate">Locate</a>
-          <a href="#panelShare" id="panelShareBtn" class="i18n ui-btn ui-icon-star ui-btn-icon-notext ui-btn-b" data-rel="popup" data-position-to="window" title="Share">Share</a>
+        <div id="panelcontrols" class="sv-map-panels" data-role="controlgroup" data-type="horizontal" class="ui-btn-right" data-theme="b">
+          <a href="#panelQuery" id="panelQueryBtn" class="i18n ui-btn ui-icon-info ui-btn-icon-notext" data-rel="popup" data-position-to="window" title="Query">Query</a>
+          <a href="#panelInfo" id="panelInfoBtn" class="i18n ui-btn ui-icon-bullets ui-btn-icon-notext" data-rel="popup" data-position-to="window" title="Legend">Legend</a>
+          <a href="#panelLocate" id="panelLocateBtn" class="i18n ui-btn ui-icon-search ui-btn-icon-notext" data-rel="popup" data-position-to="window" title="Locate">Locate</a>
+          <a href="#panelShare" id="panelShareBtn" class="i18n ui-btn ui-icon-star ui-btn-icon-notext" data-rel="popup" data-position-to="window" title="Share">Share</a>
         </div>
 
       </div>
       <!-- getfeatureinfo panel -->
-      <div id="panelQuery" class="popupPanel" data-role="popup" data-theme="a">
+      <div id="panelQuery" class="sv-panel" data-role="popup">
         <div data-role="header">
-          <a href="#header" data-rel="back" class="i18n ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-btn-right" title="Close">Close</a>
+          <a href="#" data-rel="back" class="i18n ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-btn-right" title="Close">Close</a>
           <h3 class="i18n">Query</h3>
         </div>
           <div data-role="content">
@@ -103,20 +103,20 @@ $(document).bind("mobileinit", function(){
           </div>
       </div>
       <!-- info panel -->
-      <div id="panelInfo" class="popupPanel" data-role="popup" data-theme="a">
+      <div id="panelInfo" class="sv-panel" data-role="popup">
         <div data-role="header">
           <h3 class="i18n">Legend</h3>
-          <a href="#header" data-rel="back" class="i18n ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-btn-right" title="Close">Close</a>
+          <a href="#" data-rel="back" class="i18n ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-btn-right" title="Close">Close</a>
         </div>
         <div data-role="content">
-          <div id="legend"></div>
+          <div id="legend" class="sv-legend"></div>
         </div>
       </div>
       <!-- locate panel -->
-      <div id="panelLocate" class="popupPanel" data-role="popup" data-theme="a">
+      <div id="panelLocate" class="sv-panel" data-role="popup">
         <div data-role="header">
           <h3 class="i18n">Locate</h3>
-          <a href="#header" data-rel="back" class="i18n ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-btn-right" title="Close">Close</a>
+          <a href="#" data-rel="back" class="i18n ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-btn-right" title="Close">Close</a>
         </div>
         <div data-role="content">
           <form id="addressForm" method="post" action="#">
@@ -135,10 +135,10 @@ $(document).bind("mobileinit", function(){
         </div>
       </div>
       <!-- share panel -->
-      <div id="panelShare" class="popupPanel" data-role="popup" data-theme="a">
+      <div id="panelShare" class="sv-panel" data-role="popup">
         <div data-role="header">
           <h3 class="i18n">Share</h3>
-          <a href="#header" data-rel="back" class="i18n ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-btn-right" title="Close">Close</a>
+          <a href="#" data-rel="back" class="i18n ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-btn-right" title="Close">Close</a>
         </div>
         <div data-role="content">
           <label for="setTitle" class="ui-hidden-accessible">Title</label>
@@ -158,7 +158,7 @@ $(document).bind("mobileinit", function(){
               <p class="center">
                 <a id="permalink" class="i18n" data-ajax="false" href="#" title="Permalink to this map">Permalink</a>
               </p>
-              <div id="qrcode"></div>
+              <div id="qrcode" class="sv-qrcode"></div>
             </div>
           </div>
         </div>

@@ -155,27 +155,27 @@ function initmap() {
 
                         // attribution
                         if (mdLayer.attribution) {
-                            html.push('<a target="_blank" class="mdAttrib" href="' + mdLayer.attribution.href + '" >');
+                            html.push('<a target="_blank" class="sv-md-attrib" href="' + mdLayer.attribution.href + '" >');
                             if (mdLayer.attribution.logo) {
-                                html.push('<img class="mdLogo" src="' + mdLayer.attribution.logo.href + '" /><br />');
+                                html.push('<img class="sv-md-logo" src="' + mdLayer.attribution.logo.href + '" /><br />');
                             }
                             html.push(escHTML(mdLayer.attribution.title));
                             html.push('</a>');
                         }
 
                         // title
-                        html.push('<p><h4 class="mdTitle">' + escHTML(mdLayer.title) + '</h4>');
+                        html.push('<p><h4 class="sv-md-title">' + escHTML(mdLayer.title) + '</h4>');
                         self.md.title = mdLayer.title;
 
                         // abstract
-                        html.push("<p class='mdAbstract'>" + escHTML(mdLayer.abstract));
+                        html.push("<p class='sv-md-abstract'>" + escHTML(mdLayer.abstract));
                         self.md.abstract = mdLayer.abstract;
 
                         // metadata
                         if (mdLayer.metadataURLs) {
                             $.each(mdLayer.metadataURLs, function() {
                                 if (this.format === "text/html") {
-                                    html.push('&nbsp;<a target="_blank" class="mdMeta" href="' + this.href + '">');
+                                    html.push('&nbsp;<a target="_blank" class="sv-md-meta" href="' + this.href + '">');
                                     html.push(tr('metadata'));
                                     html.push(" ... </a>");
                                 }
@@ -184,7 +184,7 @@ function initmap() {
                         html.push("</p>");
 
                         // legend
-                        html.push('<img class="mdLegend" src="');
+                        html.push('<img class="sv-md-legend" src="');
                         html.push(self.options.wmsurl_ns + '?' + $.param(legendArgs));
                         html.push('" />');
 
@@ -626,7 +626,7 @@ freeFormAddress,
             };
             var url = onlineresource + '?' + $.param(gfiparams);
             // response order = layer order
-            var domResponse =  $('<div><span class="mdtitle">' + escHTML(this.md.title) + '</span></div>');
+            var domResponse =  $('<div><span class="sv-md-title">' + escHTML(this.md.title) + '</span></div>');
             $('#querycontent').append(domResponse);
             // ajax request
             $.mobile.loading('show');
@@ -682,7 +682,7 @@ freeFormAddress,
 
     // visible popup = highlight button
     function panelToggle(e) {
-        $.each($("#panelBtn a"), function() {
+        $.each($("#panelcontrols a"), function() {
             var id = this.href.split('#', 2)[1];
             $(this).toggleClass('ui-btn-active', ($("#"+id).css('visibility')=='visible'));
         });
@@ -691,7 +691,7 @@ freeFormAddress,
     // bypass popup behavior
     function panelButton(e) {
         var idOn = e.target.href.split('#',2)[1];
-        $.each($('#panelBtn a'), function() {
+        $.each($('#panelcontrols a'), function() {
             var id = this.href.split('#',2)[1];
             if (id!=idOn) {
                 $('#'+id).popup('close');
@@ -913,11 +913,11 @@ freeFormAddress,
 
     // dynamic resize
     $(window).bind('orientationchange resize pageshow', panelLayout);
-    $('.popupPanel').bind('popupbeforeposition popupafteropen', panelLayout);
-    $.each($('.popupPanel'), panelLayout);
-    $('.popupPanel').bind('popupafteropen', setPermalink);
-    $('.popupPanel').bind('popupafterclose popupafteropen', panelToggle);
-    $('#panelBtn a').bind('click', panelButton);
+    $('.sv-panel').bind('popupbeforeposition popupafteropen', panelLayout);
+    $.each($('.sv-panel'), panelLayout);
+    $('.sv-panel').bind('popupafteropen', setPermalink);
+    $('.sv-panel').bind('popupafterclose popupafteropen', panelToggle);
+    $('#panelcontrols a').bind('click', panelButton);
 
     // i18n
     translateDOM('.i18n', ['title', 'placeholder', 'value']);

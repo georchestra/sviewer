@@ -5,22 +5,30 @@ html, body {
     background-color: #333333;
 }
 
+label {
+    font-size: small !important;
+}
+
+p.center {
+	text-align: center;
+}
+
 /* page structure */
-#header {
+.sv-header {
 	display: none;
 }
 
-#frameMap {
+.sv-framemap {
     padding: 0px;
-}
-#map {
-    width: 100%;
-    height: 100%;
     background: transparent url('images/bgpaper.jpg');
 }
 
-/* map buttons */
-#mapcontrols {
+.sv-map {
+    width: 100%;
+    height: 100%;
+}
+
+.sv-map-controls {
     position: absolute;
     top: 0px;
     left: 4px;
@@ -28,43 +36,74 @@ html, body {
     z-index: 8000;
 }
 
-#mapcontrols .ui-btn{
+.sv-map-controls .ui-btn{
     width: 44px;
     height: 44px;
-    border-radius: 6px;
-    background-repeat: no-repeat;
-    background-position: 50% 50%;
-    border: 2px solid #fff;
+	border: 1px solid #1f1f1f;
+    border-radius: 4px;
+    background-repeat: no-repeat !important;
+    background-position: 50% 50% !important;
 }
 
-#mapcontrols .ui-icon-home-c {
-    background-image: url('images/home.png');
-}
-#mapcontrols .ui-icon-plus-c {
-    background-image: url('images/plus.png');
-}
-#mapcontrols .ui-icon-minus-c {
-    background-image: url('images/minus.png');
-}
-#mapcontrols .ui-icon-layer-c {
-    background-image: url('images/layer.png');
+.sv-map-controls .ui-btn:hover {
+	background-color: #fff !important;
 }
 
+.sv-map-controls .ui-btn-active {
+	background-color: #fff !important;
+}
 
-#panelBtn {
+/* panels placement */
+
+.sv-map-panels {
     position: absolute;
     top: 0px;
     right: 4px;
     z-index: 8000;
 }
 
-
-label {
-    font-size: small !important;
+.sv-panel {
+    border-color: #666666 !important;
+    background: rgba(255,255,255,1);
+    z-index:8010 !important;
+    min-width: 300px;
+    overflow-y: auto;
+}
+#panelInfo-popup,#panelLocate-popup,#panelShare-popup, #panelQuery-popup {
+    top: 88px !important;
+    right: 4px !important;
+    left: auto !important;
+    min-width: 250px;
+}
+#panelInfo-screen, #panelLocate-screen, #panelShare-screen, #panelQuery-screen {
+    display: none;
 }
 
-p.center {
-	text-align: center;
+/* icons */
+
+.ui-icon-home-c {
+    background-image: url('images/home.png') !important;
+}
+.ui-icon-home-c:hover {
+    background-image: url('images/home_a.png') !important;
+}
+.ui-icon-plus-c {
+    background-image: url('images/plus.png') !important;
+}
+.ui-icon-plus-c:hover {
+    background-image: url('images/plus_a.png') !important;
+}
+.ui-icon-minus-c {
+    background-image: url('images/minus.png') !important;
+}
+.ui-icon-minus-c:hover {
+    background-image: url('images/minus_a.png') !important;
+}
+.ui-icon-layer-c {
+    background-image: url('images/layer.png') !important;
+}
+.ui-icon-layer-c:hover {
+    background-image: url('images/layer_a.png') !important;
 }
 
 .ui-content {
@@ -77,63 +116,47 @@ p.center {
 }
 
 /* legend layout */
-#legend a {
+.sv-legend a {
     text-decoration: none;
 }
-#legend h4,p {
+.sv-legend h4,p {
     padding: 0 0 2px 0 !important;
     margin: 0;
 }
-#legend hr {
+.sv-legend hr {
     clear: both;
 }
-.mdTitle {
+.sv-md-title {
 }
-.mdAbstract {
+.sv-md-abstract {
 }
-.mdAttrib {
+.sv-md-attrib {
     display: block;
     float: right;
     text-align: right;
     max-width: 80px;
     font-size: x-small;
 }
-img.mdLogo {
+.sv-md-logo {
     max-height: 64px;
     max-width: 64px;
 }
-img.mdLegend {
+.sv-md-legend {
     padding: 4px;
     max-width: 320px;
 }
-a.mdMeta {
-	text-decoration: underline;
+.sv-md-meta {
+    text-decoration: none;
 }
 
-/* panels placement */
-.popupPanel {
-    border-color: #666666 !important;
-    background: rgba(255,255,255,1);
-    z-index:8010 !important;
-	min-width: 300px;
-    overflow-y: auto;
-}
-#panelInfo-popup,#panelLocate-popup,#panelShare-popup, #panelQuery-popup {
-    top: 88px !important;
-    right: 4px !important;
-    left: auto !important;
-	min-width: 250px;
-}
-#panelInfo-screen, #panelLocate-screen, #panelShare-screen, #panelQuery-screen {
-    display: none;
-}
-
-#qrcode {
+.sv-qrcode {
 	margin-left: 6px;
 	margin-top: 6px;
     width: 160px;
     height: 160px;
 }
+
+
 
 #marker {
 	width: 24px;
@@ -144,19 +167,15 @@ a.mdMeta {
 
 /* ol controls */
 
-#map .ol-zoom a.ol-zoom-in {
+.sv-map .ol-zoom a {
     display: none;
 }
-#map .ol-zoom a.ol-zoom-out {
-    display: none;
-}
-.ol-attribution, .ol-attribution a {
+
+.sv-map .ol-attribution, .ol-attribution a {
     color: #333333;
     background-color: transparent;
 }
-.ol-attribution a {
-    text-decoration: underline;
-}
+
 
 
 
