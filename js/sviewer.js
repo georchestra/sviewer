@@ -646,7 +646,7 @@ freeFormAddress,
                     }
                     else {
                         $('#panelQuery').popup('open');
-                        $(this).append(tr('no item found'));
+                        $(this).append('<p class="sv-noitem">' + tr('no item found') + '</p>');
                     }
                     $.mobile.loading('hide');
 
@@ -674,10 +674,8 @@ freeFormAddress,
     // panel size and placement to fit small screens
     function panelLayout (e) {
         var panel = $(this);
-        var h = $('#header').outerHeight();
-        panel.css('top', $('#header').outerHeight()-30);
         panel.css('max-width', Math.min($(window).width() - 44, 450) + 'px');
-        panel.css('max-height', $(window).height() - 90 + 'px');
+        panel.css('max-height', $(window).height() - 64 + 'px');
     }
 
     // visible popup = highlight button
@@ -706,7 +704,7 @@ freeFormAddress,
    function setTitle(title) {
         config.title = title;
         document.title = config.title;
-        $('#title').text(config.title);
+        $('#panelShareBtn').text(config.title);
         if ($("#setTitle").val()==='') {
             $("#setTitle").val(config.title);
         }
@@ -912,7 +910,7 @@ freeFormAddress,
     });
 
     // dynamic resize
-    $(window).bind('orientationchange resize pageshow', panelLayout);
+    $(window).bind('orientationchange resize pageshow updatelayout', panelLayout);
     $('.sv-panel').bind('popupbeforeposition popupafteropen', panelLayout);
     $.each($('.sv-panel'), panelLayout);
     $('.sv-panel').bind('popupafteropen', setPermalink);

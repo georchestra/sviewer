@@ -65,17 +65,14 @@ $(document).bind("mobileinit", function(){
   </head>
   <body>
     <div data-role="page">
-      <!-- header -->
-      <!--div data-role="header" id="header" class="sv-header" data-theme="a">
-        <h1 id="title"></h1>
-      </div-->
 
-      <!-- content -->
+    <!-- content -->
       <div data-role="content" id="frameMap" class="sv-framemap">
         <!-- map -->
         <div id="map" class="sv-map" tabindex="0">
             <div id="marker"></div>
         </div>
+
         <!-- map controls -->
         <div id="mapcontrols" class="sv-map-controls ui-nodisc-icon">
           <a id="zeBt" href="#" accesskey="i" class="i18n ui-btn ui-icon-home-c ui-btn-icon-notext ui-corner-all ui-btn-b" title="initial view">initial view</a>
@@ -85,10 +82,11 @@ $(document).bind("mobileinit", function(){
         </div>
 
         <div id="panelcontrols" class="sv-map-panels" data-role="controlgroup" data-type="horizontal" class="ui-btn-right" data-theme="b">
-          <a href="#panelQuery" id="panelQueryBtn" class="i18n ui-btn ui-icon-info ui-btn-icon-notext" data-rel="popup" data-position-to="window" title="Query">Query</a>
+          <a href="#panelShare" id="panelShareBtn" class="i18n ui-btn ui-icon-star ui-btn-icon-right" data-rel="popup" data-position-to="window" title="Share">Share</a>
           <a href="#panelInfo" id="panelInfoBtn" class="i18n ui-btn ui-icon-bullets ui-btn-icon-notext" data-rel="popup" data-position-to="window" title="Legend">Legend</a>
+          <a href="#panelQuery" id="panelQueryBtn" class="i18n ui-btn ui-icon-info ui-btn-icon-notext" data-rel="popup" data-position-to="window" title="Query">Query</a>
           <a href="#panelLocate" id="panelLocateBtn" class="i18n ui-btn ui-icon-search ui-btn-icon-notext" data-rel="popup" data-position-to="window" title="Locate">Locate</a>
-          <a href="#panelShare" id="panelShareBtn" class="i18n ui-btn ui-icon-star ui-btn-icon-notext" data-rel="popup" data-position-to="window" title="Share">Share</a>
+
         </div>
 
       </div>
@@ -120,15 +118,14 @@ $(document).bind("mobileinit", function(){
         </div>
         <div data-role="content">
           <form id="addressForm" method="post" action="#">
-            <label for="addressInput" class="i18n ui-hidden-accessible">search for address or place</label>
-            <div data-role="controlgroup" data-type="horizontal">
+            <label for="addressInput" class="i18n">address and/or city</label>
+            <div data-role="controlgroup" data-type="horizontal" class="ui-mini">
                 <input type="text"
                     name="addressInput"
                     id="addressInput"
-                    data-wrapper-class="controlgroup-textinput ui-btn"
+                    data-wrapper-class="controlgroup-textinput ui-btn ui-mini"
                     value=""
-                    placeholder="address and/or city"
-                    title="address and/or city" /><button class="i18n ui-btn ui-icon-search ui-btn-icon-notext" title="Locate">Locate</button>
+                    title="Address and/or city" /><button class="i18n ui-btn ui-icon-search ui-btn-icon-notext " title="Locate">Locate</button>
             </div>
             <span id="locateMsg"></span>
           </form>
@@ -137,11 +134,11 @@ $(document).bind("mobileinit", function(){
       <!-- share panel -->
       <div id="panelShare" class="sv-panel" data-role="popup">
         <div data-role="header">
-          <h3 class="i18n">Share</h3>
+          <h3 class="i18n">Share this map</h3>
           <a href="#" data-rel="back" class="i18n ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-btn-right" title="Close">Close</a>
         </div>
         <div data-role="content">
-          <label for="setTitle" class="ui-hidden-accessible">Title</label>
+          <label for="setTitle" class="i18n">Title</label>
           <input type="text" name="setTitle" id="setTitle" class="i18n" value="" placeholder="change title"/>
           <div class="ui-grid-a ui-responsive">
             <div class="ui-block-a">

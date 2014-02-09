@@ -7,7 +7,7 @@ var i18n = {
         'Query': 'Interroger',
         'Legend': 'Légende',
         'Locate': 'Localiser',
-        'Share': 'Partager',
+        'Share this map': 'Partager cette carte',
         'initial view': 'vue initiale',
         'zoom +': 'zoom +',
         'zoom -': 'zoom -',
@@ -24,10 +24,11 @@ var i18n = {
         'Geolocation failed': 'Localisation impossible',
         'searching...': 'recherche...',
 
+        'Title': 'Titre de la carte',
         'change title': 'changer le titre',
         'Permalink': 'Lien permanent',
         'Permalink to this map': 'Lien permanent vers cette carte',
-        'address and/or city': 'adresse et/ou commune',
+        'Address and/or city': 'Adresse et/ou commune',
         'share on ' : 'partager sur ',
         'Edit with geOrchestra': 'éditer carte avec geOrchestra'
     },
@@ -36,7 +37,7 @@ var i18n = {
 
         'Legend': 'Leyenda',
         'Locate': 'Encontrar',
-        'Share': 'Compartir',
+        'Share this map': 'Compartir',
         'initial view': 'Vista inicial',
         'background': 'fondo de plano',
         'Close': 'Cerrar',
@@ -47,14 +48,14 @@ var i18n = {
         'searching...': 'búsqueda...',
 
         'Permalink': 'Vínculo permanente',
-        'address and/or city': 'Entrar dirección o lugar'
+        'Address and/or city': 'Entrar dirección o lugar'
     },
     ru: {
         'geOrchestra mobile': 'мобильная версия программы geOrchestra',
 
         'Legend': 'экспликация',
         'Locate': 'найти',
-        'Share': 'делиться',
+        'Share this map': 'делиться',
         'initial view': 'изначальный вид',
         'background': 'плановый фон',
         'Close': 'закрыть',
@@ -65,14 +66,14 @@ var i18n = {
         'searching...': 'поиск',
 
         'Permalink': 'постоянная ссылка',
-        'address and/or city': 'внести адрес или место'
+        'Address and/or city': 'внести адрес или место'
     },
     de: {
         'geOrchestra mobile': 'geOrchestra mobile',
 
         'Legend': 'Beschriftung',
         'Locate': 'Finden',
-        'Share': 'Teilen',
+        'Share this map': 'Teilen',
         'initial view': 'Startansicht',
         'background': 'Basis Karte',
         'Close': 'Schließen',
@@ -83,6 +84,6 @@ var i18n = {
         'searching...': 'suche...',
 
         'Permalink': 'Permalink',
-        'address and/or city': 'Adresse eingeben'
+        'Address and/or city': 'Adresse eingeben'
     }
 };
