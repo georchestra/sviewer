@@ -248,9 +248,9 @@ function initmap() {
      * @return {String} translated string
      */
     function tr(s) {
-        if (config.lang !== 'en') {
-            return i18n[config.lang][s];
-        }
+        if ($.type(i18n[config.lang][s])==='string') {
+                return i18n[config.lang][s];
+            }
         else {
             return s;
         }
@@ -918,5 +918,7 @@ freeFormAddress,
     $('#panelcontrols a').bind('click', panelButton);
 
     // i18n
-    translateDOM('.i18n', ['title', 'placeholder', 'value']);
+    if (config.lang !== 'en') {
+        translateDOM('.i18n', ['title', 'placeholder', 'value']);
+    }
 }
