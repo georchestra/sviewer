@@ -34,7 +34,7 @@ p.center {
 
 .sv-map-controls {
     position: absolute;
-    top: 54px;
+    top: 0px;
     left: 4px;
     width: 44px;
     z-index: 8000;
@@ -108,7 +108,7 @@ p.center {
 }
 
 .sv-map .ol-attribution a {
-    test-decoration: underline;
+    text-decoration: underline;
 }
 
 /* panels */
@@ -117,6 +117,7 @@ p.center {
     position: absolute;
     top: 0px;
     right: 4px;
+    margin-left: 56px;
     z-index: 8000;
 }
 
