@@ -21,7 +21,7 @@ var view;
 var config = {};
 var customConfig = {};
 var hardConfig = {
-    lang: 'en',
+    lang: 'es',
     title: 'geOrchestra mobile',
     geOrchestraBaseUrl: 'http://sdi.georchestra.org/',
     projection: projection,
@@ -704,7 +704,9 @@ freeFormAddress,
    function setTitle(title) {
         config.title = title;
         document.title = config.title;
-        $('#panelShareBtn').text(config.title);
+       if (config.title!=='') {
+            $('#panelShareBtn').text(config.title);
+       }
         if ($("#setTitle").val()==='') {
             $("#setTitle").val(config.title);
         }
