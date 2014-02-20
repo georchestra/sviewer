@@ -15,7 +15,9 @@ var i18n = {
         'Close': 'Fermer',
 
         'Query the map': 'Interrogez la carte',
+        'Query results :': 'Résultats :',
         'no item found': 'aucun objet n\'a été trouvé',
+        'query failed': 'l\'interrogation a échoué',
 
         'metadata': 'voir métadonnée',
 

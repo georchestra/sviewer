@@ -402,8 +402,15 @@ function initmap() {
             var permalinkHash, permalinkQuery;
             var c = view.getCenter();
             var linkParams = {};
-            linkParams.x = encodeURIComponent(Math.round(c[0]));
-            linkParams.y = encodeURIComponent(Math.round(c[1]));
+            if (config.gficoord && config.gfiok) {
+                linkParams.x = encodeURIComponent(Math.round(config.gficoord[0]));
+                linkParams.y = encodeURIComponent(Math.round(config.gficoord[1]));
+                linkParams.q = '1';
+            }
+            else {
+                linkParams.x = encodeURIComponent(Math.round(c[0]));
+                linkParams.y = encodeURIComponent(Math.round(c[1]));
+            }
             linkParams.z = encodeURIComponent(view.getZoom());
             linkParams.lb = encodeURIComponent(config.lb);
             if (config.kml) { linkParams.kml = config.kml; }
@@ -585,16 +592,15 @@ freeFormAddress,
 
     /**
      * getFeatureInfo
-     * @todo how's this is supposed to work ?
      */
-    function queryMap(e) {
-        var p = e.getPixel();
-        var coord = e.getCoordinate();
+    function queryMap(coord) {
+        var p = map.getPixelFromCoordinate(coord);
+        config.gficoord = coord;
+        config.gfiok = false;
         var width = map.getSize()[0];
         var height = map.getSize()[1];
         var bbox = view.calculateExtent(map.getSize()).join(',');
-
-        marker.setPosition(coord);
+        marker.setPosition(config.gficoord);
         $('#marker').show();
         //~ // recenter anime
         var pan = ol.animation.pan({
@@ -602,10 +608,9 @@ freeFormAddress,
             source: view.getCenter()
         });
         map.beforeRender(pan);
-        view.setCenter(coord);
+        view.setCenter(config.gficoord);
         $('#panelInfo').popup('close');
-
-        $('#querycontent').empty();
+        $('#querycontent').html(tr('Query results :'));
         $.each(config.layersQueryable, function() {
             var onlineresource = this.options.wmsurl_ns;
             var gfiparams = {
@@ -636,28 +641,41 @@ freeFormAddress,
                 dataType: 'html',
                 context: domResponse,
                 success: function(response) {
-                    // empty reponse detection
+                    // nonempty reponse detection
                     if (response.search(config.nodata)<0) {
                         $.each(['#panelInfo', '#panelLocate', '#panelShare'], function(i, p) {
                             $(p).popup('close');
                         });
                         $(this).append(response);
+                        config.gfiok = true;
                         $('#panelQuery').popup('open');
                     }
                     else {
                         $('#panelQuery').popup('open');
                         $(this).append('<p class="sv-noitem">' + tr('no item found') + '</p>');
+                        config.gfiok = false;
                     }
                     $.mobile.loading('hide');
 
                 },
                 failure: function() {
                     $.mobile.loading('hide');
-                    console.log(response);
+                    $(this).append('<p class="sv-noitem">' + tr('query failed') + '</p>');
                 }
             });
         });
     }
+
+    /**
+     * clear getFeatureInfo
+     */
+    function clearQuery() {
+        $('#marker').hide('fast');
+        $('#panelQuery').popup('close');
+        $('#querycontent').html(tr('Query the map'));
+        config.gficoord = null;
+        config.gfiok = false;
+    };
 
     // search form submit
     function searchPlace() {
@@ -812,6 +830,11 @@ freeFormAddress,
         if (qs.kml) {
             config.kml = qs.kml;
         }
+
+        // querystring param: perform getFeatureInfo
+        if (qs.q) {
+            config.gfiok = true;
+        }
     }
 
 
@@ -867,7 +890,6 @@ freeFormAddress,
             stopEvent: false
         });
         map.addOverlay(marker);
-
     }
 
 
@@ -888,9 +910,11 @@ freeFormAddress,
     }
 
     // map events
-    map.on('click', queryMap);
+    map.on('click', function(e) {
+        queryMap(e.getCoordinate());
+    });
     map.on('moveend', setPermalink);
-    $('#marker').click(function(e) { $(e.target).hide('fast'); });
+    $('#marker').click(clearQuery);
 
 
     // map buttons
@@ -923,4 +947,11 @@ freeFormAddress,
     if (config.lang !== 'en') {
         translateDOM('.i18n', ['title', 'placeholder', 'value']);
     }
+
+
+    // perform getFeatureInfo if required
+    if (config.gfiok) {
+        queryMap(view.getCenter());
+    };
+
 }
