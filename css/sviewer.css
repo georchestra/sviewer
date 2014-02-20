@@ -43,7 +43,7 @@ p.center {
 .sv-map-controls .ui-btn{
     width: 44px;
     height: 44px;
-	border: 1px solid #1f1f1f;
+    border: 1px solid #1f1f1f;
     border-radius: 4px;
     background-repeat: no-repeat !important;
     background-position: 50% 50% !important;
@@ -126,7 +126,7 @@ p.center {
     background: rgba(255,255,255,1);
     z-index:8010 !important;
     min-width: 400px;
-    overflow-y: auto;
+    #overflow-y: auto;
 }
 
 #panelInfo-popup,#panelLocate-popup,#panelShare-popup, #panelQuery-popup {

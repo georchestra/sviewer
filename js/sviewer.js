@@ -402,16 +402,18 @@ function initmap() {
             var permalinkHash, permalinkQuery;
             var c = view.getCenter();
             var linkParams = {};
-            if (config.gficoord && config.gfiok) {
+            if (config.gficoord && config.gfiz && config.gfiok) {
                 linkParams.x = encodeURIComponent(Math.round(config.gficoord[0]));
                 linkParams.y = encodeURIComponent(Math.round(config.gficoord[1]));
+                linkParams.z = encodeURIComponent(config.gfiz);
+
                 linkParams.q = '1';
             }
             else {
                 linkParams.x = encodeURIComponent(Math.round(c[0]));
                 linkParams.y = encodeURIComponent(Math.round(c[1]));
+                linkParams.z = encodeURIComponent(view.getZoom());
             }
-            linkParams.z = encodeURIComponent(view.getZoom());
             linkParams.lb = encodeURIComponent(config.lb);
             if (config.kml) { linkParams.kml = config.kml; }
             if (config.layersQueryString) { linkParams.layers = config.layersQueryString; }
@@ -597,6 +599,7 @@ freeFormAddress,
         var p = map.getPixelFromCoordinate(coord);
         config.gficoord = coord;
         config.gfiok = false;
+        config.gfiz = view.getZoom();
         var width = map.getSize()[0];
         var height = map.getSize()[1];
         var bbox = view.calculateExtent(map.getSize()).join(',');
@@ -674,6 +677,7 @@ freeFormAddress,
         $('#panelQuery').popup('close');
         $('#querycontent').html(tr('Query the map'));
         config.gficoord = null;
+        config.gfiz = null;
         config.gfiok = false;
     };
 
