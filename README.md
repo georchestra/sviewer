@@ -46,7 +46,7 @@ KVP parameters
 ==============
 
 Many KVP parameters are transmitted to the permalink or QR code. They are tagged 'is persistent'.
-KVP parameters can conflict (xyz recenter vs wmc recenter). First parameter in this document takes precedence.  
+KVP parameters can conflict (xyz recenter vs wmc recenter). First parameter in this document takes precedence.
 
 
 x {integer}
@@ -108,6 +108,13 @@ Example :
 
     http://sdi.georchestra.org/sviewer/?wmc=http://geobretagne.fr/context/default/05.xml
     http://sdi.georchestra.org/sviewer/?wmc=9be95a6894a3dc6135c8cd760d83f6ef
+
+
+q {string}
+------------------
+is persistent
+Queries the map on startup. Convenient to enlight a specific feature on the map. The query is persistent when the user
+shares the map showing a query marker. Click on the marker to disable autoquery.
 
 
 qr {string}
