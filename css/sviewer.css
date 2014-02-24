@@ -125,7 +125,7 @@ p.center {
     border-color: #666666 !important;
     background: rgba(255,255,255,1);
     z-index:8010 !important;
-    min-width: 400px;
+    min-width: 300px;
     #overflow-y: auto;
 }
 

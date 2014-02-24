@@ -7,7 +7,7 @@ var i18n = {
         'Query': 'Interroger',
         'Legend': 'Légende',
         'Locate': 'Localiser',
-        'Share this map': 'Partager cette carte',
+        'Map': 'Carte',
         'initial view': 'vue initiale',
         'zoom +': 'zoom +',
         'zoom -': 'zoom -',
@@ -39,7 +39,7 @@ var i18n = {
 
         'Legend': 'Leyenda',
         'Locate': 'Encontrar',
-        'Share this map': 'Compartir',
+        'Map': 'Mapa',
         'initial view': 'Vista inicial',
         'background': 'fondo de plano',
         'Close': 'Cerrar',
@@ -75,7 +75,7 @@ var i18n = {
 
         'Legend': 'Beschriftung',
         'Locate': 'Finden',
-        'Share this map': 'Teilen',
+        'Map': 'Karte',
         'initial view': 'Startansicht',
         'background': 'Basis Karte',
         'Close': 'Schließen',

@@ -370,6 +370,10 @@ function initmap() {
                     $.mobile.loading('hide');
                 }
             });
+            // perform gfi if requied
+            if (config.gfiok) {
+                queryMap(view.getCenter());
+            };
         }
         // wmc comes from a geOrchestra map id
         if (wmc.match(wmc.match(/^[a-z\d]{32}$/))) {
@@ -605,7 +609,7 @@ freeFormAddress,
         var bbox = view.calculateExtent(map.getSize()).join(',');
         marker.setPosition(config.gficoord);
         $('#marker').show();
-        //~ // recenter anime
+        // recenter anime
         var pan = ol.animation.pan({
             duration: 1000,
             source: view.getCenter()
@@ -868,6 +872,7 @@ freeFormAddress,
         switchBackground(config.lb);
 
         // adding WMS layers from georchestra map (WMC)
+        // try wmc=58a713a089cf408419b871b73110b7cb on dev.geobretagne.fr
         if (config.wmc) {
             parseWMC(config.wmc);
         }
@@ -952,10 +957,7 @@ freeFormAddress,
         translateDOM('.i18n', ['title', 'placeholder', 'value']);
     }
 
-
-    // perform getFeatureInfo if required
-    if (config.gfiok) {
+    if (config.gfiok && (!(config.wmc.length>0))) {
         queryMap(view.getCenter());
-    };
-
+    }
 }
