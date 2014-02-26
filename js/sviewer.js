@@ -34,11 +34,11 @@ var hardConfig = {
     layersBackground: [
         new ol.layer.Tile({
             preload: 2,
-            source: new ol.source.MapQuestOSM()
+            source: new ol.source.MapQuest({layer: 'osm'})
         }),
         new ol.layer.Tile({
             preload: 2,
-            source: new ol.source.MapQuestOpenAerial()
+            source: new ol.source.MapQuest({layer: 'sat'})
         })
     ],
     socialMedia: {
@@ -141,6 +141,8 @@ function initmap() {
                         }
                     });
                     if (mdLayer) {
+                        html.push('<div class="sv-md">');
+
                         legendArgs = {
                             'SERVICE' : 'WMS',
                             'VERSION' : capabilities.version,
@@ -155,12 +157,13 @@ function initmap() {
 
                         // attribution
                         if (mdLayer.attribution) {
-                            html.push('<a target="_blank" class="sv-md-attrib" href="' + mdLayer.attribution.href + '" >');
+                            html.push('<span class="sv-md-attrib">' + tr('source'));
+                            html.push(' : <a target="_blank" href="' + mdLayer.attribution.href + '" >');
                             if (mdLayer.attribution.logo) {
                                 html.push('<img class="sv-md-logo" src="' + mdLayer.attribution.logo.href + '" /><br />');
                             }
                             html.push(escHTML(mdLayer.attribution.title));
-                            html.push('</a>');
+                            html.push('</a></span>');
                         }
 
                         // title
@@ -187,8 +190,7 @@ function initmap() {
                         html.push('<img class="sv-md-legend" src="');
                         html.push(self.options.wmsurl_ns + '?' + $.param(legendArgs));
                         html.push('" />');
-
-                        html.push('<hr />');
+                        html.push('</div>');
 
                         $('#legend').append(html.join(''));
                     }
@@ -217,6 +219,8 @@ function initmap() {
         this.construct(options);
     };
 
+
+
     // ----- methods ------------------------------------------------------------------------------------
 
     /**
@@ -234,7 +238,12 @@ function initmap() {
      * @return {String} Ajax url
      */
     function ajaxURL (url) {
-        if (url.indexOf(location.protocol + '//' + location.host)===0) {
+        // relative path
+        if (url.indexOf('http')!=0) {
+            return url;
+        }
+        // same domain
+        else if (url.indexOf(location.protocol + '//' + location.host)===0) {
             return url;
         }
         else {
@@ -419,7 +428,7 @@ function initmap() {
                 linkParams.z = encodeURIComponent(view.getZoom());
             }
             linkParams.lb = encodeURIComponent(config.lb);
-            if (config.kml) { linkParams.kml = config.kml; }
+            if (config.kmlUrl) { linkParams.kml = config.kmlUrl; }
             if (config.layersQueryString) { linkParams.layers = config.layersQueryString; }
             if (config.title&&config.wmctitle!=config.title) { linkParams.title = config.title; }
             if (config.wmc) { linkParams.wmc = config.wmc; }
@@ -428,7 +437,7 @@ function initmap() {
 
             $('#socialLinks').empty();
             $.each(config.socialMedia, function(name, socialUrl) {
-                $('#socialLinks').append('<a data-role="button" class="socialBtn" target="_blank" href="' +
+                $('#socialLinks').append('<a class="ui-btn ui-shadow ui-corner-all" target="_blank" href="' +
                     socialUrl +
                     encodeURIComponent(permalinkQuery) +
                     '" title="' +
@@ -437,10 +446,7 @@ function initmap() {
                     name + '</a>'
                 );
             });
-            $('.socialBtn').buttonMarkup({
-                mini: true,
-                icon: null
-            });
+            $('#georchestraForm').attr('action', config.geOrchestraBaseUrl);
             if ($('#qrcode').css("visibility")==="visible") {
                 $('#qrcode').empty();
                 new QRCode("qrcode", {
@@ -451,9 +457,6 @@ function initmap() {
                 });
             }
             $('#permalink').prop('href',permalinkQuery);
-            $('#embedcode').text('<iframe style="width: 600px; height: 400px;" src="' +
-            permalinkQuery +
-            '"></iframe>');
         }
     }
 
@@ -561,7 +564,7 @@ function initmap() {
                     url: ajaxURL(config.openLSGeocodeUrl),
                     type: 'POST',
                     data: [
-/*jshint multistr: true */
+                    /*jshint multistr: true */
 '<?xml version="1.0" encoding="UTF-8"?> \
 <XLS xmlns:xls="http://www.opengis.net/xls" \
 xmlns:gml="http://www.opengis.net/gml" \
@@ -604,9 +607,8 @@ freeFormAddress,
         config.gficoord = coord;
         config.gfiok = false;
         config.gfiz = view.getZoom();
-        var width = map.getSize()[0];
-        var height = map.getSize()[1];
-        var bbox = view.calculateExtent(map.getSize()).join(',');
+        var viewResolution = view.getResolution();
+
         marker.setPosition(config.gficoord);
         $('#marker').show();
         // recenter anime
@@ -618,25 +620,13 @@ freeFormAddress,
         view.setCenter(config.gficoord);
         $('#panelInfo').popup('close');
         $('#querycontent').html(tr('Query results :'));
+
+        // WMS getFeatureInfo
         $.each(config.layersQueryable, function() {
-            var onlineresource = this.options.wmsurl_ns;
-            var gfiparams = {
-                'SERVICE': 'WMS',
-                'VERSION': '1.3.0',
-                'REQUEST': 'GetFeatureInfo',
-                'LAYERS': this.options.nslayername,
-                'WIDTH': width,
-                'HEIGHT': height,
-                'BBOX': bbox,
-                'CRS': projcode,
-                'FORMAT': 'image/png',
-                'QUERY_LAYERS':  this.options.layername,
-                'INFO_FORMAT': 'text/html',
-                'maxFeatures': config.maxFeatures,
-                'I': Math.round(p[0]),
-                'J': Math.round(p[1])
-            };
-            var url = onlineresource + '?' + $.param(gfiparams);
+            var url = this.wmslayer.getSource().getGetFeatureInfoUrl(
+                  config.gficoord, viewResolution, projection,
+                  {'INFO_FORMAT': 'text/html'});
+
             // response order = layer order
             var domResponse =  $('<div><span class="sv-md-title">' + escHTML(this.md.title) + '</span></div>');
             $('#querycontent').append(domResponse);
@@ -671,6 +661,24 @@ freeFormAddress,
                 }
             });
         });
+
+        // KML getFeatureInfo
+        if (config.kmlLayer) {
+            var features = [];
+            var domResponse =  $('<div class="sv-kml"></div>');
+            map.forEachFeatureAtPixel(p, function(feature, layer) {
+                features.push(feature) }
+            );
+            if (features.length > 0) {
+                $.each(features, function() {
+                    $('#panelQuery').popup('open');
+                    domResponse.append(this.get('description'));
+                });
+                $('#querycontent').append(domResponse);
+            }
+        };
+
+
     }
 
     /**
@@ -794,7 +802,6 @@ freeFormAddress,
         config = {
             wmc: '',
             lb: 0,
-            kml: '',
             layersQueryable: [],
             layersQueryString: ''
         };
@@ -833,10 +840,13 @@ freeFormAddress,
         if (qs.title) {
             setTitle(qs.title);
         }
+        else {
+            setTitle(config.title);
+        }
 
         // querystring param: kml
         if (qs.kml) {
-            config.kml = qs.kml;
+            config.kmlUrl = qs.kml;
         }
 
         // querystring param: perform getFeatureInfo
@@ -853,9 +863,10 @@ freeFormAddress,
         // map creation
         view = new ol.View2D();
         map = new ol.Map({
-            controls: ol.control.defaults().extend([
-                new ol.control.ScaleLine()
-            ]),
+            controls: [
+                new ol.control.ScaleLine(),
+                new ol.control.Attribution()
+            ],
             layers: [],
             overlays: [],
             target: 'map',
@@ -882,6 +893,17 @@ freeFormAddress,
             map.addLayer(this.wmslayer);
         });
 
+        // adding kml overlay
+        if (config.kmlUrl) {
+            config.kmlLayer = new ol.layer.Vector({
+                source: new ol.source.KML({
+                    projection: 'EPSG:3857',
+                    url: ajaxURL(config.kmlUrl)
+                })
+            });
+            map.addLayer(config.kmlLayer);
+        }
+
         // map recentering
         if (config.x&&config.y&&config.z) {
             view.setCenter([config.x, config.y]);
@@ -892,10 +914,11 @@ freeFormAddress,
             view.setRotation(0);
         }
 
+
         // marker overlay for geoloc and queries
         marker =  new ol.Overlay({
             element: $('#marker'),
-            positioning: ol.OverlayPositioning.BOTTOM_CENTER,
+            positioning: ol.OverlayPositioning.BOTTOM_LEFT,
             stopEvent: false
         });
         map.addOverlay(marker);
@@ -919,8 +942,8 @@ freeFormAddress,
     }
 
     // map events
-    map.on('click', function(e) {
-        queryMap(e.getCoordinate());
+    map.on('singleclick', function(e) {
+        queryMap(e.coordinate);
     });
     map.on('moveend', setPermalink);
     $('#marker').click(clearQuery);
