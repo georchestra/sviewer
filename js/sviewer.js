@@ -21,7 +21,7 @@ var view;
 var config = {};
 var customConfig = {};
 var hardConfig = {
-    lang: 'es',
+    lang: 'en',
     title: 'geOrchestra mobile',
     geOrchestraBaseUrl: 'http://sdi.georchestra.org/',
     projection: projection,
@@ -30,7 +30,7 @@ var hardConfig = {
     restrictedExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
     maxFeatures: 10,
     nodata: '<!--nodatadetect-->\n<!--nodatadetect-->',
-    openLSGeocodeUrl: "http://geobretagne.fr/openls?",
+    openLSGeocodeUrl: "http://gpp3-wxs.ign.fr/[CLEF GEOPORTAIL]/geoportail/ols?",
     layersBackground: [
         new ol.layer.Tile({
             preload: 2,

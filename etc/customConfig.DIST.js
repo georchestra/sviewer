@@ -28,7 +28,7 @@ customConfig = {
     /**
      * openLS control
      */
-    openLSGeocodeUrl: "http://geobretagne.fr/openls?",
+    openLSGeocodeUrl: "http://gpp3-wxs.ign.fr/[CLEF GEOPORTAIL]/geoportail/ols?",
 
     /**
      * background layers (EPSG:3857)
