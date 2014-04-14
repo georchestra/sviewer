@@ -125,7 +125,7 @@ function initmap() {
          * Queries the layer capabilities to display its legend and metadata
          */
         function getMetadata(self) {
-            var parser = new ol.parser.ogc.WMSCapabilities();
+            var parser = new ol.format.WMSCapabilities();
             $.ajax({
                 url: ajaxURL(self.options.wmsurl_ns + '?SERVICE=WMS&REQUEST=GetCapabilities'),
                 type: 'GET',
@@ -133,13 +133,13 @@ function initmap() {
                     var html = [];
                     var capabilities, mdLayer, legendArgs;
                     capabilities = parser.read(response);
-
                     // searching for the layer in the capabilities
-                    $.each(capabilities.capability.layers, function() {
-                        if (this.name === self.options.layername) {
+                    $.each(capabilities.Capability.Layer.Layer, function() {
+                        if (this.Name === self.options.layername) {
                             mdLayer = this;
                         }
                     });
+
                     if (mdLayer) {
                         html.push('<div class="sv-md">');
 
@@ -148,7 +148,7 @@ function initmap() {
                             'VERSION' : capabilities.version,
                             'REQUEST' : 'GetLegendGraphic',
                             'FORMAT' : 'image/png',
-                            'LAYER': mdLayer.name,
+                            'LAYER': mdLayer.Name,
                             'STYLE': self.options.stylename
                         };
                         if (self.options.sldurl) {
@@ -156,23 +156,23 @@ function initmap() {
                         }
 
                         // attribution
-                        if (mdLayer.attribution) {
+                        if (mdLayer.Attribution) {
                             html.push('<span class="sv-md-attrib">' + tr('source'));
-                            html.push(' : <a target="_blank" href="' + mdLayer.attribution.href + '" >');
-                            if (mdLayer.attribution.logo) {
-                                html.push('<img class="sv-md-logo" src="' + mdLayer.attribution.logo.href + '" /><br />');
+                            html.push(' : <a target="_blank" href="' + mdLayer.Attribution.OnlineResource + '" >');
+                            if (mdLayer.Attribution.LogoURL) {
+                                html.push('<img class="sv-md-logo" src="' + mdLayer.Attribution.LogoURL.OnlineResource + '" /><br />');
                             }
-                            html.push(escHTML(mdLayer.attribution.title));
+                            html.push(escHTML(mdLayer.Attribution.Title));
                             html.push('</a></span>');
                         }
 
                         // title
-                        html.push('<p><h4 class="sv-md-title">' + escHTML(mdLayer.title) + '</h4>');
-                        self.md.title = mdLayer.title;
+                        html.push('<p><h4 class="sv-md-title">' + escHTML(mdLayer.Title) + '</h4>');
+                        self.md.title = mdLayer.Title;
 
                         // abstract
-                        html.push("<p class='sv-md-abstract'>" + escHTML(mdLayer.abstract));
-                        self.md.abstract = mdLayer.abstract;
+                        html.push("<p class='sv-md-abstract'>" + escHTML(mdLayer.Abstract));
+                        self.md.Abstract = mdLayer.Abstract;
 
                         // metadata
                         if (mdLayer.metadataURLs) {
@@ -626,6 +626,7 @@ freeFormAddress,
             var url = this.wmslayer.getSource().getGetFeatureInfoUrl(
                   config.gficoord, viewResolution, projection,
                   {'INFO_FORMAT': 'text/html'});
+
 
             // response order = layer order
             var domResponse =  $('<div><span class="sv-md-title">' + escHTML(this.md.title) + '</span></div>');
