@@ -1,0 +1,1475 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document><Folder><name>Producteur</name>
+<Style id="Boucherie">
+    <IconStyle>
+      <Icon>
+        <href>http://www.pays-aubigne.fr/site/images/stories/icones/viande.svg</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+  <Style id="lait">
+    <IconStyle>
+      <Icon>
+        <href>http://www.pays-aubigne.fr/site/images/stories/icones/lait.svg</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+  
+  <Style id="volaille">
+    <IconStyle>
+      <Icon>
+        <href>http://www.pays-aubigne.fr/site/images/stories/icones/volaille.svg</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+  
+  <Style id="multi">
+    <IconStyle>
+      <Icon>
+        <href>http://www.pays-aubigne.fr/site/images/stories/icones/multi.svg</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+  
+  <Style id="fruit">
+    <IconStyle>
+      <Icon>
+        <href>http://www.pays-aubigne.fr/site/images/stories/icones/fruit.svg</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+  
+<Schema name="Producteur" id="Producteur">
+	<SimpleField name="Name" type="string"></SimpleField>
+	<SimpleField name="Description" type="string"></SimpleField>
+	<SimpleField name="No" type="int"></SimpleField>
+	<SimpleField name="Categorie" type="string"></SimpleField>
+	<SimpleField name="Production" type="string"></SimpleField>
+	<SimpleField name="Denominati" type="string"></SimpleField>
+	<SimpleField name="Noms" type="string"></SimpleField>
+	<SimpleField name="adresse" type="string"></SimpleField>
+	<SimpleField name="commune" type="string"></SimpleField>
+	<SimpleField name="telephone" type="string"></SimpleField>
+	<SimpleField name="site Inter" type="string"></SimpleField>
+	<SimpleField name="modalite d" type="string"></SimpleField>
+</Schema>
+  <Placemark>
+    <styleUrl>#Boucherie</styleUrl>
+   <description>
+        <![CDATA[
+       <p class="D-nomination"><span class="ferme-producteurs" style="font-size:1.2em;">1</span><span class="CHIFFRE" style="font-size:0.8em;"> </span><span class="code-Viandes" style="font-size:1.2em;">❱</span><span class="CHIFFRE" style="font-size:0.8em;"> </span><span class="ferme-producteurs" style="font-size:1.2em;">Bertel Grégory</span></p>
+				<p class="texte-courant--adresse-commune-"><span>Le Bois Hamon, Domloup - Tél : 02 99 37 42 01 ou 06 74 31 93 53</span></p>
+				<p class="Mail">bertel.gregory@neuf.fr</p>
+				<p class="Cat-gorie-Viande"> Viande de bœuf, viande de veau </p>
+				<p class="March-">»	A la ferme : le vendredi de 16h à 20h</p>
+        ]]>
+      </description>		
+      <Point><coordinates>-1.552711,48.065428</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Cidre, jus de pomme<br>
+		Loisel Florence<br>
+		Ferme du Gosne, Noyal sur Vilaine<br>
+		Noyal sur Vilaine<br>
+		06 28 33 32 95<br>
+		sur rendez vous (horaires en cours de définition)<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.4908276,48.1009921</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#volaille</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		Volailles fermières<br>
+		La Ferme de la Rodais<br>
+		Lepretre Jeanine<br>
+		La Rodais, Noyal sur Vilaine<br>
+		Noyal sur Vilaine<br>
+		02 99 37 43 77<br>
+		A la ferme sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.488272,48.0676595</coordinates></Point>
+  </Placemark>
+  <Placemark>
+ 
+      <styleUrl>#Boucherie</styleUrl>
+
+<description> 	<![CDATA[
+	
+		
+		Veau de lait en caissette<br>
+		EARL La Mazière<br>
+		Françoise et Alain Gary<br>
+		La Mazière, Piré-sur-seiche<br>
+		Piré-sur-seiche<br>
+		02 99 44 45 50<br>
+		<SimpleData name="site Inter">www.lesfermiersassocies.com<br>
+		sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.409553,48.020993</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <styleUrl>#Boucherie</styleUrl>
+
+<description> 	<![CDATA[
+	
+		
+		Viande de boeuf et de veau de lait de race normande en caissette<br>
+		Ferme de la Ville Connue<br>
+		Mellet Marie-Hélène et Vincent<br>
+		Ville Connue, Piré-sur-seiche<br>
+		Piré-sur-seiche<br>
+		02 99 37 66 23 ou 06 07 73 89 23<br>
+		sur commande à retirer le vendredi après-midi<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.433285,48.030088</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <styleUrl>#lait</styleUrl>
+
+<description> 	<![CDATA[
+	
+		Produits laitiers<br>
+		Lait de vache, produits laitiers frais de vache, viande bovine en caissette<br>
+		La Ferme d'Olivet<br>
+		Guillemin Sandra et Bricet Gérard<br>
+		Olivet, Servon sur Vilaine<br>
+		Servon sur Vilaine<br>
+		06 62 09 27 62<br>
+		<SimpleData name="site Inter">www.fermeolivet.com<br>
+		Le vendredi de 16h à 19h30 et le samedi de 10h à 12h30<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.4661603,48.1052022</coordinates></Point>
+  </Placemark>
+  <Placemark><styleUrl>#Boucherie</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Veau sous la mère de race Angus<br>
+		Angus Noir de Haute Bretagne<br>
+		Huynh Sabine<br>
+		La Chaperonnais, Dourdain<br>
+		Dourdain<br>
+		06 45 50 42 03<br>
+		<SimpleData name="site Inter">www.angusnoir.com<br>
+		sur commande Lieu de dépôt des commandes faites sur www.panierdespres.com<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.370049,48.200501</coordinates></Point>
+  </Placemark>
+  <Placemark><styleUrl>#multi</styleUrl>
+<description> 	<![CDATA[
+	
+		
+		Lait, viande de veau, viande de boeuf<br>
+		Ferme du Haut Péray<br>
+		Bentz Martine et Jean-Marc<br>
+		Le Haut Péray, Dourdain<br>
+		Dourdain<br>
+		02 99 39 06 61<br>
+		Le vendredi de 17h30 à 19h30 Lieu de dépôt des commandes faites sur www.panierde<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.3669195,48.1750081</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Petits fruits, pommes, confitures, coulis, compotes, sirops<br>
+		Les P'tits Fruits de la Forêt<br>
+		Champigny Patrick et Théo<br>
+		8 La Tuberie, Ercé-près-Liffré<br>
+		Ercé-près-Liffré<br>
+		02 99 68 54 08 ou 06 84 34 73 40<br>
+		sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.5046759,48.2460189</coordinates></Point>
+  </Placemark>
+  <Placemark><styleUrl>#multi</styleUrl>
+<description> 	<![CDATA[
+	
+		
+		Viande bovine, lait<br>
+		GAEC de l'Illet<br>
+		Guilard Christian<br>
+		L'Estourbillonnais, Ercé-près-Liffré<br>
+		Ercé-près-Liffré<br>
+		06 15 22 61 50<br>
+		sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.494462,48.246318</coordinates></Point>
+  </Placemark>
+  <Placemark><styleUrl>#multi</styleUrl>
+<description> 	<![CDATA[
+	
+		
+		Légumes, pain, pommes<br>
+		Guilard Elise<br>
+		L'Estourbillonnais, Ercé-près-Liffré<br>
+		Ercé-près-Liffré<br>
+		06 72 68 56 75<br>
+		Le vendredi de 18h30 à 20h<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.494462,48.246318</coordinates></Point>
+  </Placemark>
+  <Placemark><styleUrl>#multi</styleUrl>
+<description> 	<![CDATA[
+	
+		
+		Plantes aromatiques et médicinales<br>
+		Mille Feuilles<br>
+		Delisle Bénédicte<br>
+		19 Le Haut Chemin, Ercé-près-Liffré<br>
+		Ercé-près-Liffré<br>
+		06 31 78 59 23<br>
+		<SimpleData name="site Inter">http://millefeuillesbreton.wordpress.com/author/millefeuillesbreton/<br>
+		Le mercredi de 8h45 à 12h (visite et vente) et le vendredi soir : vente sur rend<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.508836,48.2431853</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Légumes de saison<br>
+		Dagorn Arnaud<br>
+		1 la Hairie (site de production : La touche Ory à La Bouëxière), La Bouëxière<br>
+		La Bouëxière<br>
+		06 66 81 96 77<br>
+		sur rendez vous Dépôt de légumes à la ferme bio EARL Duté à La Bouëxière les ven<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.45875,48.2116039</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Cidre, jus de pomme, vinaigre de cidre, pommes<br>
+		Le Val de la Chèvre<br>
+		Tropée Régis<br>
+		Drugeon, La Bouëxière<br>
+		La Bouëxière<br>
+		02 99 68 31 25<br>
+		<SimpleData name="site Inter">www.cidre-tropee.com<br>
+		Du lundi au vendredi de 9h à 18h30 et le samedi de 9h à 17h - Fermé le mardi<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.4921801,48.1821065</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <styleUrl>#lait</styleUrl>
+
+<description> 	<![CDATA[
+	
+		Produits laitiers<br>
+		Lait, porc<br>
+		EARL Duté Philippe<br>
+		Duté Cécile et Philippe<br>
+		La Grande Fontaine, La Bouëxière<br>
+		La Bouëxière<br>
+		02 99 04 49 43<br>
+		Fontaine à lait cru à la ferme ou sur commande Lieu de dépôt des commandes faite<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.4495998,48.1727576</coordinates></Point>
+  </Placemark>
+  <Placemark><styleUrl>#Boucherie</styleUrl>
+<description> 	<![CDATA[
+	
+		
+		Viande bovine charolaise Veau sous la mère<br>
+		EARL Le Moulin au Pave<br>
+		Moulin Patrick<br>
+		La Paveillais, La Bouëxière<br>
+		La Bouëxière<br>
+		02 99 68 42 07<br>
+		sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.459004,48.2057519</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Légumes et fruits de saison, céréales<br>
+		La Ferme de La Malécotais<br>
+		Gieu Christian et Marylène<br>
+		La Malécotais, La Bouëxière<br>
+		La Bouëxière<br>
+		02 99 04 45 27<br>
+		Le samedi de 9h30 à 18h (coupure hivernale)<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.4354275,48.2005311</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <styleUrl>#Boucherie</styleUrl>
+
+<description> 	<![CDATA[
+	
+		
+		Agneaux Label Rouge<br>
+		Genouël Fabien<br>
+		La Lande Ragot, Liffré<br>
+		Liffré<br>
+		06 50 26 60 66<br>
+		sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.5224899,48.240303</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <styleUrl>#lait</styleUrl>
+
+<description> 	<![CDATA[
+	
+		Produits laitiers<br>
+		Yaourts au lait de brebis, fromages lactiques, frais affinés et en tomme<br>
+		EARL du Moulin<br>
+		Lorant Joseline<br>
+		Le Moulin de Liffré, Liffré<br>
+		Liffré<br>
+		02 99 68 37 89<br>
+		<SimpleData name="site Inter">http://moulindeliffre.jimdo.com/<br>
+		sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.4911702,48.2084741</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#volaille</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		Volaille de Campagne<br>
+		Gautier Pierrick<br>
+		4 La mare piron, Feins<br>
+		Feins<br>
+		02 99 69 78 48<br>
+		sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.6293169,48.320713</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Pommes, jus de pomme<br>
+		Le Verger des Coudreaux<br>
+		Marquet de Kerautem Rachel<br>
+		Les Coudreaux, Feins<br>
+		Feins<br>
+		02 99 55 49 24<br>
+		De mi-septembre à mi-avril environ, le samedi de 9h à 12h et de 14h à 17h<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.5967039,48.319245</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <styleUrl>#lait</styleUrl>
+
+<description> 	<![CDATA[
+	
+		Produits laitiers<br>
+		Lait, glace<br>
+		Le vivier des saveurs<br>
+		Dugueperoux Céline et David<br>
+		Les Viviers, Gahard<br>
+		Gahard<br>
+		02 99 45 77 84<br>
+		Le vendredi de 16h à 19h<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.531232,48.305361</coordinates></Point>
+  </Placemark>
+  <Placemark>    <styleUrl>#Boucherie</styleUrl>
+
+<description> 	<![CDATA[
+	
+		
+		Viande bovine<br>
+		EARL Denis<br>
+		Denis Thierry<br>
+		La Touche Bouilly, Saint Aubin d'Aubigné<br>
+		Saint Aubin d'Aubigné<br>
+		02 99 55 46 98 ou 06 18 72 17 26<br>
+		sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.6328525,48.2644939</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <styleUrl>#Boucherie</styleUrl>
+
+<description> 	<![CDATA[
+	
+		
+		Viande bovine limousine<br>
+		EARL Leroy<br>
+		Leroy Marcel<br>
+		La Denisais, Sens de Bretagne<br>
+		Sens de Bretagne<br>
+		02 99 39 52 12<br>
+		sur commande le samedi matin<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.5233671,48.3528549</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#volaille</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		Volaille, oeufs<br>
+		EARL David Chevrel<br>
+		Chevrel Olivier<br>
+		Burdel, Sens de Bretagne<br>
+		Sens de Bretagne<br>
+		02 99 45 78 36<br>
+		sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.5321777,48.3608707</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <styleUrl>#lait</styleUrl>
+
+<description> 	<![CDATA[
+	
+		Produits laitiers<br>
+		Lait, beurre, crème<br>
+		Ferme (R)eveille tes sens<br>
+		Marquet Gaëtan et Lécrivain Stéphane<br>
+		La Chauvelais, Sens de Bretagne<br>
+		Sens de Bretagne<br>
+		Tlé : 06 15 12 27 39<br>
+		sur commande en semaine<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.577779,48.32697</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#volaille</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		oeufs<br>
+		GAEC Avicole d'Ille-et-Rance<br>
+		Commereuc Sylvie et Tison Sylvie<br>
+		Ville Buée, Guipel<br>
+		Guipel<br>
+		02 99 69 65 78<br>
+		le samedi de 9h30 à 12h30<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.72308,48.2986239</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Légumes de saison<br>
+		Maraicher Bio<br>
+		Lemarié Didier<br>
+		La Haute Lande, La Mézière<br>
+		La Mézière<br>
+		06 88 48 17 16<br>
+		le mercredi de 15h30 à 19h30 et le samedi de 8h à 12h30<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.750236,48.225944</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Légumes bio diversifiés de saison<br>
+		Ferme agriculturelle de la Haie<br>
+		Le Verge Gwénolé<br>
+		La Haie, La Mézière<br>
+		La Mézière<br>
+		06 28 07 79 59<br>
+		Le vendredi de 16h à 20h<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.772129,48.2244279</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Jus de pomme, confiture<br>
+		Mazery Isabelle<br>
+		Le Glèrois, La Mézière<br>
+		La Mézière<br>
+		06 12 52 51 93<br>
+		sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.744762,48.215718</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Légumes bio diversifiés de saison<br>
+		Legall Ronan<br>
+		Férioc, La Mézière<br>
+		La Mézière<br>
+		02 99 73 71 25 ou 06 99 02 17 08<br>
+		Sur commande par téléphone<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.7597441,48.192002</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#volaille</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		oeufs, poulets, pintades<br>
+		EARL de l'Aulne<br>
+		Communier Martine<br>
+		Le Pas à l'Ane, Langouët<br>
+		Langouët<br>
+		02 99 45 52 49 ou 06 76 96 60 26<br>
+		<SimpleData name="site Inter">www.oeufs-biologiques-de-laulne.com<br>
+		Les mercredi et vendredi de 15h30 à 19h Le samedi de 9h30 à 12h30<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.797632,48.263408</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Biéres bio : blonde, ambrée et brune Biéres vendues en bouteilles et en fûts de<br>
+		Ferme Brasserie DRAO<br>
+		Mell Rozenn<br>
+		Servaude, Melesse<br>
+		Melesse<br>
+		06 75 55 29 78<br>
+		<SimpleData name="site Inter">www.brasseriedrao.com<br>
+		sur rendez vous<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.6621407,48.2194003</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#volaille</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		Escargots cuisinés<br>
+		L'Escargole<br>
+		Bizette Jean-Claude<br>
+		Le Verger-Beaucé, Melesse<br>
+		Melesse<br>
+		02 99 33 92 98 ou 06 24 02 59 98<br>
+		les vendredi et samedi de 9h à 19h ou sur rendez vous du lundi au jeudi<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.70509,48.187854</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#multi</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Lait, viande bovine limousine en caissette et viande de veau en caissette, cidre<br>
+		GAEC Pradenn<br>
+		Macé Marie-Edith, Sauvée Loïc et Julien<br>
+		La Métairie de Millé, Melesse<br>
+		Melesse<br>
+		06 78 68 16 37<br>
+		sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.715154,48.207837</coordinates></Point>
+  </Placemark>
+  <Placemark>    <styleUrl>#Boucherie</styleUrl>
+
+<description> 	<![CDATA[
+	
+		
+		Viande de boeuf et veau de lait en caissette Viande de porc fermier et charcuteri<br>
+		La ferme de la Basse Bécherie<br>
+		Raffray Marie-Madeleine et Jean-Claude<br>
+		La Basse Bécherie, Montreuil-Le-Gast<br>
+		Montreuil-Le-Gast<br>
+		02 99 66 92 80<br>
+		sur commande à retirer les jeudi et vendredi à partir de 14h30<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.7367387,48.2359332</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <styleUrl>#lait</styleUrl>
+
+<description> 	<![CDATA[
+	
+		Produits laitiers<br>
+		Lait, yaourts<br>
+		P'tit Gallo<br>
+		Simon Yves<br>
+		La Janaie, Montreuil-Le-Gast<br>
+		Montreuil-Le-Gast<br>
+		Tlé : 02 99 66 94 13<br>
+		<SimpleData name="site Inter">www.leptitgallo.com<br>
+		Le mercredi de 14h à 18h30 et le vendredi de 16h30 à 19h<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.723287,48.256032</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Pain<br>
+		Fournil du Loup<br>
+		Noslier Laurent<br>
+		Ferme de Bel, Montreuil-Le-Gast<br>
+		Montreuil-Le-Gast<br>
+		02 99 73 52 39 ou 06 07 80 98 20<br>
+		Les Mardi et Vendredi de 12h à 19h<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.729072,48.247179</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Légumes bio<br>
+		Le Jardin d'Anne Marie<br>
+		Desille Anne-Marie<br>
+		Flux, Saint Médard sur Ille<br>
+		Saint Médard sur Ille<br>
+		02 99 55 21 95<br>
+		Le mardi de 17h à 19h et le samedi de 9h30 à 12h<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.6621312,48.2602037</coordinates></Point>
+  </Placemark>
+  <Placemark>    <styleUrl>#Boucherie</styleUrl>
+
+<description> 	<![CDATA[
+	
+		
+		Viande de boeuf et veau de lait, volailles<br>
+		Perrudin Chantal et Christophe<br>
+		La Rochette, Vignoc<br>
+		Vignoc<br>
+		06 68 61 06 64<br>
+		<SimpleData name="site Inter">www.lafermedumanoirdelarochette35.com<br>
+		1 week-end par mois : du vendredi 15h au samedi en fin de matinée<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.7495978,48.2506972</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#multi</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Lait de vache, blé, viande de boeuf, pain, légumes de saison<br>
+		EARL de Blys<br>
+		Letort Sylvie et Yvonnick<br>
+		Ifer, Acigné<br>
+		Acigné<br>
+		02 99 62 23 72<br>
+		<SimpleData name="site Inter">www.fermebio-ifer.fr<br>
+		Le mardi et vendredi de 16h à 19h<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.5539976,48.1423921</coordinates></Point>
+  </Placemark>
+  <Placemark><styleUrl>#Boucherie</styleUrl>
+<description> 	<![CDATA[
+	
+		
+		Porc et charcuterie traditionnelle au détail et en caissette et Poulet<br>
+		Au fin Goret<br>
+		Letort Pierrette et Michel<br>
+		Monthelon, Acigné<br>
+		Acigné<br>
+		A la ferme du mercredi au samedi de 10h à 12h et 15h à 19h<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.553982,48.13769</coordinates></Point>
+  </Placemark>
+  <Placemark>    <styleUrl>#Boucherie</styleUrl>
+
+<description> 	<![CDATA[
+	
+		
+		viande de boeuf, viande de veau<br>
+		EARL 1001 Pattes<br>
+		Crosnier Véronique, Auffray Jean-René, Lejas Frédèric<br>
+		Le Bois de Betton, Betton<br>
+		Betton<br>
+		02 99 55 04 98 (heures repas) ou 06 76 19 21 59 (Véronique)<br>
+		sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.618477,48.173769</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <styleUrl>#lait</styleUrl>
+
+<description> 	<![CDATA[
+	
+		Produits laitiers<br>
+		Lait, beurre, yaourts variés, fromage blanc, faisselle, crèmes?<br>
+		L'Ille au Pré<br>
+		Le Grand Goueset Gwénolée<br>
+		La mévrais, Betton<br>
+		Betton<br>
+		06 11 93 18 91<br>
+		Le mercredi de 10h à 12h et le jeudi de 16h30 à 18h30<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.650701,48.165802</coordinates></Point>
+  </Placemark>
+  <Placemark>    <styleUrl>#Boucherie</styleUrl>
+
+<description> 	<![CDATA[
+	
+		
+		Viande de porc en caissette<br>
+		Ferme du Tertre<br>
+		Houget Dominique<br>
+		Le Rocher, Bourgbarré<br>
+		Bourgbarré<br>
+		06 15 60 04 50<br>
+		sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.610251,48.001979</coordinates></Point>
+  </Placemark>
+  <Placemark>    <styleUrl>#Boucherie</styleUrl>
+
+<description> 	<![CDATA[
+	
+		
+		Viande de porc et charcuterie, viande bovine race limousine<br>
+		La Ferme du Portail<br>
+		Gicquel Jean-Marc et Gourmelen Hélène<br>
+		Le Portail, Bourgbarré<br>
+		Bourgbarré<br>
+		02 99 57 66 21 ou 06 30 72 94 60<br>
+		<SimpleData name="site Inter">sites.google.com/site/fermeduportail<br>
+		Le vendredi de 15h à 19h et le samedi de 10h à 12h<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.625694,47.9897876</coordinates></Point>
+  </Placemark>
+  <Placemark>    <styleUrl>#Boucherie</styleUrl>
+
+<description> 	<![CDATA[
+	
+		
+		Viande d'agneau en caissette, race protégée Landes de Bretagne<br>
+		Les moutons de Clarisse<br>
+		Prod'homme Clarisse<br>
+		L'Alinière, Brécé<br>
+		Brécé<br>
+		06 89 85 24 16<br>
+		<SimpleData name="site Inter">www.lesmoutonsdeclarisse.overblog.com<br>
+		sur commande vente à la Ferme d'Ifer à Acigné et vente à la Ferme Olivet à Servo<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.5019185,48.113255</coordinates></Point>
+  </Placemark>
+  <Placemark>   
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Légumes et fruits de saison, fleurs, plantes et plans potagers<br>
+		Biobruz<br>
+		Hery Guillaume<br>
+		Le Clos Renaud, Bruz<br>
+		Bruz<br>
+		06 78 88 43 12<br>
+		<SimpleData name="site Inter">www.biobruz.directetbon.com<br>
+		Le samedi de 9h à 12h30<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.7302335,48.041573</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <styleUrl>#lait</styleUrl>
+
+<description> 	<![CDATA[
+	
+		Produits laitiers<br>
+		Lait bio<br>
+		Ferme de Mouille Pied<br>
+		Jan Yves<br>
+		Mouille Pied, Cesson-Sevigné<br>
+		Cesson-Sevigné<br>
+		06 69 13 08 20<br>
+		sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.5703,48.120346</coordinates></Point>
+  </Placemark>
+  <Placemark>    <styleUrl>#Boucherie</styleUrl>
+
+<description> 	<![CDATA[
+	
+		
+		Viande bovine race limousine<br>
+		Leray Benoît<br>
+		Soeuvres, Chantepie<br>
+		Chantepie<br>
+		02 99 41 47 47 ou 06 08 63 56 55<br>
+		en livraison sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.5952809,48.075774</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#multi</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Volailles et oeufs fermiers, viande bovine, légumes<br>
+		Les Paniers des Vergers<br>
+		Kervarec Michel<br>
+		La Chaplinais, Chavagne<br>
+		Chavagne<br>
+		02 99 64 24 24<br>
+		Du mercredi au samedi de 10h à 19h<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.798707,48.060441</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#multi</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Pain, brioche, lait, légumes, oeufs, farine<br>
+		EARL Les Petits Chapelais<br>
+		Simoneaux Gilles, Gitton Yoann, Thiel Sylvie, Lefranc André<br>
+		Les Petits Chapelais, Chavagne<br>
+		Chavagne<br>
+		02 99 64 38 31<br>
+		<SimpleData name="site Inter">www.lespetitschapelais.fr<br>
+		Le Mercredi de 15h à 19h et le vendredi de 15h à 20h<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.7638712,48.0716527</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Légumes de saison, fraises, oeufs<br>
+		Le Potager de Marius<br>
+		EARL du Petit Pont Coralie et Thierry Leloup<br>
+		Le Pont à Pleurer, Chevaigné<br>
+		Chevaigné<br>
+		06 87 14 66 42<br>
+		Le lundi et vendredi de 16h à 19h et le samedi de 15h à 18h<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.6448838,48.2267744</coordinates></Point>
+  </Placemark>
+  <Placemark>    <styleUrl>#Boucherie</styleUrl>
+
+<description> 	<![CDATA[
+	
+		
+		Viande de boeuf et veau de lait en caissette<br>
+		EARL Renaudin<br>
+		Renaudin Gabriel et Chrystèle<br>
+		2 Bintin, Cintré<br>
+		Cintré<br>
+		02 99 64 10 10<br>
+		sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.9007773,48.1144045</coordinates></Point>
+  </Placemark>
+  <Placemark>    <styleUrl>#Boucherie</styleUrl>
+
+<description> 	<![CDATA[
+	
+		
+		Viande de boeuf race parthenaise en caissettes<br>
+		La Ferme de Vélobert<br>
+		Fraleux Jean-Paul et Sabrina<br>
+		Vélobert, Corps-Nuds<br>
+		Corps-Nuds<br>
+		02 99 44 05 26<br>
+		sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.6116591,47.9764254</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#volaille</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		Cailles, pigeons, perdrix, faisans, poules ainsi que leurs oeufs<br>
+		Les Cailles de Chanteloup<br>
+		Primault Christophe<br>
+		La Route des Gourmets, le Petit Vélobert, Corps-Nuds<br>
+		Corps-Nuds<br>
+		02 99 44 12 83 ou 06 62 75 95 22<br>
+		<SimpleData name="site Inter">www.caillesdechanteloup.com<br>
+		Du lundi au vendredi de 9h30 à 18h Fermiers du Coin (St Jacques de la Lande)<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.588157,47.979124</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Plants jardiniers (légumes et fleurs)<br>
+		SARL Rocambole<br>
+		Bannier Chistrine et Bienvenu Luc<br>
+		La lande aux Pitois, Corps-Nuds<br>
+		Corps-Nuds<br>
+		02 99 57 68 32<br>
+		<SimpleData name="site Inter">www.jardinsrocambole.fr<br>
+		D'Avril à Juin : les mercredi et samedi de 9h à 19h, les lundi mardi, jeudi, ven<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.6102305,47.9793519</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <styleUrl>#lait</styleUrl>
+
+<description> 	<![CDATA[
+	
+		Produits laitiers<br>
+		Fromages de chèvre et de vache<br>
+		La chèvrerie du Moulin Briant<br>
+		Poirier Patrick<br>
+		Moulin Briant, Corps-Nuds<br>
+		Corps-Nuds<br>
+		02 99 44 09 78<br>
+		Tous les jours sauf dimanche et jours fériès de 16h30 à 17h30<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.596268,47.983785</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#multi</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Jus de pomme, farine de blé, d'épeautre et de seigle, viande bovine &quot;blonde d'aq<br>
+		Ferme de la Rocheraie<br>
+		Simonneaux Paul et Chantal<br>
+		La Rocheraie, Corps-Nuds<br>
+		Corps-Nuds<br>
+		02 99 44 00 66<br>
+		<SimpleData name="site Inter">www.larocheraie.com<br>
+		Le vendredi matin ou sur commande par téléphone<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.588157,47.979124</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Légumes et fruits de saison bio<br>
+		Les jardins du Châtaigner<br>
+		Berthelot Mickaël<br>
+		Radeux, Corps-Nuds<br>
+		Corps-Nuds<br>
+		06 63 54 21 61<br>
+		<SimpleData name="site Inter">www.lesjardinsduchataignier.fr<br>
+		Vente à la ferme en libre cueillette de petits fruits et légumes biologique de m<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.582119,47.990806</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#multi</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Tisanes et aromates, légumes<br>
+		Les Herbes de l'écureuil<br>
+		Deraeve Emmanuelle<br>
+		Corps-Nuds<br>
+		Corps-Nuds<br>
+		02 23 31 10 95<br>
+		<SimpleData name="site Inter">www.lesherbesdelecureuil.fr<br>
+		Sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.588157,47.979124</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <styleUrl>#lait</styleUrl>
+
+<description> 	<![CDATA[
+	
+		Produits laitiers<br>
+		Fromage de vache au lait cru : Tomme de la Moltais, Le Petit Moulin<br>
+		Ferme de la Moltais<br>
+		Chauvin Stéphanie et Benoît<br>
+		La Moltais, Gévezé<br>
+		Gévezé<br>
+		02 99 69 90 77<br>
+		Le samedi de 9h à 12h<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.7945565,48.2301374</coordinates></Point>
+  </Placemark>
+  <Placemark>    <styleUrl>#Boucherie</styleUrl>
+
+<description> 	<![CDATA[
+	
+		
+		Viande de porc et charcuterie traditionnelle au détail ou en caissette<br>
+		EARL du Verger<br>
+		Trubert Marie-Noëlle et Dominique<br>
+		Le Verger Tixüe, Gévezé<br>
+		Gévezé<br>
+		02 99 69 18 43<br>
+		Le jeudi de 18h à 20h<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.793296,48.191252</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Légumes de saison et herbes aromatiques<br>
+		SCEA Le Rheu Maraichers<br>
+		Vallais Matthieu<br>
+		Lieu dit Coutance, Le Rheu<br>
+		Le Rheu<br>
+		02 99 14 79 61 ou 02 99 14 95 70 (magasin)<br>
+		<SimpleData name="site Inter">www.lerheumaraichers.com<br>
+		Du mardi au samedi de 9h à 12h15 et de 14h à 19h<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.7575245,48.0839003</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <styleUrl>#lait</styleUrl>
+
+<description> 	<![CDATA[
+	
+		Produits laitiers<br>
+		Lait<br>
+		GAEC Mézières<br>
+		Nozay Jean-Michel et Berthelot Philippe<br>
+		Mordelles<br>
+		Mordelles<br>
+		06 82 94 17 17 ou 06 15 32 20 41<br>
+		<SimpleData name="site Inter">www.cabane-a-lait.com<br>
+		Distributeur de lait situé Place des Muletiers à Mordelles<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.846946,48.072918</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <styleUrl>#lait</styleUrl>
+
+<description> 	<![CDATA[
+	
+		Produits laitiers<br>
+		Lait<br>
+		La Ferme d'ici<br>
+		Dezenaire Yannick<br>
+		Place Pierre Croc, Noyal Châtillon sur Seiche<br>
+		Noyal Châtillon sur Seiche<br>
+		06 15 53 70 65<br>
+		Distributeur automatique de lait à la ferme<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.6665928,48.0417889</coordinates></Point>
+  </Placemark>
+  <Placemark> 
+  <styleUrl>#multi</styleUrl>
+  
+
+<description> 	<![CDATA[
+	
+		
+		Lait, viande bovine<br>
+		La Ferme des Prés<br>
+		Clermont Bénedicte, Pélerin et Richomme<br>
+		La Foucherais, Noyal Châtillon sur Seiche<br>
+		Noyal Châtillon sur Seiche<br>
+		02 99 52 27 75 ou 06 26 78 21 86<br>
+		<SimpleData name="site Inter">http://lafermedespresverts.free.fr<br>
+		Les lundi, mercredi et vendredi de 16h à 19h<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.6570086,48.0571677</coordinates></Point>
+  </Placemark>
+  <Placemark>    <styleUrl>#Boucherie</styleUrl>
+
+<description> 	<![CDATA[
+	
+		
+		Viande de boeuf et de veau de race Salers bio<br>
+		La Ferme de la Corbière<br>
+		Regnier Antonin<br>
+		La Corbière, Orgères<br>
+		Orgères<br>
+		06 87 57 20 39<br>
+		sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.6829,47.978905</coordinates></Point>
+  </Placemark>
+  <Placemark>    <styleUrl>#Boucherie</styleUrl>
+
+<description> 	<![CDATA[
+	
+		
+		Cochon de lait, agneaux<br>
+		Méchoui et cochon grillé<br>
+		Trubert Jean-Michel<br>
+		Le Plessis, Pacé<br>
+		Pacé<br>
+		09 75 69 53 78<br>
+		<SimpleData name="site Inter">www.mechouietcochongrille.com<br>
+		sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.7941779,48.1764109</coordinates></Point>
+  </Placemark>
+  <Placemark>    <styleUrl>#Boucherie</styleUrl>
+
+<description> 	<![CDATA[
+	
+		
+		Porc charcutier, cochon de lait rôti au feu de bois, agneaux rôtis au feu de boi<br>
+		La Ferme du Plessis<br>
+		Trubert Didier<br>
+		Le Plessis, Pacé<br>
+		Pacé<br>
+		02 99 85 66 54<br>
+		<SimpleData name="site Inter">www.fermeduplessis.com<br>
+		sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.7941779,48.1764109</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Légumes de saison<br>
+		EARL Chauvin<br>
+		Chauvin Lydie et Loïc<br>
+		Le cachot, Pacé<br>
+		Pacé<br>
+		06 88 89 13 53<br>
+		Le mercredi de 16h30 à 19h et le vendredi de 15h30 à 19h (de mi-avril à fin octo<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.789535,48.137526</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#volaille</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		Volailles et charcuterie de volaille<br>
+		GAEC de la Haie du Val<br>
+		Michel Dominique, Loïc, Patrick et Michel<br>
+		La haie du Val, Pacé<br>
+		Pacé<br>
+		02 99 60 66 82 ou 06 81 05 45 60<br>
+		Vendredi et samedi toute la journée<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.7903201,48.1771752</coordinates></Point>
+  </Placemark>
+  <Placemark>    <styleUrl>#Boucherie</styleUrl>
+
+<description> 	<![CDATA[
+	
+		
+		Viande de porc label rouge et charcuterie traditionnelle au détail ou en caisset<br>
+		Ferme du Chatelier<br>
+		Trubert Christine et Jean-Yves<br>
+		Le Chatellier, Pacé<br>
+		Pacé<br>
+		02 99 77 86 58<br>
+		A la ferme les mardi, mercredi, vendredi et samedi 9h à 17h<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.81370349,48.1335254</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#multi</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Pain au levain pétri et façonné à la main, cuit au feu de bois, petits fruits, j<br>
+		Le Chant du Blé<br>
+		Clisson Olivier<br>
+		Les Peignes, Parthenay de Bretagne<br>
+		Parthenay de Bretagne<br>
+		06 84 20 97 53<br>
+		Sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.8256625,48.2001818</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Légumes de saison<br>
+		EARL Marc Roussin<br>
+		Roussin Marc<br>
+		Le Vivier Bourgneuf, Romillé<br>
+		Romillé<br>
+		02 99 68 21 40<br>
+		Le vendredi de 16h à 19h<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.889489,48.217367</coordinates></Point>
+  </Placemark>
+  <Placemark>    <styleUrl>#Boucherie</styleUrl>
+
+<description> 	<![CDATA[
+	
+		
+		Porc blanc de l'ouest et bovins de race limousine<br>
+		Ferme de La Gohérie<br>
+		Sauvée Francis<br>
+		La Gohérie, Romillé<br>
+		Romillé<br>
+		06 73 53 49 33<br>
+		Le samedi de 10h à 13h ou sur rendez vous<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.910218,48.2265919</coordinates></Point>
+  </Placemark>
+  <Placemark>    <styleUrl>#Boucherie</styleUrl>
+
+<description> 	<![CDATA[
+	
+		
+		Porc biologique<br>
+		La ferme des bois<br>
+		Govin Pierre-Yves<br>
+		Les Bois, Romillé<br>
+		Romillé<br>
+		06 52 51 82 02<br>
+		sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.8992849,48.2448613</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Fruits rouges et légumes de saison<br>
+		Le Potager d'Agnès<br>
+		Gohin Agnès<br>
+		Le petit bouquillé, Romillé<br>
+		Romillé<br>
+		06 04 14 57 74<br>
+		<SimpleData name="site Inter">lepotagerdagnes.com<br>
+		De mi-Mai à Mi-Septembre : libre cueillette les lundi, mercredi et vendrei de 14<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.914019,48.224599</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Légumes et fruits de saison bio<br>
+		Galerme Jean-Baptiste<br>
+		Saint-Erblon<br>
+		Saint-Erblon<br>
+		sur rendez vous<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.651392,48.018007</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Jus de pomme, cidre, confit de cidre, gelée de jus de pomme, apéritif fermier<br>
+		La Belle Vilaine<br>
+		Mounier Nathalie et Thierry<br>
+		La Perrière, Saint-Gilles<br>
+		Saint-Gilles<br>
+		06 70 68 16 75<br>
+		<SimpleData name="site Inter">www.labellevilaine.fr<br>
+		A la ferme : Mardi et vendredi et 17h30 à 20h et samedi de 14h à 19h Sur command<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.8276949,48.170783</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		pommes, jus de pomme, cidres, apéritifs, vinaigre de cidre<br>
+		Les Vergers de l'Ille<br>
+		Forel Sylvie et Lehuger Etienne<br>
+		La Fouinardière, Saint-Grégoire<br>
+		Saint-Grégoire<br>
+		06 79 10 77 18<br>
+		Le samedi de 14h à 18h (d'octobre à février)<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.7031362,48.1658835</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Légumes de saison<br>
+		Bougerie Jean-Claude<br>
+		La Mare, Saint-Grégoire<br>
+		Saint-Grégoire<br>
+		02 99 23 89 41<br>
+		Tous les jours sauf dimanche de 16h à 21h<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.700571,48.159387</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#volaille</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		Volailles prêtes à cuire<br>
+		Les Volailles du Pâtis<br>
+		Georges Denis<br>
+		Le pâtis du Moulinet, Thorigné-Fouillard<br>
+		Thorigné-Fouillard<br>
+		02 99 62 02 41<br>
+		Le vendredi et le samedi<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.578495,48.1424039</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#fruit</styleUrl>
+  
+<description> 	<![CDATA[
+	
+		
+		Légumes et fruits de saison<br>
+		Verger La Réauté<br>
+		Ferron Jean-Claude<br>
+		La Grande Réauté, Thorigné-Fouillard<br>
+		Thorigné-Fouillard<br>
+		02 99 62 01 09<br>
+		<SimpleData name="site Inter">http://verger-la-reaute.com/<br>
+		Cueillette au jardin de Mai à Octobre et horaires du magasin : lundi de 14h à 19<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.5718981,48.1426357</coordinates></Point>
+  </Placemark>
+  <Placemark>
+  <styleUrl>#multi</styleUrl>
+  
+<description> 	<![CDATA[
+	F
+		
+		Cidre et viande bovine<br>
+		Vallée Armel<br>
+		Le Perron, Vern sur Seiche<br>
+		Vern sur Seiche<br>
+		02 99 62 73 54<br>
+		Sur commande<br>
+	
+      ]]>
+      </description><Point><coordinates>-1.6319343,48.0612755</coordinates></Point>
+  </Placemark>
+</Folder></Document></kml>
