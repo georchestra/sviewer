@@ -68,6 +68,7 @@ function initmap() {
             layername: '',
             namespace: '',
             stylename: '',
+            qcl_filter: '',
             wmsurl_global: '',
             wmsurl_ns: '',
             wmsurl_layer: '',
@@ -89,13 +90,16 @@ function initmap() {
          * @param {String} s the querystring describing the layer
          */
         function parseLayerParam (s) {
-           self.options.nslayername = s.split('*')[0]; // namespace:layername
-           self.options.stylename = (s.indexOf("*")>0) ? s.split('*',2)[1]:''; // stylename
-           self.options.namespace = (self.options.nslayername.indexOf(":")>0) ? self.options.nslayername.split(':',2)[0]:''; // namespace
-           self.options.layername = (self.options.nslayername.indexOf(':')>0) ? self.options.nslayername.split(':',2)[1]:''; // layername
-           self.options.wmsurl_global = config.geOrchestraBaseUrl + '/geoserver/wms'; // global getcap
-           self.options.wmsurl_ns = config.geOrchestraBaseUrl + '/geoserver/' + self.options.namespace + '/wms'; // virtual getcap namespace
-           self.options.wmsurl_layer = config.geOrchestraBaseUrl + '/geoserver/' + self.options.namespace + '/' + self.options.layername + '/wms'; // virtual getcap layer
+            self.options.nslayername = s.split('*')[0]; // namespace:layername
+            self.options.stylename = (s.indexOf("*")>0) ? s.split('*',2)[1]:''; // stylename
+            self.options.cql_filter = (s.indexOf("*")>1) ? s.split('*',3)[2]:''; // qcl_filter
+            console.log(self.options.cql_filter);
+
+            self.options.namespace = (self.options.nslayername.indexOf(":")>0) ? self.options.nslayername.split(':',2)[0]:''; // namespace
+            self.options.layername = (self.options.nslayername.indexOf(':')>0) ? self.options.nslayername.split(':',2)[1]:''; // layername
+            self.options.wmsurl_global = config.geOrchestraBaseUrl + '/geoserver/wms'; // global getcap
+            self.options.wmsurl_ns = config.geOrchestraBaseUrl + '/geoserver/' + self.options.namespace + '/wms'; // virtual getcap namespace
+            self.options.wmsurl_layer = config.geOrchestraBaseUrl + '/geoserver/' + self.options.namespace + '/' + self.options.layername + '/wms'; // virtual getcap layer
         };
 
         /**
@@ -112,6 +116,9 @@ function initmap() {
                 },
                 extent: config.maxExtent
             };
+            if (self.options.cql_filter) {
+                wms_params.params.CQL_FILTER = self.options.cql_filter;
+            }
             if (self.options.sldurl) {
                 wms_params.params.SLD = self.options.sldurl;
             }
@@ -823,7 +830,7 @@ freeFormAddress,
         if (qs.layers) {
             config.layersQueryString = qs.layers;
             var ns_layer_style_list = [];
-            // parser to retrieve serialized namespace:name[*style] and store the description in config
+            // parser to retrieve serialized namespace:name[*style[*cql_filter]] and store the description in config
             ns_layer_style_list = (typeof qs.layers === 'string') ? qs.layers.split(',') : qs.layers;
             $.each(ns_layer_style_list, function() {
                 config.layersQueryable.push(new LayerQueryable(this));
