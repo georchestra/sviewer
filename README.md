@@ -95,6 +95,12 @@ example :
 
     http://sdi.georchestra.org/sviewer/?layers=geor:sdi*geor_sdi
 
+To specify a vendor CQL_FILTER for a layer, add "**cql_filter" to the layer name if no alternative style is specified, otherwise use layer*style*cql_filter
+examples :
+
+    http://sdi.georchestra.org/sviewer/?layers=geor:sdi*geor_sdi*title%3DPIGMA
+    http://sdi.georchestra.org/sviewer/?layers=geor:sdi**title%3DPIGMA
+
 
 wmc {string}
 -------------------
