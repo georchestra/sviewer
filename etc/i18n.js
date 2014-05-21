@@ -72,13 +72,21 @@ var i18n = {
     },
     de: {
         'geOrchestra mobile': 'geOrchestra mobile',
-
+        'Query': 'abfragen',
         'Legend': 'Beschriftung',
         'Locate': 'Finden',
         'Map': 'Karte',
         'initial view': 'Startansicht',
+        'zoom +': 'zoom +',
+        'zoom -': 'zoom -',
         'background': 'Basis Karte',
         'Close': 'Schließen',
+        'Query the map': 'Karte abfragen',
+        'Query results :': 'Ergebnis :',
+        'no item found': 'kein Treffer',
+        'query failed': 'Abfrage nicht erfolgt',
+
+        'metadata': 'Metadaten',
 
         'Results are off map': 'Ergebnisse sind außerhalb der Karte',
         'No result': 'kein Ergebnis',
@@ -87,5 +95,15 @@ var i18n = {
 
         'Permalink': 'Permalink',
         'Address and/or city': 'Adresse eingeben'
+        
+      
+
+        'Title': 'Kartentitel',
+        'change title': 'Titel ändern',
+        'Permalink': 'Permalink',
+        'Permalink to this map': 'Permanenter link zur Karte',
+        'Address and/or city': 'Adresse',
+        'share on ' : 'teilen',
+        'Edit with geOrchestra': 'Karte mittels georchestra ändern'
     }
 };
