@@ -2,9 +2,9 @@ customConfig = {
     title: 'geOrchestra mobile',
 
     /**
-     * default language, see etc/i18n.js
+     * force default language, see etc/i18n.js
      */
-    lang: 'fr',
+    // lang: 'fr',
 
     /**
      * base url of the geOrchetra SDI. Layers coming from this SDI

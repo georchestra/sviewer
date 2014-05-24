@@ -21,7 +21,6 @@ var view;
 var config = {};
 var customConfig = {};
 var hardConfig = {
-    lang: 'en',
     title: 'geOrchestra mobile',
     geOrchestraBaseUrl: 'http://sdi.georchestra.org/',
     projection: projection,
@@ -47,6 +46,7 @@ var hardConfig = {
         'Facebook': 'http://www.facebook.com/sharer/sharer.php?u='
     }
 };
+
 
 
 
@@ -264,8 +264,8 @@ function initmap() {
      * @return {String} translated string
      */
     function tr(s) {
-        if ($.type(i18n[config.lang][s])==='string') {
-                return i18n[config.lang][s];
+        if ($.type(hardConfig.i18n[config.lang][s])==='string') {
+                return hardConfig.i18n[config.lang][s];
             }
         else {
             return s;
@@ -806,8 +806,13 @@ freeFormAddress,
      * reads configuration from querystring
      */
     function doConfiguration() {
+        
+        // browser language
+        var language = ((navigator.language) ? navigator.language : navigator.userLanguage).substring(0,2);
+        console.log(language);
         // current config
         config = {
+            lang: ((hardConfig.i18n.hasOwnProperty(language)) ? language : 'en'),
             wmc: '',
             lb: 0,
             layersQueryable: [],
