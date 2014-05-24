@@ -453,7 +453,7 @@ function initmap() {
                     name + '</a>'
                 );
             });
-            $('#georchestraForm').attr('action', config.geOrchestraBaseUrl);
+            $('#georchestraForm').attr('action', config.geOrchestraBaseUrl + 'mapfishapp/');
             if ($('#qrcode').css("visibility")==="visible") {
                 $('#qrcode').empty();
                 new QRCode("qrcode", {
@@ -479,15 +479,17 @@ function initmap() {
                 "services": [],
                 "layers" : []
             };
-            $.each(config.layersQueryable, function() {
+            $.each(config.layersQueryable, function(i, layer) {
                 params.layers.push({
-                    "layername" : this.layername,
+                    "layername" : layer.options.layername,
                     "owstype" : "WMS",
-                    "owsurl" : this.wmsurl_ns
+                    "owsurl" : layer.options.wmsurl_layer
                 });
             });
+            console.log(params.layers);
             $("#georchestraFormData").val(JSON.stringify(params));
-            return true;
+            //~ return true;
+            return false;
         }
     }
 
@@ -809,7 +811,7 @@ freeFormAddress,
         
         // browser language
         var language = ((navigator.language) ? navigator.language : navigator.userLanguage).substring(0,2);
-        console.log(language);
+        
         // current config
         config = {
             lang: ((hardConfig.i18n.hasOwnProperty(language)) ? language : 'en'),
