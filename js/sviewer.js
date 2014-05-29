@@ -182,10 +182,10 @@ function initmap() {
                         self.md.Abstract = mdLayer.Abstract;
 
                         // metadata
-                        if (mdLayer.metadataURLs) {
-                            $.each(mdLayer.metadataURLs, function() {
-                                if (this.format === "text/html") {
-                                    html.push('&nbsp;<a target="_blank" class="sv-md-meta" href="' + this.href + '">');
+                        if (mdLayer.hasOwnProperty('MetadataURL')) {
+                            $.each(mdLayer.MetadataURL, function() {
+                                if (this.Format === "text/html") {
+                                    html.push('&nbsp;<a target="_blank" class="sv-md-meta" href="' + this.OnlineResource + '">');
                                     html.push(tr('metadata'));
                                     html.push(" ... </a>");
                                 }
@@ -808,10 +808,10 @@ freeFormAddress,
      * reads configuration from querystring
      */
     function doConfiguration() {
-        
+
         // browser language
         var language = ((navigator.language) ? navigator.language : navigator.userLanguage).substring(0,2);
-        
+
         // current config
         config = {
             lang: ((hardConfig.i18n.hasOwnProperty(language)) ? language : 'en'),
