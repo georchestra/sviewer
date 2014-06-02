@@ -149,7 +149,6 @@ function initmap() {
 
                     if (mdLayer) {
                         html.push('<div class="sv-md">');
-
                         legendArgs = {
                             'SERVICE' : 'WMS',
                             'VERSION' : capabilities.version,
@@ -633,9 +632,11 @@ freeFormAddress,
         // WMS getFeatureInfo
         $.each(config.layersQueryable, function() {
             var url = this.wmslayer.getSource().getGetFeatureInfoUrl(
-                  config.gficoord, viewResolution, projection,
-                  {'INFO_FORMAT': 'text/html'});
-
+                config.gficoord,
+                viewResolution,
+                projection,
+                {'INFO_FORMAT': 'text/html'}
+            );
 
             // response order = layer order
             var domResponse =  $('<div><span class="sv-md-title">' + escHTML(this.md.title) + '</span></div>');
@@ -996,6 +997,10 @@ freeFormAddress,
     }
 
     if (config.gfiok && (!(config.wmc.length>0))) {
-        queryMap(view.getCenter());
+        //~ queryMap(view.getCenter());
+        setTimeout(
+            function() { queryMap(view.getCenter()) },
+            300
+        );
     }
 }
