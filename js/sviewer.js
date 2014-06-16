@@ -627,7 +627,7 @@ freeFormAddress,
         map.beforeRender(pan);
         view.setCenter(config.gficoord);
         $('#panelInfo').popup('close');
-        $('#querycontent').html(tr('Query results :'));
+        $('#querycontent').html('');
 
         // WMS getFeatureInfo
         $.each(config.layersQueryable, function() {
