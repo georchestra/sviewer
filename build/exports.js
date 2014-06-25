@@ -766,11 +766,6 @@ goog.exportProperty(
     'getImage',
     ol.ImageTile.prototype.getImage);
 
-goog.exportProperty(
-    ol.ImageTile.prototype,
-    'getTileCoord',
-    ol.ImageTile.prototype.getTileCoord);
-
 goog.exportSymbol(
     'ol.Kinetic',
     ol.Kinetic);
@@ -6884,41 +6879,6 @@ goog.exportProperty(
 goog.exportSymbol(
     'ol.source.TileDebug',
     ol.source.TileDebug);
-
-goog.exportProperty(
-    ol.source.TileDebug.prototype,
-    'dispatchChangeEvent',
-    ol.source.TileDebug.prototype.dispatchChangeEvent);
-
-goog.exportProperty(
-    ol.source.TileDebug.prototype,
-    'getState',
-    ol.source.TileDebug.prototype.getState);
-
-goog.exportProperty(
-    ol.source.TileDebug.prototype,
-    'getTileGrid',
-    ol.source.TileDebug.prototype.getTileGrid);
-
-goog.exportProperty(
-    ol.source.TileDebug.prototype,
-    'on',
-    ol.source.TileDebug.prototype.on);
-
-goog.exportProperty(
-    ol.source.TileDebug.prototype,
-    'once',
-    ol.source.TileDebug.prototype.once);
-
-goog.exportProperty(
-    ol.source.TileDebug.prototype,
-    'un',
-    ol.source.TileDebug.prototype.un);
-
-goog.exportProperty(
-    ol.source.TileDebug.prototype,
-    'unByKey',
-    ol.source.TileDebug.prototype.unByKey);
 
 goog.exportSymbol(
     'ol.source.TileImage',

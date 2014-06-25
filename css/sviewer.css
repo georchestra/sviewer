@@ -75,6 +75,7 @@ p.center {
 .sv-map {
     width: 100%;
     height: 100%;
+    cursor: hand;
 }
 
 .sv-map-controls .ui-btn{
@@ -186,7 +187,7 @@ p.center {
     background-color: #ffffff;
 }
 .sv-md-title {
-    font-size: x-small;
+    font-size: x-small;svè
 }
 .sv-md-abstract {
 }
