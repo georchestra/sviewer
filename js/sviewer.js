@@ -93,7 +93,6 @@ function initmap() {
             self.options.nslayername = s.split('*')[0]; // namespace:layername
             self.options.stylename = (s.indexOf("*")>0) ? s.split('*',2)[1]:''; // stylename
             self.options.cql_filter = (s.indexOf("*")>1) ? s.split('*',3)[2]:''; // qcl_filter
-            console.log(self.options.cql_filter);
 
             self.options.namespace = (self.options.nslayername.indexOf(":")>0) ? self.options.nslayername.split(':',2)[0]:''; // namespace
             self.options.layername = (self.options.nslayername.indexOf(':')>0) ? self.options.nslayername.split(':',2)[1]:''; // layername
@@ -362,7 +361,7 @@ function initmap() {
                 var srs = vgb.attr('SRS');
                 var extent = [vgb.attr('minx'), vgb.attr('miny'), vgb.attr('maxx'), vgb.attr('maxy')];
                 var transf = ol.proj.getTransform(srs, projcode);
-                view.fitExtent(ol.extent.transform(extent, transf), map.getSize());
+                view.fitExtent(ol.extent.transform2D(extent, transf), map.getSize());
             }
 
             // we only consider visible and queryable layers
@@ -485,7 +484,6 @@ function initmap() {
                     "owsurl" : layer.options.wmsurl_layer
                 });
             });
-            console.log(params.layers);
             $("#georchestraFormData").val(JSON.stringify(params));
             //~ return true;
             return false;
@@ -540,7 +538,6 @@ function initmap() {
             } catch(err) {
                 $('#locateMsg').text(tr('Geolocation failed'));
                 $.mobile.loading('hide');
-                console.log(err.message);
             }
         }
 
@@ -603,7 +600,6 @@ freeFormAddress,
         }
         catch(err) {
             $.mobile.loading('hide');
-            console.log(err.message);
         }
     }
 
@@ -711,7 +707,6 @@ freeFormAddress,
         }
         catch(err) {
             $.mobile.loading('hide');
-            console.log(err.message);
         }
         return false;
     }
