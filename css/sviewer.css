@@ -152,8 +152,6 @@ p.center {
 
 /* panels */
 
-
-
 #panelInfo-screen, #panelLocate-screen, #panelShare-screen, #panelQuery-screen {
     display: none;
 }
@@ -222,6 +220,15 @@ p.center {
 .sv-noitem {
     font-style: italic;
     color: #666;
+}
+
+.sv-key {
+    color: #999;
+    font-size: small;
+}
+
+.sv-value {
+    font-size: small;
 }
 
 

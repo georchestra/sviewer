@@ -505,7 +505,6 @@ function initmap() {
     /**
      * Queries the OpenLS service and recenters the map
      * @param text {String} the OpenLS plain text query
-     * @Returns {OpenLayers.Layer.KML} the Ol KML layer
      */
     function openLsRequest(text) {
 
@@ -691,7 +690,20 @@ freeFormAddress,
             if (features.length > 0) {
                 $.each(features, function() {
                     $('#panelQuery').popup('open');
-                    domResponse.append(this.get('description'));
+                    if (this.get('description')) {
+                        domResponse.append(this.get('description'));
+                    }
+                    else {
+                        var html = '';
+                        $.each(this.getProperties(), function(k, v) {
+                            if ($.type(v)==="string") {
+                                html += '<span class="sv-key">' + k + '</span>' + ' : ';
+                                html += '<span class="sv-value">' + v + '</span>';
+                                html += '<br />'
+                            }
+                        });
+                        domResponse.append(html);
+                    };
                 });
                 $('#querycontent').append(domResponse);
             }
