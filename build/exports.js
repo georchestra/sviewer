@@ -1034,6 +1034,16 @@ goog.exportProperty(
 
 goog.exportProperty(
     ol.MapBrowserEvent.prototype,
+    'frameState',
+    ol.MapBrowserEvent.prototype.frameState);
+
+goog.exportProperty(
+    ol.MapBrowserEvent.prototype,
+    'map',
+    ol.MapBrowserEvent.prototype.map);
+
+goog.exportProperty(
+    ol.MapBrowserEvent.prototype,
     'originalEvent',
     ol.MapBrowserEvent.prototype.originalEvent);
 
@@ -1056,6 +1066,16 @@ goog.exportProperty(
     ol.MapBrowserPointerEvent.prototype,
     'coordinate',
     ol.MapBrowserPointerEvent.prototype.coordinate);
+
+goog.exportProperty(
+    ol.MapBrowserPointerEvent.prototype,
+    'frameState',
+    ol.MapBrowserPointerEvent.prototype.frameState);
+
+goog.exportProperty(
+    ol.MapBrowserPointerEvent.prototype,
+    'map',
+    ol.MapBrowserPointerEvent.prototype.map);
 
 goog.exportProperty(
     ol.MapBrowserPointerEvent.prototype,
@@ -2934,6 +2954,11 @@ goog.exportProperty(
     ol.format.KML.prototype,
     'readProjection',
     ol.format.KML.prototype.readProjection);
+
+goog.exportProperty(
+    ol.format.KML.prototype,
+    'writeFeatures',
+    ol.format.KML.prototype.writeFeatures);
 
 goog.exportSymbol(
     'ol.format.OSMXML',

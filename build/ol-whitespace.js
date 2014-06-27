@@ -588,8 +588,8 @@ goog.addDependency("../src/ol/format/gmlformat.js", ["ol.format.GML"], ["goog.as
 goog.addDependency("../src/ol/format/gpxformat.js", ["ol.format.GPX", "ol.format.GPX.V1_1"], ["goog.array", "goog.asserts", "goog.dom.NodeType", "goog.object", "ol.Feature", "ol.format.XMLFeature", "ol.format.XSD", "ol.geom.LineString", "ol.geom.MultiLineString", "ol.geom.Point", "ol.proj", "ol.xml"]);
 goog.addDependency("../src/ol/format/igcformat.js", ["ol.format.IGC", "ol.format.IGCZ"], ["goog.asserts", "goog.string", "goog.string.newlines", "ol.Feature", "ol.format.TextFeature", "ol.geom.LineString", "ol.proj"]);
 goog.addDependency("../src/ol/format/jsonfeatureformat.js", ["ol.format.JSONFeature"], ["goog.asserts", "goog.json", "ol.BrowserFeature", "ol.format.Feature", "ol.format.FormatType"]);
-goog.addDependency("../src/ol/format/kmlformat.js", ["ol.format.KML"], ["goog.Uri", "goog.array", "goog.asserts", "goog.dom.NodeType", "goog.math", "goog.object", "goog.string", "ol.Feature", "ol.array", "ol.feature", "ol.format.XMLFeature", "ol.format.XSD", "ol.geom.GeometryCollection", "ol.geom.GeometryType", "ol.geom.LineString", "ol.geom.MultiLineString", "ol.geom.MultiPoint", "ol.geom.MultiPolygon", "ol.geom.Point", "ol.geom.Polygon", "ol.proj", "ol.style.Fill", "ol.style.Icon", "ol.style.IconAnchorUnits", 
-"ol.style.IconOrigin", "ol.style.Image", "ol.style.Stroke", "ol.style.Style", "ol.xml"]);
+goog.addDependency("../src/ol/format/kmlformat.js", ["ol.format.KML"], ["goog.Uri", "goog.array", "goog.asserts", "goog.dom.NodeType", "goog.math", "goog.object", "goog.string", "ol.Feature", "ol.array", "ol.color", "ol.feature", "ol.format.XMLFeature", "ol.format.XSD", "ol.geom.Geometry", "ol.geom.GeometryCollection", "ol.geom.GeometryType", "ol.geom.LineString", "ol.geom.LinearRing", "ol.geom.MultiLineString", "ol.geom.MultiPoint", "ol.geom.MultiPolygon", "ol.geom.Point", "ol.geom.Polygon", "ol.proj", 
+"ol.style.Fill", "ol.style.Icon", "ol.style.IconAnchorUnits", "ol.style.IconOrigin", "ol.style.Image", "ol.style.Stroke", "ol.style.Style", "ol.style.Text", "ol.xml"]);
 goog.addDependency("../src/ol/format/osmxmlformat.js", ["ol.format.OSMXML"], ["goog.array", "goog.asserts", "goog.dom.NodeType", "goog.object", "ol.Feature", "ol.format.XMLFeature", "ol.geom.LineString", "ol.geom.Point", "ol.geom.Polygon", "ol.proj", "ol.xml"]);
 goog.addDependency("../src/ol/format/owsformat.js", ["ol.format.OWS"], ["goog.asserts", "goog.dom.NodeType", "goog.object", "ol.format.XLink", "ol.format.XML", "ol.format.XSD", "ol.xml"]);
 goog.addDependency("../src/ol/format/polylineformat.js", ["ol.format.Polyline"], ["goog.asserts", "ol.Feature", "ol.format.TextFeature", "ol.geom.LineString", "ol.geom.flat.inflate", "ol.proj"]);
@@ -17939,6 +17939,9 @@ ol.style.Icon.prototype.getAnchor = function() {
 ol.style.Icon.prototype.getImage = function(pixelRatio) {
   return this.iconImage_.getImage(pixelRatio)
 };
+ol.style.Icon.prototype.getImageSize = function() {
+  return this.iconImage_.getSize()
+};
 ol.style.Icon.prototype.getImageState = function() {
   return this.iconImage_.getImageState()
 };
@@ -28941,6 +28944,9 @@ ol.format.XSD.readString = function(node) {
   var s = ol.xml.getAllTextContent(node, false);
   return goog.string.trim(s)
 };
+ol.format.XSD.writeBooleanTextNode = function(node, bool) {
+  ol.format.XSD.writeStringTextNode(node, bool ? "1" : "0")
+};
 ol.format.XSD.writeDateTimeTextNode = function(node, dateTime) {
   var date = new Date(dateTime * 1E3);
   var string = date.getUTCFullYear() + "-" + goog.string.padNumber(date.getUTCMonth() + 1, 2) + "-" + goog.string.padNumber(date.getUTCDate(), 2) + "T" + goog.string.padNumber(date.getUTCHours(), 2) + ":" + goog.string.padNumber(date.getUTCMinutes(), 2) + ":" + goog.string.padNumber(date.getUTCSeconds(), 2) + "Z";
@@ -30549,6 +30555,50 @@ ol.format.IGC.prototype.readProjection;
 ol.format.IGC.prototype.readProjectionFromText = function(text) {
   return ol.proj.get("EPSG:4326")
 };
+goog.provide("ol.style.Text");
+ol.style.Text = function(opt_options) {
+  var options = goog.isDef(opt_options) ? opt_options : {};
+  this.font_ = options.font;
+  this.rotation_ = options.rotation;
+  this.scale_ = options.scale;
+  this.text_ = options.text;
+  this.textAlign_ = options.textAlign;
+  this.textBaseline_ = options.textBaseline;
+  this.fill_ = goog.isDef(options.fill) ? options.fill : null;
+  this.stroke_ = goog.isDef(options.stroke) ? options.stroke : null;
+  this.offsetX_ = goog.isDef(options.offsetX) ? options.offsetX : 0;
+  this.offsetY_ = goog.isDef(options.offsetY) ? options.offsetY : 0
+};
+ol.style.Text.prototype.getFont = function() {
+  return this.font_
+};
+ol.style.Text.prototype.getOffsetX = function() {
+  return this.offsetX_
+};
+ol.style.Text.prototype.getOffsetY = function() {
+  return this.offsetY_
+};
+ol.style.Text.prototype.getFill = function() {
+  return this.fill_
+};
+ol.style.Text.prototype.getRotation = function() {
+  return this.rotation_
+};
+ol.style.Text.prototype.getScale = function() {
+  return this.scale_
+};
+ol.style.Text.prototype.getStroke = function() {
+  return this.stroke_
+};
+ol.style.Text.prototype.getText = function() {
+  return this.text_
+};
+ol.style.Text.prototype.getTextAlign = function() {
+  return this.textAlign_
+};
+ol.style.Text.prototype.getTextBaseline = function() {
+  return this.textBaseline_
+};
 goog.provide("ol.format.KML");
 goog.require("goog.Uri");
 goog.require("goog.array");
@@ -30559,12 +30609,15 @@ goog.require("goog.object");
 goog.require("goog.string");
 goog.require("ol.Feature");
 goog.require("ol.array");
+goog.require("ol.color");
 goog.require("ol.feature");
 goog.require("ol.format.XMLFeature");
 goog.require("ol.format.XSD");
+goog.require("ol.geom.Geometry");
 goog.require("ol.geom.GeometryCollection");
 goog.require("ol.geom.GeometryType");
 goog.require("ol.geom.LineString");
+goog.require("ol.geom.LinearRing");
 goog.require("ol.geom.MultiLineString");
 goog.require("ol.geom.MultiPoint");
 goog.require("ol.geom.MultiPolygon");
@@ -30578,6 +30631,7 @@ goog.require("ol.style.IconOrigin");
 goog.require("ol.style.Image");
 goog.require("ol.style.Stroke");
 goog.require("ol.style.Style");
+goog.require("ol.style.Text");
 goog.require("ol.xml");
 ol.format.KMLVec2_;
 ol.format.KMLGxTrackObject_;
@@ -30617,6 +30671,7 @@ goog.inherits(ol.format.KML, ol.format.XMLFeature);
 ol.format.KML.EXTENSIONS_ = [".kml"];
 ol.format.KML.GX_NAMESPACE_URIS_ = ["http://www.google.com/kml/ext/2.2"];
 ol.format.KML.NAMESPACE_URIS_ = [null, "http://earth.google.com/kml/2.0", "http://earth.google.com/kml/2.1", "http://earth.google.com/kml/2.2", "http://www.opengis.net/kml/2.2"];
+ol.format.KML.SCHEMA_LOCATION_ = "http://www.opengis.net/kml/2.2 " + "https://developers.google.com/kml/schema/kml22gx.xsd";
 ol.format.KML.DEFAULT_COLOR_ = [255, 255, 255, 1];
 ol.format.KML.DEFAULT_FILL_STYLE_ = new ol.style.Fill({color:ol.format.KML.DEFAULT_COLOR_});
 ol.format.KML.DEFAULT_IMAGE_STYLE_ANCHOR_ = [2, 20];
@@ -31303,6 +31358,296 @@ ol.format.KML.prototype.readProjectionFromDocument = function(doc) {
 };
 ol.format.KML.prototype.readProjectionFromNode = function(node) {
   return ol.proj.get("EPSG:4326")
+};
+ol.format.KML.writeColorTextNode_ = function(node, color) {
+  var rgba = ol.color.asArray(color);
+  var opacity = rgba.length == 4 ? rgba[3] : 1;
+  var abgr = [opacity * 255, rgba[2], rgba[1], rgba[0]];
+  var i;
+  for(i = 0;i < 4;++i) {
+    var hex = parseInt(abgr[i], 10).toString(16);
+    abgr[i] = hex.length == 1 ? "0" + hex : hex
+  }
+  ol.format.XSD.writeStringTextNode(node, abgr.join(""))
+};
+ol.format.KML.writeCoordinatesTextNode_ = function(node, coordinates, objectStack) {
+  var context = objectStack[objectStack.length - 1];
+  goog.asserts.assert(goog.isObject(context));
+  var layout = goog.object.get(context, "layout");
+  var stride = goog.object.get(context, "stride");
+  var dimension;
+  if(layout == ol.geom.GeometryLayout.XY || layout == ol.geom.GeometryLayout.XYM) {
+    dimension = 2
+  }else {
+    if(layout == ol.geom.GeometryLayout.XYZ || layout == ol.geom.GeometryLayout.XYZM) {
+      dimension = 3
+    }else {
+      goog.asserts.fail()
+    }
+  }
+  var d, i;
+  var ii = coordinates.length;
+  var text = "";
+  if(ii > 0) {
+    text += coordinates[0];
+    for(d = 1;d < dimension;++d) {
+      text += "," + coordinates[d]
+    }
+    for(i = stride;i < ii;i += stride) {
+      text += " " + coordinates[i];
+      for(d = 1;d < dimension;++d) {
+        text += "," + coordinates[i + d]
+      }
+    }
+  }
+  ol.format.XSD.writeStringTextNode(node, text)
+};
+ol.format.KML.writeDocument_ = function(node, features, objectStack) {
+  var context = {node:node};
+  ol.xml.pushSerializeAndPop(context, ol.format.KML.DOCUMENT_SERIALIZERS_, ol.format.KML.DOCUMENT_NODE_FACTORY_, features, objectStack)
+};
+ol.format.KML.writeIcon_ = function(node, icon, objectStack) {
+  var context = {node:node};
+  var parentNode = objectStack[objectStack.length - 1].node;
+  var orderedKeys = ol.format.KML.ICON_SEQUENCE_[parentNode.namespaceURI];
+  var values = ol.xml.makeSequence(icon, orderedKeys);
+  ol.xml.pushSerializeAndPop(context, ol.format.KML.ICON_SERIALIZERS_, ol.xml.OBJECT_PROPERTY_NODE_FACTORY, values, objectStack, orderedKeys);
+  orderedKeys = ol.format.KML.ICON_SEQUENCE_[ol.format.KML.GX_NAMESPACE_URIS_[0]];
+  values = ol.xml.makeSequence(icon, orderedKeys);
+  ol.xml.pushSerializeAndPop(context, ol.format.KML.ICON_SERIALIZERS_, ol.format.KML.GX_NODE_FACTORY_, values, objectStack, orderedKeys)
+};
+ol.format.KML.writeIconStyle_ = function(node, style, objectStack) {
+  var context = {node:node};
+  var properties = {};
+  var src = style.getSrc();
+  var size = style.getSize();
+  var iconImageSize = style.getImageSize();
+  var iconProperties = {"href":src};
+  if(!goog.isNull(size)) {
+    goog.object.set(iconProperties, "w", size[0]);
+    goog.object.set(iconProperties, "h", size[1]);
+    var anchor = style.getAnchor();
+    var origin = style.getOrigin();
+    if(!goog.isNull(origin) && !goog.isNull(iconImageSize) && origin[0] !== 0 && origin[1] !== size[1]) {
+      goog.object.set(iconProperties, "x", origin[0]);
+      goog.object.set(iconProperties, "y", iconImageSize[1] - (origin[1] + size[1]))
+    }
+    if(!goog.isNull(anchor) && anchor[0] !== 0 && anchor[1] !== size[1]) {
+      var hotSpot = {x:anchor[0], xunits:ol.style.IconAnchorUnits.PIXELS, y:size[1] - anchor[1], yunits:ol.style.IconAnchorUnits.PIXELS};
+      goog.object.set(properties, "hotSpot", hotSpot)
+    }
+  }
+  goog.object.set(properties, "Icon", iconProperties);
+  var scale = style.getScale();
+  if(scale !== 1) {
+    goog.object.set(properties, "scale", scale)
+  }
+  var rotation = style.getRotation();
+  if(rotation !== 0) {
+    goog.object.set(properties, "heading", rotation)
+  }
+  var parentNode = objectStack[objectStack.length - 1].node;
+  var orderedKeys = ol.format.KML.ICON_STYLE_SEQUENCE_[parentNode.namespaceURI];
+  var values = ol.xml.makeSequence(properties, orderedKeys);
+  ol.xml.pushSerializeAndPop(context, ol.format.KML.ICON_STYLE_SERIALIZERS_, ol.xml.OBJECT_PROPERTY_NODE_FACTORY, values, objectStack, orderedKeys)
+};
+ol.format.KML.writeLabelStyle_ = function(node, style, objectStack) {
+  var context = {node:node};
+  var properties = {};
+  var fill = style.getFill();
+  if(!goog.isNull(fill)) {
+    goog.object.set(properties, "color", fill.getColor())
+  }
+  var scale = style.getScale();
+  if(goog.isDef(scale) && scale !== 1) {
+    goog.object.set(properties, "scale", scale)
+  }
+  var parentNode = objectStack[objectStack.length - 1].node;
+  var orderedKeys = ol.format.KML.LABEL_STYLE_SEQUENCE_[parentNode.namespaceURI];
+  var values = ol.xml.makeSequence(properties, orderedKeys);
+  ol.xml.pushSerializeAndPop(context, ol.format.KML.LABEL_STYLE_SERIALIZERS_, ol.xml.OBJECT_PROPERTY_NODE_FACTORY, values, objectStack, orderedKeys)
+};
+ol.format.KML.writeLineStyle_ = function(node, style, objectStack) {
+  var context = {node:node};
+  var properties = {"color":style.getColor(), "width":style.getWidth()};
+  var parentNode = objectStack[objectStack.length - 1].node;
+  var orderedKeys = ol.format.KML.LINE_STYLE_SEQUENCE_[parentNode.namespaceURI];
+  var values = ol.xml.makeSequence(properties, orderedKeys);
+  ol.xml.pushSerializeAndPop(context, ol.format.KML.LINE_STYLE_SERIALIZERS_, ol.xml.OBJECT_PROPERTY_NODE_FACTORY, values, objectStack, orderedKeys)
+};
+ol.format.KML.writeMultiGeometry_ = function(node, geometry, objectStack) {
+  goog.asserts.assert(geometry instanceof ol.geom.MultiPoint || geometry instanceof ol.geom.MultiLineString || geometry instanceof ol.geom.MultiPolygon);
+  var context = {node:node};
+  var type = geometry.getType();
+  var geometries;
+  var factory;
+  if(type == ol.geom.GeometryType.MULTI_POINT) {
+    geometries = (geometry).getPoints();
+    factory = ol.format.KML.POINT_NODE_FACTORY_
+  }else {
+    if(type == ol.geom.GeometryType.MULTI_LINE_STRING) {
+      geometries = (geometry).getLineStrings();
+      factory = ol.format.KML.LINE_STRING_NODE_FACTORY_
+    }else {
+      if(type == ol.geom.GeometryType.MULTI_POLYGON) {
+        geometries = (geometry).getPolygons();
+        factory = ol.format.KML.POLYGON_NODE_FACTORY_
+      }else {
+        goog.asserts.fail()
+      }
+    }
+  }
+  ol.xml.pushSerializeAndPop(context, ol.format.KML.MULTI_GEOMETRY_SERIALIZERS_, factory, geometries, objectStack)
+};
+ol.format.KML.writeBoundaryIs_ = function(node, linearRing, objectStack) {
+  var context = {node:node};
+  ol.xml.pushSerializeAndPop(context, ol.format.KML.BOUNDARY_IS_SERIALIZERS_, ol.format.KML.LINEAR_RING_NODE_FACTORY_, [linearRing], objectStack)
+};
+ol.format.KML.writePlacemark_ = function(node, feature, objectStack) {
+  var context = {node:node};
+  if(goog.isDefAndNotNull(feature.getId())) {
+    node.setAttribute("id", feature.getId())
+  }
+  var properties = feature.getProperties();
+  var styleFunction = feature.getStyleFunction();
+  if(goog.isDef(styleFunction)) {
+    var styles = styleFunction.call(feature, 0);
+    if(!goog.isNull(styles) && styles.length > 0) {
+      goog.object.set(properties, "Style", styles[0]);
+      var textStyle = styles[0].getText();
+      if(!goog.isNull(textStyle)) {
+        goog.object.set(properties, "name", textStyle.getText())
+      }
+    }
+  }
+  var parentNode = objectStack[objectStack.length - 1].node;
+  var orderedKeys = ol.format.KML.PLACEMARK_SEQUENCE_[parentNode.namespaceURI];
+  var values = ol.xml.makeSequence(properties, orderedKeys);
+  ol.xml.pushSerializeAndPop(context, ol.format.KML.PLACEMARK_SERIALIZERS_, ol.xml.OBJECT_PROPERTY_NODE_FACTORY, values, objectStack, orderedKeys);
+  ol.xml.pushSerializeAndPop(context, ol.format.KML.PLACEMARK_SERIALIZERS_, ol.format.KML.GEOMETRY_NODE_FACTORY_, [feature.getGeometry()], objectStack)
+};
+ol.format.KML.writePrimitiveGeometry_ = function(node, geometry, objectStack) {
+  goog.asserts.assert(geometry instanceof ol.geom.Point || geometry instanceof ol.geom.LineString || geometry instanceof ol.geom.LinearRing);
+  var flatCoordinates = geometry.getFlatCoordinates();
+  var context = {node:node};
+  goog.object.set(context, "layout", geometry.getLayout());
+  goog.object.set(context, "stride", geometry.getStride());
+  ol.xml.pushSerializeAndPop(context, ol.format.KML.PRIMITIVE_GEOMETRY_SERIALIZERS_, ol.format.KML.COORDINATES_NODE_FACTORY_, [flatCoordinates], objectStack)
+};
+ol.format.KML.writePolygon_ = function(node, polygon, objectStack) {
+  goog.asserts.assertInstanceof(polygon, ol.geom.Polygon);
+  var linearRings = polygon.getLinearRings();
+  goog.asserts.assert(linearRings.length > 0);
+  var outerRing = linearRings.shift();
+  var context = {node:node};
+  ol.xml.pushSerializeAndPop(context, ol.format.KML.POLYGON_SERIALIZERS_, ol.format.KML.INNER_BOUNDARY_NODE_FACTORY_, linearRings, objectStack);
+  ol.xml.pushSerializeAndPop(context, ol.format.KML.POLYGON_SERIALIZERS_, ol.format.KML.OUTER_BOUNDARY_NODE_FACTORY_, [outerRing], objectStack)
+};
+ol.format.KML.writePolyStyle_ = function(node, style, objectStack) {
+  var context = {node:node};
+  ol.xml.pushSerializeAndPop(context, ol.format.KML.POLY_STYLE_SERIALIZERS_, ol.format.KML.COLOR_NODE_FACTORY_, [style.getColor()], objectStack)
+};
+ol.format.KML.writeScaleTextNode_ = function(node, scale) {
+  ol.format.XSD.writeDecimalTextNode(node, scale * scale)
+};
+ol.format.KML.writeStyle_ = function(node, style, objectStack) {
+  var context = {node:node};
+  var properties = {};
+  var fillStyle = style.getFill();
+  var strokeStyle = style.getStroke();
+  var imageStyle = style.getImage();
+  var textStyle = style.getText();
+  if(!goog.isNull(imageStyle)) {
+    goog.object.set(properties, "IconStyle", imageStyle)
+  }
+  if(!goog.isNull(textStyle)) {
+    goog.object.set(properties, "LabelStyle", textStyle)
+  }
+  if(!goog.isNull(strokeStyle)) {
+    goog.object.set(properties, "LineStyle", strokeStyle)
+  }
+  if(!goog.isNull(fillStyle)) {
+    goog.object.set(properties, "PolyStyle", fillStyle)
+  }
+  var parentNode = objectStack[objectStack.length - 1].node;
+  var orderedKeys = ol.format.KML.STYLE_SEQUENCE_[parentNode.namespaceURI];
+  var values = ol.xml.makeSequence(properties, orderedKeys);
+  ol.xml.pushSerializeAndPop(context, ol.format.KML.STYLE_SERIALIZERS_, ol.xml.OBJECT_PROPERTY_NODE_FACTORY, values, objectStack, orderedKeys)
+};
+ol.format.KML.writeVec2_ = function(node, vec2) {
+  node.setAttribute("x", vec2.x);
+  node.setAttribute("y", vec2.y);
+  node.setAttribute("xunits", vec2.xunits);
+  node.setAttribute("yunits", vec2.yunits)
+};
+ol.format.KML.KML_SEQUENCE_ = ol.xml.makeStructureNS(ol.format.KML.NAMESPACE_URIS_, ["Document", "Placemark"]);
+ol.format.KML.KML_SERIALIZERS_ = ol.xml.makeStructureNS(ol.format.KML.NAMESPACE_URIS_, {"Document":ol.xml.makeChildAppender(ol.format.KML.writeDocument_), "Placemark":ol.xml.makeChildAppender(ol.format.KML.writePlacemark_)});
+ol.format.KML.DOCUMENT_SERIALIZERS_ = ol.xml.makeStructureNS(ol.format.KML.NAMESPACE_URIS_, {"Placemark":ol.xml.makeChildAppender(ol.format.KML.writePlacemark_)});
+ol.format.KML.GEOMETRY_TYPE_TO_NODENAME_ = {"Point":"Point", "LineString":"LineString", "LinearRing":"LinearRing", "Polygon":"Polygon", "MultiPoint":"MultiGeometry", "MultiLineString":"MultiGeometry", "MultiPolygon":"MultiGeometry"};
+ol.format.KML.ICON_SEQUENCE_ = ol.xml.makeStructureNS(ol.format.KML.NAMESPACE_URIS_, ["href"], ol.xml.makeStructureNS(ol.format.KML.GX_NAMESPACE_URIS_, ["x", "y", "w", "h"]));
+ol.format.KML.ICON_SERIALIZERS_ = ol.xml.makeStructureNS(ol.format.KML.NAMESPACE_URIS_, {"href":ol.xml.makeChildAppender(ol.format.XSD.writeStringTextNode)}, ol.xml.makeStructureNS(ol.format.KML.GX_NAMESPACE_URIS_, {"x":ol.xml.makeChildAppender(ol.format.XSD.writeDecimalTextNode), "y":ol.xml.makeChildAppender(ol.format.XSD.writeDecimalTextNode), "w":ol.xml.makeChildAppender(ol.format.XSD.writeDecimalTextNode), "h":ol.xml.makeChildAppender(ol.format.XSD.writeDecimalTextNode)}));
+ol.format.KML.ICON_STYLE_SEQUENCE_ = ol.xml.makeStructureNS(ol.format.KML.NAMESPACE_URIS_, ["scale", "heading", "Icon", "hotSpot"]);
+ol.format.KML.ICON_STYLE_SERIALIZERS_ = ol.xml.makeStructureNS(ol.format.KML.NAMESPACE_URIS_, {"Icon":ol.xml.makeChildAppender(ol.format.KML.writeIcon_), "heading":ol.xml.makeChildAppender(ol.format.XSD.writeDecimalTextNode), "hotSpot":ol.xml.makeChildAppender(ol.format.KML.writeVec2_), "scale":ol.xml.makeChildAppender(ol.format.KML.writeScaleTextNode_)});
+ol.format.KML.LABEL_STYLE_SEQUENCE_ = ol.xml.makeStructureNS(ol.format.KML.NAMESPACE_URIS_, ["color", "scale"]);
+ol.format.KML.LABEL_STYLE_SERIALIZERS_ = ol.xml.makeStructureNS(ol.format.KML.NAMESPACE_URIS_, {"color":ol.xml.makeChildAppender(ol.format.KML.writeColorTextNode_), "scale":ol.xml.makeChildAppender(ol.format.KML.writeScaleTextNode_)});
+ol.format.KML.LINE_STYLE_SEQUENCE_ = ol.xml.makeStructureNS(ol.format.KML.NAMESPACE_URIS_, ["color", "width"]);
+ol.format.KML.LINE_STYLE_SERIALIZERS_ = ol.xml.makeStructureNS(ol.format.KML.NAMESPACE_URIS_, {"color":ol.xml.makeChildAppender(ol.format.KML.writeColorTextNode_), "width":ol.xml.makeChildAppender(ol.format.XSD.writeDecimalTextNode)});
+ol.format.KML.BOUNDARY_IS_SERIALIZERS_ = ol.xml.makeStructureNS(ol.format.KML.NAMESPACE_URIS_, {"LinearRing":ol.xml.makeChildAppender(ol.format.KML.writePrimitiveGeometry_)});
+ol.format.KML.MULTI_GEOMETRY_SERIALIZERS_ = ol.xml.makeStructureNS(ol.format.KML.NAMESPACE_URIS_, {"LineString":ol.xml.makeChildAppender(ol.format.KML.writePrimitiveGeometry_), "Point":ol.xml.makeChildAppender(ol.format.KML.writePrimitiveGeometry_), "Polygon":ol.xml.makeChildAppender(ol.format.KML.writePolygon_)});
+ol.format.KML.PLACEMARK_SEQUENCE_ = ol.xml.makeStructureNS(ol.format.KML.NAMESPACE_URIS_, ["name", "open", "visibility", "address", "phoneNumber", "description", "styleUrl", "Style"]);
+ol.format.KML.PLACEMARK_SERIALIZERS_ = ol.xml.makeStructureNS(ol.format.KML.NAMESPACE_URIS_, {"MultiGeometry":ol.xml.makeChildAppender(ol.format.KML.writeMultiGeometry_), "LineString":ol.xml.makeChildAppender(ol.format.KML.writePrimitiveGeometry_), "LinearRing":ol.xml.makeChildAppender(ol.format.KML.writePrimitiveGeometry_), "Point":ol.xml.makeChildAppender(ol.format.KML.writePrimitiveGeometry_), "Polygon":ol.xml.makeChildAppender(ol.format.KML.writePolygon_), "Style":ol.xml.makeChildAppender(ol.format.KML.writeStyle_), 
+"address":ol.xml.makeChildAppender(ol.format.XSD.writeStringTextNode), "description":ol.xml.makeChildAppender(ol.format.XSD.writeStringTextNode), "name":ol.xml.makeChildAppender(ol.format.XSD.writeStringTextNode), "open":ol.xml.makeChildAppender(ol.format.XSD.writeBooleanTextNode), "phoneNumber":ol.xml.makeChildAppender(ol.format.XSD.writeStringTextNode), "styleUrl":ol.xml.makeChildAppender(ol.format.XSD.writeStringTextNode), "visibility":ol.xml.makeChildAppender(ol.format.XSD.writeBooleanTextNode)});
+ol.format.KML.PRIMITIVE_GEOMETRY_SERIALIZERS_ = ol.xml.makeStructureNS(ol.format.KML.NAMESPACE_URIS_, {"coordinates":ol.xml.makeChildAppender(ol.format.KML.writeCoordinatesTextNode_)});
+ol.format.KML.POLYGON_SERIALIZERS_ = ol.xml.makeStructureNS(ol.format.KML.NAMESPACE_URIS_, {"outerBoundaryIs":ol.xml.makeChildAppender(ol.format.KML.writeBoundaryIs_), "innerBoundaryIs":ol.xml.makeChildAppender(ol.format.KML.writeBoundaryIs_)});
+ol.format.KML.POLY_STYLE_SERIALIZERS_ = ol.xml.makeStructureNS(ol.format.KML.NAMESPACE_URIS_, {"color":ol.xml.makeChildAppender(ol.format.KML.writeColorTextNode_)});
+ol.format.KML.STYLE_SEQUENCE_ = ol.xml.makeStructureNS(ol.format.KML.NAMESPACE_URIS_, ["IconStyle", "LabelStyle", "LineStyle", "PolyStyle"]);
+ol.format.KML.STYLE_SERIALIZERS_ = ol.xml.makeStructureNS(ol.format.KML.NAMESPACE_URIS_, {"IconStyle":ol.xml.makeChildAppender(ol.format.KML.writeIconStyle_), "LabelStyle":ol.xml.makeChildAppender(ol.format.KML.writeLabelStyle_), "LineStyle":ol.xml.makeChildAppender(ol.format.KML.writeLineStyle_), "PolyStyle":ol.xml.makeChildAppender(ol.format.KML.writePolyStyle_)});
+ol.format.KML.GX_NODE_FACTORY_ = function(value, objectStack, opt_nodeName) {
+  return ol.xml.createElementNS(ol.format.KML.GX_NAMESPACE_URIS_[0], "gx:" + opt_nodeName)
+};
+ol.format.KML.DOCUMENT_NODE_FACTORY_ = function(value, objectStack, opt_nodeName) {
+  goog.asserts.assertInstanceof(value, ol.Feature);
+  var parentNode = objectStack[objectStack.length - 1].node;
+  goog.asserts.assert(ol.xml.isNode(parentNode));
+  return ol.xml.createElementNS(parentNode.namespaceURI, "Placemark")
+};
+ol.format.KML.GEOMETRY_NODE_FACTORY_ = function(value, objectStack, opt_nodeName) {
+  if(goog.isDefAndNotNull(value)) {
+    goog.asserts.assertInstanceof(value, ol.geom.Geometry);
+    var parentNode = objectStack[objectStack.length - 1].node;
+    goog.asserts.assert(ol.xml.isNode(parentNode));
+    return ol.xml.createElementNS(parentNode.namespaceURI, ol.format.KML.GEOMETRY_TYPE_TO_NODENAME_[value.getType()])
+  }
+};
+ol.format.KML.COLOR_NODE_FACTORY_ = ol.xml.makeSimpleNodeFactory("color");
+ol.format.KML.COORDINATES_NODE_FACTORY_ = ol.xml.makeSimpleNodeFactory("coordinates");
+ol.format.KML.INNER_BOUNDARY_NODE_FACTORY_ = ol.xml.makeSimpleNodeFactory("innerBoundaryIs");
+ol.format.KML.POINT_NODE_FACTORY_ = ol.xml.makeSimpleNodeFactory("Point");
+ol.format.KML.LINE_STRING_NODE_FACTORY_ = ol.xml.makeSimpleNodeFactory("LineString");
+ol.format.KML.LINEAR_RING_NODE_FACTORY_ = ol.xml.makeSimpleNodeFactory("LinearRing");
+ol.format.KML.POLYGON_NODE_FACTORY_ = ol.xml.makeSimpleNodeFactory("Polygon");
+ol.format.KML.OUTER_BOUNDARY_NODE_FACTORY_ = ol.xml.makeSimpleNodeFactory("outerBoundaryIs");
+ol.format.KML.prototype.writeFeatures;
+ol.format.KML.prototype.writeFeaturesNode = function(features) {
+  var kml = ol.xml.createElementNS(ol.format.KML.NAMESPACE_URIS_[4], "kml");
+  var xmlnsUri = "http://www.w3.org/2000/xmlns/";
+  var xmlSchemaInstanceUri = "http://www.w3.org/2001/XMLSchema-instance";
+  ol.xml.setAttributeNS(kml, xmlnsUri, "xmlns:gx", ol.format.KML.GX_NAMESPACE_URIS_[0]);
+  ol.xml.setAttributeNS(kml, xmlnsUri, "xmlns:xsi", xmlSchemaInstanceUri);
+  ol.xml.setAttributeNS(kml, xmlSchemaInstanceUri, "xsi:schemaLocation", ol.format.KML.SCHEMA_LOCATION_);
+  var context = {node:kml};
+  var properties = {};
+  if(features.length > 1) {
+    goog.object.set(properties, "Document", features)
+  }else {
+    if(features.length == 1) {
+      goog.object.set(properties, "Placemark", features[0])
+    }
+  }
+  var orderedKeys = ol.format.KML.KML_SEQUENCE_[kml.namespaceURI];
+  var values = ol.xml.makeSequence(properties, orderedKeys);
+  ol.xml.pushSerializeAndPop(context, ol.format.KML.KML_SERIALIZERS_, ol.xml.OBJECT_PROPERTY_NODE_FACTORY, values, [], orderedKeys);
+  return kml
 };
 goog.provide("ol.format.OSMXML");
 goog.require("goog.array");
@@ -36656,50 +37001,6 @@ ol.source.ZoomifyTile_.prototype.getImage = function(opt_context) {
     }
   }
 };
-goog.provide("ol.style.Text");
-ol.style.Text = function(opt_options) {
-  var options = goog.isDef(opt_options) ? opt_options : {};
-  this.font_ = options.font;
-  this.rotation_ = options.rotation;
-  this.scale_ = options.scale;
-  this.text_ = options.text;
-  this.textAlign_ = options.textAlign;
-  this.textBaseline_ = options.textBaseline;
-  this.fill_ = goog.isDef(options.fill) ? options.fill : null;
-  this.stroke_ = goog.isDef(options.stroke) ? options.stroke : null;
-  this.offsetX_ = goog.isDef(options.offsetX) ? options.offsetX : 0;
-  this.offsetY_ = goog.isDef(options.offsetY) ? options.offsetY : 0
-};
-ol.style.Text.prototype.getFont = function() {
-  return this.font_
-};
-ol.style.Text.prototype.getOffsetX = function() {
-  return this.offsetX_
-};
-ol.style.Text.prototype.getOffsetY = function() {
-  return this.offsetY_
-};
-ol.style.Text.prototype.getFill = function() {
-  return this.fill_
-};
-ol.style.Text.prototype.getRotation = function() {
-  return this.rotation_
-};
-ol.style.Text.prototype.getScale = function() {
-  return this.scale_
-};
-ol.style.Text.prototype.getStroke = function() {
-  return this.stroke_
-};
-ol.style.Text.prototype.getText = function() {
-  return this.text_
-};
-ol.style.Text.prototype.getTextAlign = function() {
-  return this.textAlign_
-};
-ol.style.Text.prototype.getTextBaseline = function() {
-  return this.textBaseline_
-};
 goog.require("ol");
 goog.require("ol.Attribution");
 goog.require("ol.BrowserFeature");
@@ -37054,11 +37355,15 @@ goog.exportProperty(ol.Map.prototype, "unbind", ol.Map.prototype.unbind);
 goog.exportProperty(ol.Map.prototype, "unbindAll", ol.Map.prototype.unbindAll);
 goog.exportProperty(ol.Map.prototype, "updateSize", ol.Map.prototype.updateSize);
 goog.exportProperty(ol.MapBrowserEvent.prototype, "coordinate", ol.MapBrowserEvent.prototype.coordinate);
+goog.exportProperty(ol.MapBrowserEvent.prototype, "frameState", ol.MapBrowserEvent.prototype.frameState);
+goog.exportProperty(ol.MapBrowserEvent.prototype, "map", ol.MapBrowserEvent.prototype.map);
 goog.exportProperty(ol.MapBrowserEvent.prototype, "originalEvent", ol.MapBrowserEvent.prototype.originalEvent);
 goog.exportProperty(ol.MapBrowserEvent.prototype, "pixel", ol.MapBrowserEvent.prototype.pixel);
 goog.exportProperty(ol.MapBrowserEvent.prototype, "preventDefault", ol.MapBrowserEvent.prototype.preventDefault);
 goog.exportProperty(ol.MapBrowserEvent.prototype, "stopPropagation", ol.MapBrowserEvent.prototype.stopPropagation);
 goog.exportProperty(ol.MapBrowserPointerEvent.prototype, "coordinate", ol.MapBrowserPointerEvent.prototype.coordinate);
+goog.exportProperty(ol.MapBrowserPointerEvent.prototype, "frameState", ol.MapBrowserPointerEvent.prototype.frameState);
+goog.exportProperty(ol.MapBrowserPointerEvent.prototype, "map", ol.MapBrowserPointerEvent.prototype.map);
 goog.exportProperty(ol.MapBrowserPointerEvent.prototype, "originalEvent", ol.MapBrowserPointerEvent.prototype.originalEvent);
 goog.exportProperty(ol.MapBrowserPointerEvent.prototype, "pixel", ol.MapBrowserPointerEvent.prototype.pixel);
 goog.exportProperty(ol.MapBrowserPointerEvent.prototype, "preventDefault", ol.MapBrowserPointerEvent.prototype.preventDefault);
@@ -37448,6 +37753,7 @@ goog.exportProperty(ol.format.KML.prototype, "readFeature", ol.format.KML.protot
 goog.exportProperty(ol.format.KML.prototype, "readFeatures", ol.format.KML.prototype.readFeatures);
 goog.exportProperty(ol.format.KML.prototype, "readName", ol.format.KML.prototype.readName);
 goog.exportProperty(ol.format.KML.prototype, "readProjection", ol.format.KML.prototype.readProjection);
+goog.exportProperty(ol.format.KML.prototype, "writeFeatures", ol.format.KML.prototype.writeFeatures);
 goog.exportSymbol("ol.format.OSMXML", ol.format.OSMXML);
 goog.exportProperty(ol.format.OSMXML.prototype, "readFeatures", ol.format.OSMXML.prototype.readFeatures);
 goog.exportProperty(ol.format.OSMXML.prototype, "readProjection", ol.format.OSMXML.prototype.readProjection);

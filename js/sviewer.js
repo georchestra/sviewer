@@ -361,7 +361,7 @@ function initmap() {
                 var srs = vgb.attr('SRS');
                 var extent = [vgb.attr('minx'), vgb.attr('miny'), vgb.attr('maxx'), vgb.attr('maxy')];
                 var transf = ol.proj.getTransform(srs, projcode);
-                view.fitExtent(ol.extent.transform2D(extent, transf), map.getSize());
+                view.fitExtent(ol.extent.applyTransform(extent, transf), map.getSize());
             }
 
             // we only consider visible and queryable layers
@@ -384,11 +384,13 @@ function initmap() {
                     $.mobile.loading('hide');
                 }
             });
+
             // perform gfi if requied
             if (config.gfiok) {
                 queryMap(view.getCenter());
             };
         }
+
         // wmc comes from a geOrchestra map id
         if (wmc.match(wmc.match(/^[a-z\d]{32}$/))) {
             url = config.geOrchestraBaseUrl + 'mapfishapp/ws/wmc/geodoc' + wmc + '.wmc';
@@ -404,7 +406,16 @@ function initmap() {
                 url: ajaxURL(url),
                 type: 'GET',
                 dataType: 'XML',
-                success: parseWMCResponse
+                success: parseWMCResponse,
+                error: function(xhr) {
+                    if (xhr.status==404) {
+                        messagePopup(tr("map context not found"));
+                    }
+                    else {
+                        messagePopup(tr("map context error"));
+                    };
+                    $.mobile.loading('hide');
+                }
             });
         }
     }
@@ -599,6 +610,7 @@ freeFormAddress,
             }
         }
         catch(err) {
+            messagePopup(tr('Geolocation failed'));
             $.mobile.loading('hide');
         }
     }
@@ -706,6 +718,7 @@ freeFormAddress,
             openLsRequest($("#addressInput").val());
         }
         catch(err) {
+            messagePopup(tr('Geolocation failed'));
             $.mobile.loading('hide');
         }
         return false;
@@ -798,6 +811,23 @@ freeFormAddress,
         view.setRotation(0);
     }
 
+    //  info popup
+    function messagePopup(msg){
+        $("<div class='ui-loader ui-overlay-shadow ui-body-e ui-corner-all'><h3>"+msg+"</h3></div>")
+        .css({
+            display: "block",
+            position: "fixed",
+            padding: "7px",
+            "text-align": "center",
+            width: "270px",
+            left: ($(window).width() - 284)/2,
+            top: $(window).height()/2 })
+            .appendTo( $.mobile.pageContainer ).delay( 1500 )
+            .fadeOut( 1000, function(){
+            $(this).remove();
+        });
+    }
+
         // ----- configuration --------------------------------------------------------------------------------
 
     /**
@@ -881,7 +911,7 @@ freeFormAddress,
             layers: [],
             overlays: [],
             target: 'map',
-            renderer: ol.RendererHint.CANVAS,
+            renderer: ol.RendererType.CANVAS,
             view: view
         });
 
