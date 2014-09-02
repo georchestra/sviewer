@@ -45,7 +45,7 @@ sViewer design notes
 KVP parameters
 ==============
 
-Many KVP parameters are transmitted to the permalink or QR code. They are tagged 'is persistent'.
+The tag 'is persistent' indicates that the specified parameter is persistent in the permalink or QR code. 
 KVP parameters can conflict (xyz recenter vs wmc recenter). First parameter in this document takes precedence.
 
 
@@ -58,6 +58,7 @@ Center the map on x,y (EPSG:3857 units) and set the z zoom factor
 example :
 
     http://sdi.georchestra.org/sviewer/?x=-366959&y=2951352&z=5
+
 
 title {string}
 ------------------
@@ -114,13 +115,19 @@ Example :
 
     http://sdi.georchestra.org/sviewer/?wmc=http://geobretagne.fr/context/default/05.xml
     http://sdi.georchestra.org/sviewer/?wmc=9be95a6894a3dc6135c8cd760d83f6ef
+    
+    
+kml {string}
+-------------------
+is persistent
+Url of a kml resource. On query, the popup displays object description or, if missing, the object attributes.
 
 
 q {string}
 ------------------
 is persistent
 Queries the map on startup. Convenient to enlight a specific feature on the map. The query is persistent when the user
-shares the map showing a query marker. Click on the marker to disable autoquery.
+shares the map. Click on the marker to remove it and disable autoquery.
 
 
 qr {string}
@@ -148,9 +155,7 @@ First item, highest priority
 * customisable splashscreen
 * check the genericity of the openLS helper
 * GPS geocoding, tracking, events based on feature proximity
-* KML overlay support
 * CQL filters support
-* compress js and external libs
 * mobile OS manifest
 
 Before using this project, read the LICENSE.en terms.
