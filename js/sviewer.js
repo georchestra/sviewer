@@ -513,8 +513,7 @@ function initmap() {
             try {
                 var zoom = 15;
                 var results = $(response).find('GeocodedAddress');
-                console.log(response.getElementsByTagNameNS('http://www.opengis.net/gml', 'pos')[0].textContent.split(' '));
-                var a = response.getElementsByTagNameNS('http://www.opengis.net/gml', 'pos')[0].textContent.split(' ');
+                var a = results[0].getElementsByTagNameNS('http://www.opengis.net/gml', 'pos')[0].textContent.split(' ');
                 var lonlat = [parseFloat(a[1]), parseFloat(a[0])];
                 var matchType = results.find('GeocodeMatchCode').attr('matchType');
                 if (results.length>0) {
