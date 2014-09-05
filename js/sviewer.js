@@ -642,7 +642,8 @@ freeFormAddress,
                 config.gficoord,
                 viewResolution,
                 projection,
-                {'INFO_FORMAT': 'text/html'}
+                {'INFO_FORMAT': 'text/html',
+                'FEATURE_COUNT': config.maxFeatures}
             );
 
             // response order = layer order
