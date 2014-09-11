@@ -884,9 +884,14 @@ freeFormAddress,
 
         // querystring param: xyz
         if (qs.x&&qs.y&&qs.z) {
-            config.x = parseFloat(qs.x);
-            config.y = parseFloat(qs.y);
             config.z = parseInt(qs.z);
+            var p = [parseFloat(qs.x), parseFloat(qs.y)];
+            // is this lonlat ? anyway don't use sviewer for the vendee globe
+            if (Math.abs(p[0])<=180&&Math.abs(p[1])<=180&&config.z>7) {
+                p = ol.proj.transform(p, 'EPSG:4326', projcode);
+            }
+            config.x = p[0];
+            config.y = p[1];
         }
 
         // querystring param: title
@@ -897,12 +902,12 @@ freeFormAddress,
             setTitle(config.title);
         }
 
-        // querystring param: kml
+        // querystring param: kml overlay url
         if (qs.kml) {
             config.kmlUrl = qs.kml;
         }
 
-        // querystring param: perform getFeatureInfo
+        // querystring param: perform getFeatureInfo on map center
         if (qs.q) {
             config.gfiok = true;
         }
