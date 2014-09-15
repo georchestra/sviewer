@@ -1,9 +1,10 @@
 // supported (re)projections. add more in customConfig.js
-proj4.defs["EPSG:4326"] = "+title=WGS 84, +proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
-proj4.defs["EPSG:3857"] = "+title=Web Spherical Mercator, +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs";
-proj4.defs["EPSG:900913"] = "+title=Web Spherical Mercator, +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs";
-proj4.defs["EPSG:2154"] = "+title=RGF-93/Lambert 93, +proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs";
-
+proj4.defs([
+    ["EPSG:4326", "+title=WGS 84, +proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"],
+    ["EPSG:3857", "+title=Web Spherical Mercator, +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs"],
+    ["EPSG:900913", "+title=Web Spherical Mercator, +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs"],
+    ["EPSG:2154", "+title=RGF-93/Lambert 93, +proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"]
+]);
 // map projection and grids
 var projcode = 'EPSG:3857';
 var projection = ol.proj.get(projcode);
@@ -360,8 +361,7 @@ function initmap() {
                 var vgb = $(wmc).children('General').children('BoundingBox');
                 var srs = vgb.attr('SRS');
                 var extent = [vgb.attr('minx'), vgb.attr('miny'), vgb.attr('maxx'), vgb.attr('maxy')];
-                var transf = ol.proj.getTransform(srs, projcode);
-                view.fitExtent(ol.extent.applyTransform(extent, transf), map.getSize());
+                view.fitExtent(ol.proj.transformExtent(extent, srs, projcode), map.getSize());
             }
 
             // we only consider visible and queryable layers
@@ -435,7 +435,6 @@ function initmap() {
                 linkParams.x = encodeURIComponent(Math.round(config.gficoord[0]));
                 linkParams.y = encodeURIComponent(Math.round(config.gficoord[1]));
                 linkParams.z = encodeURIComponent(config.gfiz);
-
                 linkParams.q = '1';
             }
             else {
