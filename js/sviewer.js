@@ -911,6 +911,11 @@ freeFormAddress,
         if (qs.q) {
             config.gfiok = true;
         }
+        
+        // querystring param: activate search based on layer text attributes
+        if (qs.s) {
+            config.search = true;
+        }
     }
 
 
