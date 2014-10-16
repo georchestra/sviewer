@@ -742,74 +742,75 @@ freeFormAddress,
     };
     
     function searchInFeatures (value) {
-        config.searchparams.term = value;
-        var ogcfilter = [];
-        var propertynames = [];
-        for (var i = 0; i < config.searchparams.searchfields.length; ++i) {
-            /*matchCase="false" for PropertyIsLike don't works with geoserver 2.5.0*/
-            ogcfilter.push(
-            '<fes:PropertyIsLike wildCard="*" singleChar="." escapeChar="!">' +
-            '<fes:ValueReference>'+config.searchparams.searchfields[i]+'</fes:ValueReference>' +
-            '<fes:Literal>*'+value+'*</fes:Literal></fes:PropertyIsLike>'); 
-            propertynames.push('<wfs:PropertyName>'+config.searchparams.searchfields[i]+'</wfs:PropertyName>');
-        }
-        propertynames.push('<wfs:PropertyName>'+config.searchparams.geom+'</wfs:PropertyName>');
-        if (config.searchparams.searchfields.length > 1) {
-            ogcfilter.unshift('<fes:Or>');
-            ogcfilter.push('</fes:Or>');
-        }       
-        var getFeaturesRequest = ['<?xml version="1.0" encoding="UTF-8"?>',
-            '<wfs:GetFeature',
-                'xmlns:wfs="http://www.opengis.net/wfs/2.0" service="WFS" version="2.0.0" outputFormat="application/json"',
-                'count="3" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd"',
-                'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">',
-                '<wfs:Query typeNames="feature:'+config.searchparams.name+'" srsName="'+config.projection.getCode()+'"',
-                    'xmlns:feature="'+config.searchparams.ns+'">',
-                    propertynames.join(' '),                    ,
-                    '<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">',
-                        ogcfilter.join(' '),
-                    '</fes:Filter>',
-                '</wfs:Query>',
-            '</wfs:GetFeature>'].join (' ');
-            console.log("getFeaturesRequest", getFeaturesRequest);
-            
-        $.ajax({
-                url: ajaxURL(config.searchparams.url),
-                type: 'POST',
-                data: getFeaturesRequest ,  
-                contentType: "application/xml",
-                success: function(response) {
-                    console.log(response);
-                    var features =  new ol.format.GeoJSON().readFeatures(response);
-                    if (features.length > 0) {
-                        $("#searchResults").append('<li data-role="list-divider">'+config.searchparams.title+'</li>');
-                    }
-                    for (var i = 0; i < features.length; ++i) {
-                        var geom = features[i].getGeometry();
-                        var coord = geom.getPoints()[0].getCoordinates();
-                        var attributes = features[i].getProperties();
-                        var tips = [];
-                        var title = [];
-                        $.map( attributes, function( val, i ) {
-                            if (typeof(val)=== 'string') {
-                                tips.push(i + ' : ' + val);
-                                if (val.toLowerCase().search(config.searchparams.term.toLowerCase())!= -1) {
-                                    title.push(val);
+        if (value.length>2) {
+            config.searchparams.term = value;
+            var ogcfilter = [];
+            var propertynames = [];
+            for (var i = 0; i < config.searchparams.searchfields.length; ++i) {
+                /*matchCase="false" for PropertyIsLike don't works with geoserver 2.5.0*/
+                ogcfilter.push(
+                '<fes:PropertyIsLike wildCard="*" singleChar="." escapeChar="!">' +
+                '<fes:ValueReference>'+config.searchparams.searchfields[i]+'</fes:ValueReference>' +
+                '<fes:Literal>*'+value+'*</fes:Literal></fes:PropertyIsLike>'); 
+                propertynames.push('<wfs:PropertyName>'+config.searchparams.searchfields[i]+'</wfs:PropertyName>');
+            }
+            propertynames.push('<wfs:PropertyName>'+config.searchparams.geom+'</wfs:PropertyName>');
+            if (config.searchparams.searchfields.length > 1) {
+                ogcfilter.unshift('<fes:Or>');
+                ogcfilter.push('</fes:Or>');
+            }       
+            var getFeaturesRequest = ['<?xml version="1.0" encoding="UTF-8"?>',
+                '<wfs:GetFeature',
+                    'xmlns:wfs="http://www.opengis.net/wfs/2.0" service="WFS" version="2.0.0" outputFormat="application/json"',
+                    'count="3" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd"',
+                    'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">',
+                    '<wfs:Query typeNames="feature:'+config.searchparams.name+'" srsName="'+config.projection.getCode()+'"',
+                        'xmlns:feature="'+config.searchparams.ns+'">',
+                        propertynames.join(' '),                    ,
+                        '<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">',
+                            ogcfilter.join(' '),
+                        '</fes:Filter>',
+                    '</wfs:Query>',
+                '</wfs:GetFeature>'].join (' ');
+                console.log("getFeaturesRequest", getFeaturesRequest);
+                
+            $.ajax({
+                    url: ajaxURL(config.searchparams.url),
+                    type: 'POST',
+                    data: getFeaturesRequest ,  
+                    contentType: "application/xml",
+                    success: function(response) {
+                        console.log(response);
+                        var features =  new ol.format.GeoJSON().readFeatures(response);
+                        if (features.length > 0) {
+                            $("#searchResults").append('<li data-role="list-divider">'+config.searchparams.title+'</li>');
+                        }
+                        for (var i = 0; i < features.length; ++i) {
+                            var geom = features[i].getGeometry();
+                            var coord = geom.getPoints()[0].getCoordinates();
+                            var attributes = features[i].getProperties();
+                            var tips = [];
+                            var title = [];
+                            $.map( attributes, function( val, i ) {
+                                if (typeof(val)=== 'string') {
+                                    tips.push(i + ' : ' + val);
+                                    if (val.toLowerCase().search(config.searchparams.term.toLowerCase())!= -1) {
+                                        title.push(val);
+                                    }
                                 }
-                            }
-                        });
-                        
-                        $("#searchResults").append( '<li class="sv-feature" data-icon="info" title="'+tips.join('\n')+'"><a href="#" onclick="map.getView().setCenter(['+coord+'],map.getSize());">'+title.join(", ")+'</a></li>');
-                      
-                      $("#searchResults").listview().listview('refresh');
+                            });
+                            
+                            $("#searchResults").append( '<li class="sv-feature" data-icon="info" title="'+tips.join('\n')+'"><a href="#" onclick="map.getView().setCenter(['+coord+'],map.getSize());">'+title.join(", ")+'</a></li>');
+                          
+                          $("#searchResults").listview().listview('refresh');
+                        }
+                       
+                    },
+                    failure: function() {
+                        alert('error');
                     }
-                   
-                },
-                failure: function() {
-                    alert('error');
-                }
-            });    
-        
+                });    
+        }
     
     };
     // enables search on features attributes
