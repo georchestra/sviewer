@@ -7,7 +7,7 @@ $.extend(hardConfig, {
 
             'Query': 'Interroger',
             'Legend': 'Légende',
-            'Locate': 'Localiser',
+            'Locate': 'Rechercher',
             'Map': 'Carte',
             'initial view': 'vue initiale',
             'zoom +': 'zoom +',
