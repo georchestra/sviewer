@@ -535,7 +535,7 @@ function initmap() {
                         var resultElems = [municipality, code];
                         (street.length>1)?resultElems.unshift(street):false;
                         var label = resultElems.join (" ");                                       
-                        items.push( '<li class="sv-location" data-icon="location" title="'+resultElems.join('\n')+'"><a href="#" onclick="onSearchItemClick(['+ptResult+']);">'+label+'</a></li>');                      
+                        items.push( '<li class="sv-location" data-icon="location" title="'+resultElems.join('\n')+'"><a href="#" data-extent="[]" data-location="['+ptResult+']" onclick="onSearchItemClick(this);">'+label+'</a></li>');                      
                     }
                     $("#searchResults").prepend(items.join(" "));
                     $("#searchResults").prepend('<li data-role="list-divider">Localit&eacute;s</li>');
@@ -734,16 +734,17 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         config.gfiok = false;
     };
     
-    function getCentroid(geom) {
-        var coordinates = null;
+    function getCentroidAndExtent(geom) {
+        var obj = {};        
         switch (geom.getType()) {
             case 'Point': 
-                coordinates =  geom.getCoordinates();
+                obj.coordinates =  geom.getCoordinates();
                 break;             
              default:
-                coordinates = ol.extent.getCenter(geom.getExtent());            
+                obj.coordinates = ol.extent.getCenter(geom.getExtent());            
         }
-        return coordinates;
+        obj.extent = geom.getExtent();
+        return obj;
     };    
     
     function searchInFeatures (value) {
@@ -811,7 +812,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                         }
                         for (var i = 0; i < features.length; ++i) {
                             var geom = features[i].getGeometry();
-                            var coord = getCentroid(geom);
+                            var svgeometry = getCentroidAndExtent(geom);                            
                             var attributes = features[i].getProperties();
                             var tips = [];
                             var title = [];
@@ -824,7 +825,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                                 }
                             });
                             
-                            $("#searchResults").append( '<li class="sv-feature" data-icon="info" title="'+tips.join('\n')+'"><a href="#" onclick="onSearchItemClick(['+coord+']);">'+title.join(", ")+'</a></li>');
+                            $("#searchResults").append( '<li class="sv-feature" data-icon="info" title="'+tips.join('\n')+'"><a href="#" data-extent="['+svgeometry.extent+']" data-location="['+svgeometry.coordinates+']" onclick="onSearchItemClick(this);">'+title.join(", ")+'</a></li>');
                           
                           $("#searchResults").listview().listview('refresh');
                         }
@@ -1113,9 +1114,17 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         
         if (config.search) {
             config.searchparams = {};
-            onSearchItemClick = function (coordinates) {                
+            onSearchItemClick = function (item) {
+                var coordinates = JSON.parse(item.dataset.location);                
+                var extent = JSON.parse(item.dataset.extent);
                 map.getView().setCenter(coordinates,map.getSize());
                 marker.setPosition(coordinates);
+                if (extent.length===4) {
+                    map.getView().fitExtent(extent, map.getSize()); 
+                    
+                } else {
+                    map.getView().setZoom(16);
+                }
                 $('#marker').show();
             };
             activateSearchFeatures();
