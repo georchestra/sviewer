@@ -540,26 +540,9 @@ function initmap() {
                     $("#searchResults").prepend(items.join(" "));
                     $("#searchResults").prepend('<li data-role="list-divider">Localit&eacute;s</li>');
                     $("#searchResults").listview().listview('refresh');
-                    // map move and zoom
-                    /*
-                    if (ptResult[0]>config.restrictedExtent[0] &&
-                        ptResult[1]>config.restrictedExtent[1] &&
-                        ptResult[0]<config.restrictedExtent[2] &&
-                        ptResult[1]<config.restrictedExtent[3]
-                    ) {
-                        marker.setPosition(ptResult);
-                        $('#marker').show();
-                        $('#locateMsg').text('');
-                        view.setCenter(ptResult);
-                        view.setZoom(zoom);
-                    }
-                    else {
-                        $('#locateMsg').text(tr('Results are off map'));
-                        $.mobile.loading('hide');
-                    }*/
                 }
                 else {
-                    $('#locateMsg').text('No result');
+                    //$('#locateMsg').text('No result');
                     $.mobile.loading('hide');
                 }
             } catch(err) {
@@ -574,6 +557,7 @@ function initmap() {
         }
 
         try {
+            var extent = ol.proj.transformExtent(config.initialExtent,map.getView().getProjection().getCode(), 'EPSG:4326');
             var q = text.trim();
             var qa = q.split(',');
             if (q.length>0) {
@@ -613,6 +597,14 @@ countryCode,
 <freeFormAddress>',
 freeFormAddress,
 '</freeFormAddress> \
+<gml:envelope> \
+<gml:pos>',
+ol.extent.getBottomLeft(extent).reverse().join(" "),
+'</gml:pos> \
+<gml:pos>',
+ol.extent.getTopRight(extent).reverse().join(" "),
+'</gml:pos> \
+</gml:envelope> \
 </Address> \
 </GeocodeRequest> \
 </Request> \
