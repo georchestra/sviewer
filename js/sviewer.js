@@ -19,6 +19,7 @@ for (var z = 0; z < 20; ++z) {
 
 var map;
 var view;
+var onSearchItemClick;
 var config = {};
 var customConfig = {};
 var hardConfig = {
@@ -534,7 +535,7 @@ function initmap() {
                         var resultElems = [municipality, code];
                         (street.length>1)?resultElems.unshift(street):false;
                         var label = resultElems.join (" ");                                       
-                        items.push( '<li class="sv-location" data-icon="location" title="'+resultElems.join('\n')+'"><a href="#" onclick="map.getView().setCenter(['+ptResult.join(",")+'],map.getSize());">'+label+'</a></li>');                      
+                        items.push( '<li class="sv-location" data-icon="location" title="'+resultElems.join('\n')+'"><a href="#" onclick="onSearchItemClick(['+ptResult+']);">'+label+'</a></li>');                      
                     }
                     $("#searchResults").prepend(items.join(" "));
                     $("#searchResults").prepend('<li data-role="list-divider">Localit&eacute;s</li>');
@@ -741,38 +742,69 @@ freeFormAddress,
         config.gfiok = false;
     };
     
+    function getCentroid(geom) {
+        var coordinates = null;
+        switch (geom.getType()) {
+            case 'Point': 
+                coordinates =  geom.getCoordinates();
+                break;             
+             default:
+                coordinates = ol.extent.getCenter(geom.getExtent());            
+        }
+        return coordinates;
+    };    
+    
     function searchInFeatures (value) {
-        if (value.length>2) {
+        if (value.length>1) {
             config.searchparams.term = value;
             var ogcfilter = [];
             var propertynames = [];
             for (var i = 0; i < config.searchparams.searchfields.length; ++i) {
-                /*matchCase="false" for PropertyIsLike don't works with geoserver 2.5.0*/
+                /*matchCase="false" for PropertyIsLike don't works with geoserver 2.5.0* in wfs 2.0.0 version*/
                 ogcfilter.push(
-                '<fes:PropertyIsLike wildCard="*" singleChar="." escapeChar="!">' +
-                '<fes:ValueReference>'+config.searchparams.searchfields[i]+'</fes:ValueReference>' +
-                '<fes:Literal>*'+value+'*</fes:Literal></fes:PropertyIsLike>'); 
-                propertynames.push('<wfs:PropertyName>'+config.searchparams.searchfields[i]+'</wfs:PropertyName>');
+                '<ogc:PropertyIsLike wildCard="*" singleChar="." escapeChar="!" matchCase="false" >' +
+                '<ogc:PropertyName>'+config.searchparams.searchfields[i]+'</ogc:PropertyName>' +
+                '<ogc:Literal>*'+value+'*</ogc:Literal></ogc:PropertyIsLike>'); 
+                propertynames.push('<ogc:PropertyName>'+config.searchparams.searchfields[i]+'</ogc:PropertyName>');
             }
-            propertynames.push('<wfs:PropertyName>'+config.searchparams.geom+'</wfs:PropertyName>');
+            propertynames.push('<ogc:PropertyName>'+config.searchparams.geom+'</ogc:PropertyName>');
+            
+            var extent = map.getView().calculateExtent(map.getSize());            
+            var bboxFilter = ['<ogc:BBOX>',
+                '<ogc:PropertyName>'+config.searchparams.geom+'</ogc:PropertyName>',
+                '<gml:Envelope xmlns:gml="http://www.opengis.net/gml" srsName="'+config.projection.getCode()+'">',
+                  '<gml:lowerCorner>'+ol.extent.getBottomLeft(extent).join(" ")+'</gml:lowerCorner>',
+                  '<gml:upperCorner>'+ol.extent.getTopRight(extent).join(" ")+'</gml:upperCorner>',
+                '</gml:Envelope>',
+              '</ogc:BBOX>'].join( ' ' );
+              
+            console.log('bbox : ', bboxFilter);
+            
             if (config.searchparams.searchfields.length > 1) {
-                ogcfilter.unshift('<fes:Or>');
-                ogcfilter.push('</fes:Or>');
-            }       
+                ogcfilter.unshift('<ogc:Or>');
+                ogcfilter.push('</ogc:Or>');
+            }
+
+            if (config.searchparams.bboxfilter == true) {
+                ogcfilter.unshift('<ogc:And>');
+                ogcfilter.push(bboxFilter);
+                ogcfilter.push('</ogc:And>');
+            }                 
+           
+              
             var getFeaturesRequest = ['<?xml version="1.0" encoding="UTF-8"?>',
                 '<wfs:GetFeature',
-                    'xmlns:wfs="http://www.opengis.net/wfs/2.0" service="WFS" version="2.0.0" outputFormat="application/json"',
-                    'count="3" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd"',
-                    'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">',
-                    '<wfs:Query typeNames="feature:'+config.searchparams.name+'" srsName="'+config.projection.getCode()+'"',
-                        'xmlns:feature="'+config.searchparams.ns+'">',
-                        propertynames.join(' '),                    ,
-                        '<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">',
-                            ogcfilter.join(' '),
-                        '</fes:Filter>',
+                    'xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.1.0"',
+                    'xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"',
+                    'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" maxFeatures="5" outputFormat="application/json">',
+                      '<wfs:Query xmlns:ogc="http://www.opengis.net/ogc" typeName="'+config.searchparams.typename+'" srsName="'+config.projection.getCode()+'">',
+                        propertynames.join(' '),
+                        '<ogc:Filter>',
+                           ogcfilter.join(' '),
+                        '</ogc:Filter>',
                     '</wfs:Query>',
                 '</wfs:GetFeature>'].join (' ');
-                console.log("getFeaturesRequest", getFeaturesRequest);
+           console.log("getFeaturesRequest", getFeaturesRequest);
                 
             $.ajax({
                     url: ajaxURL(config.searchparams.url),
@@ -787,7 +819,7 @@ freeFormAddress,
                         }
                         for (var i = 0; i < features.length; ++i) {
                             var geom = features[i].getGeometry();
-                            var coord = geom.getPoints()[0].getCoordinates();
+                            var coord = getCentroid(geom);
                             var attributes = features[i].getProperties();
                             var tips = [];
                             var title = [];
@@ -800,7 +832,7 @@ freeFormAddress,
                                 }
                             });
                             
-                            $("#searchResults").append( '<li class="sv-feature" data-icon="info" title="'+tips.join('\n')+'"><a href="#" onclick="map.getView().setCenter(['+coord+'],map.getSize());">'+title.join(", ")+'</a></li>');
+                            $("#searchResults").append( '<li class="sv-feature" data-icon="info" title="'+tips.join('\n')+'"><a href="#" onclick="onSearchItemClick(['+coord+']);">'+title.join(", ")+'</a></li>');
                           
                           $("#searchResults").listview().listview('refresh');
                         }
@@ -830,16 +862,16 @@ freeFormAddress,
                         type: 'GET',                                              
                         success: function(response) {
                             console.log("describeFeaturetype",response);
-                            var fields = [];
-                            //$(response).find("sequence").find('[type="xsd\\:string"]').each(function( i ) {
+                            var fields = [];                            
                             $(response.getElementsByTagNameNS("*","sequence")).find('[type="xsd\\:string"]').each(function( i ) {
                                 fields.push($(this).attr("name"));                                
                             });
-                            config.searchparams.geom = $(response.getElementsByTagNameNS("*","sequence")).find('[type="gml\\:GeometryPropertyType"]').attr("name");
+                            config.searchparams.geom = $(response.getElementsByTagNameNS("*","sequence")).find('[type*="gml\\:"]').attr("name");
                             config.searchparams.searchfields = fields;
                             config.searchparams.ns = $(response.getElementsByTagNameNS("*","schema")).attr("targetNamespace");
                             config.searchparams.name = config.searchparams.typename.split(":")[1];
-                            console.log("searchparams : ",config.searchparams);                           
+                            config.searchparams.bboxfilter = true;
+                                                  
                         },
                         failure: function() {
                             alert('error');
@@ -1089,6 +1121,11 @@ freeFormAddress,
         
         if (config.search) {
             config.searchparams = {};
+            onSearchItemClick = function (coordinates) {                
+                map.getView().setCenter(coordinates,map.getSize());
+                marker.setPosition(coordinates);
+                $('#marker').show();
+            };
             activateSearchFeatures();
         }
 
