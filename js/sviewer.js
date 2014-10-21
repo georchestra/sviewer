@@ -825,7 +825,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                                 }
                             });
                             
-                            $("#searchResults").append( '<li class="sv-feature" data-icon="info" title="'+tips.join('\n')+'"><a href="#" data-extent="['+svgeometry.extent+']" data-location="['+svgeometry.coordinates+']" onclick="onSearchItemClick(this);">'+title.join(", ")+'</a></li>');
+                            $("#searchResults").append( '<li class="sv-feature" data-icon="star" title="'+tips.join('\n')+'"><a href="#" data-extent="['+svgeometry.extent+']" data-location="['+svgeometry.coordinates+']" onclick="onSearchItemClick(this);">'+title.join(", ")+'</a></li>');
                           
                           $("#searchResults").listview().listview('refresh');
                         }
