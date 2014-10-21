@@ -386,6 +386,9 @@ function initmap() {
                     config.layersQueryable.push(l);
                     map.addLayer(l.wmslayer);
                     $.mobile.loading('hide');
+                    if (config.search) {                                    
+                        activateSearchFeatures();
+                    }
                 }
             });
 
@@ -867,46 +870,47 @@ ol.extent.getTopRight(extent).reverse().join(" "),
     // enables search on features attributes
     function activateSearchFeatures() { 
         var searchLayer = config.layersQueryable[config.layersQueryable.length -1];
-        config.searchparams.title = searchLayer.md.title;
-        // get DescribeLayer from last Layer
-        var describeLayerUrl = searchLayer.options.wmsurl_ns;
-        $.ajax({
-                url: ajaxURL(describeLayerUrl + "?SERVICE=WMS&VERSION=1.1.1&REQUEST=DescribeLayer&LAYERS="+
-                    searchLayer.options.layername),
-                type: 'GET',                                              
-                success: function(response) {
-                    config.searchparams.url = $(response).find("LayerDescription").attr("wfs");
-                    config.searchparams.typename = $(response).find("Query").attr("typeName");
-                    $.ajax({
-                        url: ajaxURL($(response).find("LayerDescription").attr("wfs") + 
-                            "SERVICE=WFS&VERSION=1.0.0&REQUEST=DescribeFeatureType&TYPENAME="
-                            +$(response).find("Query").attr("typeName")),
-                        type: 'GET',                                              
-                        success: function(response) {
-                            console.log("describeFeaturetype",response);
-                            var fields = [];                            
-                            $(response.getElementsByTagNameNS("*","sequence")).find('[type="xsd\\:string"]').each(function( i ) {
-                                fields.push($(this).attr("name"));                                
-                            });
-                            config.searchparams.geom = $(response.getElementsByTagNameNS("*",
-                                "sequence")).find('[type*="gml\\:"]').attr("name");
-                            config.searchparams.searchfields = fields;
-                            config.searchparams.ns = $(response.getElementsByTagNameNS("*","schema")).attr("targetNamespace");
-                            config.searchparams.name = config.searchparams.typename.split(":")[1];
-                            config.searchparams.bboxfilter = true;
-                                                  
-                        },
-                        failure: function() {
-                            alert('error');
-                        }
-                    });
-                    
-                },
-                failure: function() {
-                    alert('error');
-                }
-            });
-            
+        if (searchLayer) {
+            config.searchparams.title = searchLayer.md.title;
+            // get DescribeLayer from last Layer
+            var describeLayerUrl = searchLayer.options.wmsurl_ns;
+            $.ajax({
+                    url: ajaxURL(describeLayerUrl + "?SERVICE=WMS&VERSION=1.1.1&REQUEST=DescribeLayer&LAYERS="+
+                        searchLayer.options.layername),
+                    type: 'GET',                                              
+                    success: function(response) {
+                        config.searchparams.url = $(response).find("LayerDescription").attr("wfs");
+                        config.searchparams.typename = $(response).find("Query").attr("typeName");
+                        $.ajax({
+                            url: ajaxURL($(response).find("LayerDescription").attr("wfs") + 
+                                "SERVICE=WFS&VERSION=1.0.0&REQUEST=DescribeFeatureType&TYPENAME="
+                                +$(response).find("Query").attr("typeName")),
+                            type: 'GET',                                              
+                            success: function(response) {
+                                console.log("describeFeaturetype",response);
+                                var fields = [];                            
+                                $(response.getElementsByTagNameNS("*","sequence")).find('[type="xsd\\:string"]').each(function( i ) {
+                                    fields.push($(this).attr("name"));                                
+                                });
+                                config.searchparams.geom = $(response.getElementsByTagNameNS("*",
+                                    "sequence")).find('[type*="gml\\:"]').attr("name");
+                                config.searchparams.searchfields = fields;
+                                config.searchparams.ns = $(response.getElementsByTagNameNS("*","schema")).attr("targetNamespace");
+                                config.searchparams.name = config.searchparams.typename.split(":")[1];
+                                config.searchparams.bboxfilter = true;
+                                                      
+                            },
+                            failure: function() {
+                                alert('error');
+                            }
+                        });
+                        
+                    },
+                    failure: function() {
+                        alert('error');
+                    }
+                });
+            }
     }
 
     // search form submit
@@ -1142,31 +1146,32 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             map.addLayer(this.wmslayer);
         });
         
+        onSearchItemClick = function (item) {
+            var data = $(item).data();
+            var coordinates = data.location;                
+            var extent = data.extent;
+            var zoom = parseInt(data.zoom);
+            // test if extent is valid (with width and height - not a simple point)
+            // invalidate extent if extent is not valid
+            if (extent.length===4) {
+                if (extent[0] == extent[2] && extent[1] == extent[3]) {
+                    extent = false; 
+                }
+            } else {
+                extent = false;
+            }
+            marker.setPosition(coordinates);
+            if (extent) {
+                view.fitExtent(extent, map.getSize());                     
+            } else {
+                view.setCenter(coordinates,map.getSize());
+                view.setZoom(zoom || 16);                    
+            }
+            $('#marker').show();
+        };
+        
         if (config.search) {
-            config.searchparams = {};
-            onSearchItemClick = function (item) {
-                var data = $(item).data();
-                var coordinates = data.location;                
-                var extent = data.extent;
-                var zoom = parseInt(data.zoom);
-                // test if extent is valid (with width and height - not a simple point)
-                // invalidate extent if extent is not valid
-                if (extent.length===4) {
-                    if (extent[0] == extent[2] && extent[1] == extent[3]) {
-                        extent = false; 
-                    }
-                } else {
-                    extent = false;
-                }
-                marker.setPosition(coordinates);
-                if (extent) {
-                    view.fitExtent(extent, map.getSize());                     
-                } else {
-                    view.setCenter(coordinates,map.getSize());
-                    view.setZoom(zoom || 16);                    
-                }
-                $('#marker').show();
-            };
+            config.searchparams = {};            
             activateSearchFeatures();
         }
 
