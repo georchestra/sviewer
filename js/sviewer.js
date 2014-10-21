@@ -20,6 +20,7 @@ for (var z = 0; z < 20; ++z) {
 var map;
 var view;
 var onSearchItemClick;
+var featuresToList;
 var config = {};
 var customConfig = {};
 var hardConfig = {
@@ -769,108 +770,111 @@ ol.extent.getTopRight(extent).reverse().join(" "),
     function searchInFeatures (value) {
         if (value.length>1) {
             config.searchparams.term = value;
-            var ogcfilter = [];
-            var propertynames = [];
-            for (var i = 0; i < config.searchparams.searchfields.length; ++i) {
-                /*matchCase="false" for PropertyIsLike don't works with geoserver 2.5.0* in wfs 2.0.0 version*/
-                ogcfilter.push(
-                '<ogc:PropertyIsLike wildCard="*" singleChar="." escapeChar="!" matchCase="false" >' +
-                '<ogc:PropertyName>'+config.searchparams.searchfields[i]+'</ogc:PropertyName>' +
-                '<ogc:Literal>*'+value+'*</ogc:Literal></ogc:PropertyIsLike>'); 
-                propertynames.push('<ogc:PropertyName>'+config.searchparams.searchfields[i]+'</ogc:PropertyName>');
-            }
-            propertynames.push('<ogc:PropertyName>'+config.searchparams.geom+'</ogc:PropertyName>');
-            
-            var extent = map.getView().calculateExtent(map.getSize());            
-            var bboxFilter = ['<ogc:BBOX>',
-                '<ogc:PropertyName>'+config.searchparams.geom+'</ogc:PropertyName>',
-                '<gml:Envelope xmlns:gml="http://www.opengis.net/gml" srsName="'+config.projection.getCode()+'">',
-                  '<gml:lowerCorner>'+ol.extent.getBottomLeft(extent).join(" ")+'</gml:lowerCorner>',
-                  '<gml:upperCorner>'+ol.extent.getTopRight(extent).join(" ")+'</gml:upperCorner>',
-                '</gml:Envelope>',
-              '</ogc:BBOX>'].join( ' ' );
-              
-            console.log('bbox : ', bboxFilter);
-            
-            if (config.searchparams.searchfields.length > 1) {
-                ogcfilter.unshift('<ogc:Or>');
-                ogcfilter.push('</ogc:Or>');
-            }
-
-            if (config.searchparams.bboxfilter == true) {
-                ogcfilter.unshift('<ogc:And>');
-                ogcfilter.push(bboxFilter);
-                ogcfilter.push('</ogc:And>');
-            }                 
-           
-              
-            var getFeaturesRequest = ['<?xml version="1.0" encoding="UTF-8"?>',
-                '<wfs:GetFeature',
-                    'xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.1.0"',
-                    'xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"',
-                    'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" maxFeatures="5" outputFormat="application/json">',
-                      '<wfs:Query xmlns:ogc="http://www.opengis.net/ogc"' + 
-                       ' typeName="'+config.searchparams.typename+'" srsName="'+config.projection.getCode()+'">',
-                        propertynames.join(' '),
-                        '<ogc:Filter>',
-                           ogcfilter.join(' '),
-                        '</ogc:Filter>',
-                    '</wfs:Query>',
-                '</wfs:GetFeature>'].join (' ');
-           console.log("getFeaturesRequest", getFeaturesRequest);
+            if (config.searchparams.mode === 'remote') {
+                var ogcfilter = [];
+                var propertynames = [];
+                for (var i = 0; i < config.searchparams.searchfields.length; ++i) {
+                    /*matchCase="false" for PropertyIsLike don't works with geoserver 2.5.0* in wfs 2.0.0 version*/
+                    ogcfilter.push(
+                    '<ogc:PropertyIsLike wildCard="*" singleChar="." escapeChar="!" matchCase="false" >' +
+                    '<ogc:PropertyName>'+config.searchparams.searchfields[i]+'</ogc:PropertyName>' +
+                    '<ogc:Literal>*'+value+'*</ogc:Literal></ogc:PropertyIsLike>'); 
+                    propertynames.push('<ogc:PropertyName>'+config.searchparams.searchfields[i]+'</ogc:PropertyName>');
+                }
+                propertynames.push('<ogc:PropertyName>'+config.searchparams.geom+'</ogc:PropertyName>');
                 
-            $.ajax({
-                    url: ajaxURL(config.searchparams.url),
-                    type: 'POST',
-                    data: getFeaturesRequest ,  
-                    contentType: "application/xml",
-                    success: function(response) {
-                        console.log(response);
-                        var features =  new ol.format.GeoJSON().readFeatures(response);
-                        if (features.length > 0) {
-                            $("#searchResults").append('<li data-role="list-divider">'+config.searchparams.title+'</li>');
+                var extent = map.getView().calculateExtent(map.getSize());            
+                var bboxFilter = ['<ogc:BBOX>',
+                    '<ogc:PropertyName>'+config.searchparams.geom+'</ogc:PropertyName>',
+                    '<gml:Envelope xmlns:gml="http://www.opengis.net/gml" srsName="'+config.projection.getCode()+'">',
+                      '<gml:lowerCorner>'+ol.extent.getBottomLeft(extent).join(" ")+'</gml:lowerCorner>',
+                      '<gml:upperCorner>'+ol.extent.getTopRight(extent).join(" ")+'</gml:upperCorner>',
+                    '</gml:Envelope>',
+                  '</ogc:BBOX>'].join( ' ' );
+                  
+                console.log('bbox : ', bboxFilter);
+                
+                if (config.searchparams.searchfields.length > 1) {
+                    ogcfilter.unshift('<ogc:Or>');
+                    ogcfilter.push('</ogc:Or>');
+                }
+
+                if (config.searchparams.bboxfilter == true) {
+                    ogcfilter.unshift('<ogc:And>');
+                    ogcfilter.push(bboxFilter);
+                    ogcfilter.push('</ogc:And>');
+                }                 
+               
+                  
+                var getFeaturesRequest = ['<?xml version="1.0" encoding="UTF-8"?>',
+                    '<wfs:GetFeature',
+                        'xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.1.0"',
+                        'xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"',
+                        'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" maxFeatures="5" outputFormat="application/json">',
+                          '<wfs:Query xmlns:ogc="http://www.opengis.net/ogc"' + 
+                           ' typeName="'+config.searchparams.typename+'" srsName="'+config.projection.getCode()+'">',
+                            propertynames.join(' '),
+                            '<ogc:Filter>',
+                               ogcfilter.join(' '),
+                            '</ogc:Filter>',
+                        '</wfs:Query>',
+                    '</wfs:GetFeature>'].join (' ');
+               console.log("getFeaturesRequest", getFeaturesRequest);
+                    
+                $.ajax({
+                        url: ajaxURL(config.searchparams.url),
+                        type: 'POST',
+                        data: getFeaturesRequest ,  
+                        contentType: "application/xml",
+                        success: function(response) {
+                            console.log(response);
+                            var features =  new ol.format.GeoJSON().readFeatures(response);
+                            if (features.length > 0) {                                
+                                featuresToList(features);
+                            }                          
+                        },
+                        failure: function() {
+                            alert('error');
                         }
-                        for (var i = 0; i < features.length; ++i) {
-                            var geom = features[i].getGeometry();
-                            var svgeometry = getCentroidAndExtent(geom);                            
-                            var attributes = features[i].getProperties();
-                            var tips = [];
-                            var title = [];
-                            $.map( attributes, function( val, i ) {
-                                if (typeof(val)=== 'string') {
-                                    tips.push(i + ' : ' + val);
-                                    if (val.toLowerCase().search(config.searchparams.term.toLowerCase())!= -1) {
-                                        title.push(val);
-                                    }
-                                }
-                            });                         
-                            
-                            var item =$('<li class="sv-feature" data-icon="star"><a href="#"></a></li>')                                                              
-                                .find("a")                                
-                                .text(title.join(", "))
-                                .attr("data-extent", '['+svgeometry.extent+']')
-                                .attr("data-location", '['+svgeometry.extent+']')  
-                                .click(function() {
-                                  onSearchItemClick($( this ));                                  
-                                })
-                                .parent()
-                                .attr("title",tips.join('\n'));                                
-                            $("#searchResults").append(item);
+                    });    
+            }
+            if (config.searchparams.mode === 'local') {
+                if (!config.searchindex) {
+                    var featureIndex = [];
+                    var features = config.kmlLayer.getSource().getFeatures();
+                    for (var i=0;i<features.length;i++) {
+                        // construct an index with all text attributes
+                        var id = features[i].getId();
+                        var feat = features[i].getProperties();
+                        var idx = "";
+                        for (var name in feat) {                             
+                             if (feat.hasOwnProperty(name) && typeof(feat[name])==='string') {                
+                                idx+='|' + String(feat[name]).toLowerCase();                                
+                              }
                         }
-                        $("#searchResults").listview().listview('refresh');
-                       
-                    },
-                    failure: function() {
-                        alert('error');
+                        featureIndex.push({id:id, data:idx});                    
+                  }
+                  config.searchindex = featureIndex;
+              }
+              if (config.searchindex) {
+                var features = [];
+                var responses = 0;
+                for (var i=0;i<config.searchindex.length && responses <3;i++) {
+                    if (config.searchindex[i].data.indexOf(value)!=-1) {                        
+                        features.push(config.kmlLayer.getSource().getFeatureById(config.searchindex[i].id));
+                        responses +=1;                       
                     }
-                });    
+                }
+                featuresToList(features);
+              }
+           }
         }
-    
     };
     // enables search on features attributes
     function activateSearchFeatures() { 
         var searchLayer = config.layersQueryable[config.layersQueryable.length -1];
         if (searchLayer) {
+            config.searchparams.mode = 'remote';
             config.searchparams.title = searchLayer.md.title;
             // get DescribeLayer from last Layer
             var describeLayerUrl = searchLayer.options.wmsurl_ns;
@@ -910,6 +914,9 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                         alert('error');
                     }
                 });
+            }
+            if (config.kmlLayer) {
+                config.searchparams.mode = 'local';
             }
     }
 
@@ -1170,6 +1177,39 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             $('#marker').show();
         };
         
+        featuresToList = function (features) {
+            var lib = config.searchparams.title || 'Top layer';
+            $("#searchResults").append('<li data-role="list-divider">'+lib+'</li>');
+            for (var i = 0; i < features.length; ++i) {
+                var geom = features[i].getGeometry();
+                var svgeometry = getCentroidAndExtent(geom);                            
+                var attributes = features[i].getProperties();
+                var tips = [];
+                var title = [];
+                $.map( attributes, function( val, i ) {
+                    if (typeof(val)=== 'string') {
+                        tips.push(i + ' : ' + val);
+                        if (val.toLowerCase().search(config.searchparams.term.toLowerCase())!= -1) {
+                            title.push(val);
+                        }
+                    }
+                });                         
+                
+                var item =$('<li class="sv-feature" data-icon="star"><a href="#"></a></li>')                                                              
+                    .find("a")                                
+                    .text(title.join(", "))
+                    .attr("data-extent", '['+svgeometry.extent+']')
+                    .attr("data-location", '['+svgeometry.extent+']')  
+                    .click(function() {
+                      onSearchItemClick($( this ));                                  
+                    })
+                    .parent()
+                    .attr("title",tips.join('\n'));                                
+                $("#searchResults").append(item);
+            }
+            $("#searchResults").listview().listview('refresh');
+        }
+        
         if (config.search) {
             config.searchparams = {};            
             activateSearchFeatures();
@@ -1184,6 +1224,9 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 })
             });
             map.addLayer(config.kmlLayer);
+            if (config.search) {                                    
+                activateSearchFeatures();
+            }
         }
 
         // map recentering
