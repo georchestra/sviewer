@@ -514,7 +514,8 @@ function initmap() {
         function onOpenLSSuccess (response) {
             $.mobile.loading('hide');
             try {
-                var zoom = 15;
+                var zoom = false;
+                var extent = [];
                 var results = $(response).find('GeocodedAddress');
                 if (results.length>0) {
                     var items = [];
@@ -523,21 +524,36 @@ function initmap() {
                         var lonlat = [parseFloat(a[1]), parseFloat(a[0])];
                         var matchType = results.find('GeocodeMatchCode').attr('matchType');                
                         switch (matchType) {
-                            case 'City': zoom = 15; break;
-                            case 'Street': zoom = 17; break;
+                            /*case 'City': zoom = 15; break;
+                            case 'Street': zoom = 17; break;*/
                             case 'Street enhanced': zoom = 18; break;
                             case 'Street number': zoom = 18; break;
                         }
                         var ptResult = ol.proj.transform(lonlat, 'EPSG:4326', projcode);                    
                         var street = $(results[i]).find("Street").text();
                         var municipality = $(results[i]).find('[type="Municipality"]').text();
+                        if (!zoom) {
+                            var bbox = JSON.parse('[' +  $(results[i]).find('[type="Bbox"]').text().replace(/;/g,",") + ']');
+                            extent = ol.proj.transformExtent(bbox, 'EPSG:4326', map.getView().getProjection().getCode());
+                        }
                         var code =  $(results[i]).find('[type="INSEE"]').text();
                         var resultElems = [municipality, code];
                         (street.length>1)?resultElems.unshift(street):false;
-                        var label = resultElems.join (" ");                                       
-                        items.push( '<li class="sv-location" data-icon="location" title="'+resultElems.join('\n')+'"><a href="#" data-extent="[]" data-location="['+ptResult+']" onclick="onSearchItemClick(this);">'+label+'</a></li>');                      
+                        var label = resultElems.join (" ");
+                        var item =$('<li class="sv-location" data-icon="location"><a href="#"></a></li>')                                                              
+                                .find("a")                                
+                                .text(label)
+                                .attr("data-extent", '['+extent+']')
+                                .attr("data-location", '['+ptResult+']')  
+                                .attr("data-zoom", zoom)
+                                .click(function() {
+                                  onSearchItemClick($( this ));                                  
+                                })
+                                .parent()
+                                .attr("title",resultElems.join('\n'));                            
+                        items.push(item);                        
                     }
-                    $("#searchResults").prepend(items.join(" "));
+                    $("#searchResults").prepend(items);
                     $("#searchResults").prepend('<li data-role="list-divider">Localit&eacute;s</li>');
                     $("#searchResults").listview().listview('refresh');
                 }
@@ -790,7 +806,8 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                     'xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.1.0"',
                     'xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"',
                     'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" maxFeatures="5" outputFormat="application/json">',
-                      '<wfs:Query xmlns:ogc="http://www.opengis.net/ogc" typeName="'+config.searchparams.typename+'" srsName="'+config.projection.getCode()+'">',
+                      '<wfs:Query xmlns:ogc="http://www.opengis.net/ogc"' + 
+                       ' typeName="'+config.searchparams.typename+'" srsName="'+config.projection.getCode()+'">',
                         propertynames.join(' '),
                         '<ogc:Filter>',
                            ogcfilter.join(' '),
@@ -823,12 +840,21 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                                         title.push(val);
                                     }
                                 }
-                            });
+                            });                         
                             
-                            $("#searchResults").append( '<li class="sv-feature" data-icon="star" title="'+tips.join('\n')+'"><a href="#" data-extent="['+svgeometry.extent+']" data-location="['+svgeometry.coordinates+']" onclick="onSearchItemClick(this);">'+title.join(", ")+'</a></li>');
-                          
-                          $("#searchResults").listview().listview('refresh');
+                            var item =$('<li class="sv-feature" data-icon="star"><a href="#"></a></li>')                                                              
+                                .find("a")                                
+                                .text(title.join(", "))
+                                .attr("data-extent", '['+svgeometry.extent+']')
+                                .attr("data-location", '['+svgeometry.extent+']')  
+                                .click(function() {
+                                  onSearchItemClick($( this ));                                  
+                                })
+                                .parent()
+                                .attr("title",tips.join('\n'));                                
+                            $("#searchResults").append(item);
                         }
+                        $("#searchResults").listview().listview('refresh');
                        
                     },
                     failure: function() {
@@ -845,13 +871,16 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         // get DescribeLayer from last Layer
         var describeLayerUrl = searchLayer.options.wmsurl_ns;
         $.ajax({
-                url: ajaxURL(describeLayerUrl + "?SERVICE=WMS&VERSION=1.1.1&REQUEST=DescribeLayer&LAYERS="+searchLayer.options.layername),
+                url: ajaxURL(describeLayerUrl + "?SERVICE=WMS&VERSION=1.1.1&REQUEST=DescribeLayer&LAYERS="+
+                    searchLayer.options.layername),
                 type: 'GET',                                              
                 success: function(response) {
                     config.searchparams.url = $(response).find("LayerDescription").attr("wfs");
                     config.searchparams.typename = $(response).find("Query").attr("typeName");
                     $.ajax({
-                        url: ajaxURL($(response).find("LayerDescription").attr("wfs") + "SERVICE=WFS&VERSION=1.0.0&REQUEST=DescribeFeatureType&TYPENAME="+$(response).find("Query").attr("typeName")),
+                        url: ajaxURL($(response).find("LayerDescription").attr("wfs") + 
+                            "SERVICE=WFS&VERSION=1.0.0&REQUEST=DescribeFeatureType&TYPENAME="
+                            +$(response).find("Query").attr("typeName")),
                         type: 'GET',                                              
                         success: function(response) {
                             console.log("describeFeaturetype",response);
@@ -859,7 +888,8 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                             $(response.getElementsByTagNameNS("*","sequence")).find('[type="xsd\\:string"]').each(function( i ) {
                                 fields.push($(this).attr("name"));                                
                             });
-                            config.searchparams.geom = $(response.getElementsByTagNameNS("*","sequence")).find('[type*="gml\\:"]').attr("name");
+                            config.searchparams.geom = $(response.getElementsByTagNameNS("*",
+                                "sequence")).find('[type*="gml\\:"]').attr("name");
                             config.searchparams.searchfields = fields;
                             config.searchparams.ns = $(response.getElementsByTagNameNS("*","schema")).attr("targetNamespace");
                             config.searchparams.name = config.searchparams.typename.split(":")[1];
@@ -1115,15 +1145,25 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         if (config.search) {
             config.searchparams = {};
             onSearchItemClick = function (item) {
-                var coordinates = JSON.parse(item.dataset.location);                
-                var extent = JSON.parse(item.dataset.extent);
-                map.getView().setCenter(coordinates,map.getSize());
-                marker.setPosition(coordinates);
+                var data = $(item).data();
+                var coordinates = data.location;                
+                var extent = data.extent;
+                var zoom = parseInt(data.zoom);
+                // test if extent is valid (with width and height - not a simple point)
+                // invalidate extent if extent is not valid
                 if (extent.length===4) {
-                    map.getView().fitExtent(extent, map.getSize()); 
-                    
+                    if (extent[0] == extent[2] && extent[1] == extent[3]) {
+                        extent = false; 
+                    }
                 } else {
-                    map.getView().setZoom(16);
+                    extent = false;
+                }
+                marker.setPosition(coordinates);
+                if (extent) {
+                    view.fitExtent(extent, map.getSize());                     
+                } else {
+                    view.setCenter(coordinates,map.getSize());
+                    view.setZoom(zoom || 16);                    
                 }
                 $('#marker').show();
             };
