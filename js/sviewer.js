@@ -452,6 +452,7 @@ function initmap() {
             }
             linkParams.lb = encodeURIComponent(config.lb);
             if (config.kmlUrl) { linkParams.kml = config.kmlUrl; }
+            if (config.search) { linkParams.s = '1'; }
             if (config.layersQueryString) { linkParams.layers = config.layersQueryString; }
             if (config.title&&config.wmctitle!=config.title) { linkParams.title = config.title; }
             if (config.wmc) { linkParams.wmc = config.wmc; }
