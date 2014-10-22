@@ -386,12 +386,14 @@ function initmap() {
                     var l = new LayerQueryable(options);
                     config.layersQueryable.push(l);
                     map.addLayer(l.wmslayer);
-                    $.mobile.loading('hide');
-                    if (config.search) {                                    
-                        activateSearchFeatures();
-                    }
+                    $.mobile.loading('hide');                    
                 }
             });
+            
+            //activate search if required
+            if (config.search) {                                    
+                activateSearchFeatures('remote');
+            }
 
             // perform gfi if requied
             if (config.gfiok) {
@@ -610,7 +612,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
 version="1.2" \
 xsi:schemaLocation="http://www.opengis.net/xls http://schemas.opengis.net/ols/1.2/olsAll.xsd"> \
 <RequestHeader/> \
-<Request maximumResponses="3" requestID="1" version="1.2" methodName="LocationUtilityService"> \
+<Request maximumResponses="'+config.maxFeatures+'" requestID="1" version="1.2" methodName="LocationUtilityService"> \
 <GeocodeRequest returnFreeForm="false"> \
 <Address countryCode="',
 countryCode,
@@ -811,7 +813,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                     '<wfs:GetFeature',
                         'xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.1.0"',
                         'xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"',
-                        'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" maxFeatures="5" outputFormat="application/json">',
+                        'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" maxFeatures="'+config.maxFeatures+'" outputFormat="application/json">',
                           '<wfs:Query xmlns:ogc="http://www.opengis.net/ogc"' + 
                            ' typeName="'+config.searchparams.typename+'" srsName="'+config.projection.getCode()+'">',
                             propertynames.join(' '),
@@ -840,8 +842,9 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                     });    
             }
             if (config.searchparams.mode === 'local') {
+                // construct a pseudo index the first use
                 if (!config.searchindex) {
-                    var featureIndex = [];
+                    var pseudoIndex = [];
                     var features = config.kmlLayer.getSource().getFeatures();
                     for (var i=0;i<features.length;i++) {
                         // construct an index with all text attributes
@@ -853,15 +856,16 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                                 idx+='|' + String(feat[name]).toLowerCase();                                
                               }
                         }
-                        featureIndex.push({id:id, data:idx});                    
+                        pseudoIndex.push({id:id, data:idx});                    
                   }
-                  config.searchindex = featureIndex;
+                  config.searchindex = pseudoIndex;
               }
+              // use pseudo index to retrieve features by attribute filtering
               if (config.searchindex) {
                 var features = [];
                 var responses = 0;
-                for (var i=0;i<config.searchindex.length && responses <3;i++) {
-                    if (config.searchindex[i].data.indexOf(value)!=-1) {                        
+                for (var i=0;i<config.searchindex.length && responses <config.maxFeatures;i++) {
+                    if (config.searchindex[i].data.indexOf(value.toLowerCase())!=-1) {                        
                         features.push(config.kmlLayer.getSource().getFeatureById(config.searchindex[i].id));
                         responses +=1;                       
                     }
@@ -872,52 +876,55 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         }
     };
     // enables search on features attributes
-    function activateSearchFeatures() { 
-        var searchLayer = config.layersQueryable[config.layersQueryable.length -1];
-        if (searchLayer) {
-            config.searchparams.mode = 'remote';
-            config.searchparams.title = searchLayer.md.title;
-            // get DescribeLayer from last Layer
-            var describeLayerUrl = searchLayer.options.wmsurl_ns;
-            $.ajax({
-                    url: ajaxURL(describeLayerUrl + "?SERVICE=WMS&VERSION=1.1.1&REQUEST=DescribeLayer&LAYERS="+
-                        searchLayer.options.layername),
-                    type: 'GET',                                              
-                    success: function(response) {
-                        config.searchparams.url = $(response).find("LayerDescription").attr("wfs");
-                        config.searchparams.typename = $(response).find("Query").attr("typeName");
-                        $.ajax({
-                            url: ajaxURL($(response).find("LayerDescription").attr("wfs") + 
-                                "SERVICE=WFS&VERSION=1.0.0&REQUEST=DescribeFeatureType&TYPENAME="
-                                +$(response).find("Query").attr("typeName")),
-                            type: 'GET',                                              
-                            success: function(response) {
-                                console.log("describeFeaturetype",response);
-                                var fields = [];                            
-                                $(response.getElementsByTagNameNS("*","sequence")).find('[type="xsd\\:string"]').each(function( i ) {
-                                    fields.push($(this).attr("name"));                                
-                                });
-                                config.searchparams.geom = $(response.getElementsByTagNameNS("*",
-                                    "sequence")).find('[type*="gml\\:"]').attr("name");
-                                config.searchparams.searchfields = fields;
-                                config.searchparams.ns = $(response.getElementsByTagNameNS("*","schema")).attr("targetNamespace");
-                                config.searchparams.name = config.searchparams.typename.split(":")[1];
-                                config.searchparams.bboxfilter = true;
-                                                      
-                            },
-                            failure: function() {
-                                alert('error');
-                            }
-                        });
-                        
-                    },
-                    failure: function() {
-                        alert('error');
-                    }
-                });
+    function activateSearchFeatures(mode) {        
+        config.searchparams.mode = mode ;
+        if (mode === 'remote') {            
+            var searchLayer = config.layersQueryable[config.layersQueryable.length -1];
+            if (searchLayer) {            
+                config.searchparams.title = searchLayer.md.title;
+                // get DescribeLayer from last Layer
+                var describeLayerUrl = searchLayer.options.wmsurl_ns;
+                $.ajax({
+                        url: ajaxURL(describeLayerUrl + "?SERVICE=WMS&VERSION=1.1.1&REQUEST=DescribeLayer&LAYERS="+
+                            searchLayer.options.layername),
+                        type: 'GET',                                              
+                        success: function(response) {
+                            config.searchparams.url = $(response).find("LayerDescription").attr("wfs");
+                            config.searchparams.typename = $(response).find("Query").attr("typeName");
+                            $.ajax({
+                                url: ajaxURL($(response).find("LayerDescription").attr("wfs") + 
+                                    "SERVICE=WFS&VERSION=1.0.0&REQUEST=DescribeFeatureType&TYPENAME="
+                                    +$(response).find("Query").attr("typeName")),
+                                type: 'GET',                                              
+                                success: function(response) {
+                                    console.log("describeFeaturetype",response);
+                                    var fields = [];                            
+                                    $(response.getElementsByTagNameNS("*","sequence")).find('[type="xsd\\:string"]')
+                                        .each(function( i ) {
+                                            fields.push($(this).attr("name"));                                
+                                    });
+                                    config.searchparams.geom = $(response.getElementsByTagNameNS("*",
+                                        "sequence")).find('[type*="gml\\:"]').attr("name");
+                                    config.searchparams.searchfields = fields;
+                                    config.searchparams.ns = $(response.getElementsByTagNameNS("*","schema"))
+                                        .attr("targetNamespace");
+                                    config.searchparams.name = config.searchparams.typename.split(":")[1];
+                                    config.searchparams.bboxfilter = true;                                                          
+                                },
+                                failure: function() {
+                                    alert('error');
+                                }
+                            });
+                            
+                        },
+                        failure: function() {
+                            alert('error');
+                        }
+                    });
+                }
             }
-            if (config.kmlLayer) {
-                config.searchparams.mode = 'local';
+            if (mode === 'local') {                
+                //bla bla
             }
     }
 
@@ -1114,6 +1121,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         // querystring param: activate search based on layer text attributes
         if (qs.s) {
             config.search = true;
+            config.searchparams = {};            
         }
     }
 
@@ -1146,13 +1154,18 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         // adding WMS layers from georchestra map (WMC)
         // try wmc=58a713a089cf408419b871b73110b7cb on dev.geobretagne.fr
         if (config.wmc) {
-            parseWMC(config.wmc);
+            parseWMC(config.wmc);           
         }
 
         // adding queryable WMS layers from querystring
         $.each(config.layersQueryable, function() {
             map.addLayer(this.wmslayer);
         });
+        
+        //activate search for WMS layer (origin : ?layers=...)
+        if (config.search && config.layersQueryable.length > 0) { 
+            activateSearchFeatures('remote');
+        }
         
         onSearchItemClick = function (item) {
             var data = $(item).data();
@@ -1209,12 +1222,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 $("#searchResults").append(item);
             }
             $("#searchResults").listview().listview('refresh');
-        }
-        
-        if (config.search) {
-            config.searchparams = {};            
-            activateSearchFeatures();
-        }
+        }       
 
         // adding kml overlay
         if (config.kmlUrl) {
@@ -1225,8 +1233,10 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 })
             });
             map.addLayer(config.kmlLayer);
+            
+            //activate search for kml layer (origin : ?kml=...)
             if (config.search) {                                    
-                activateSearchFeatures();
+                activateSearchFeatures('local');
             }
         }
 
