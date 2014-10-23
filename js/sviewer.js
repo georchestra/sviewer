@@ -924,7 +924,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 }
             }
             if (mode === 'local') {                
-                //bla bla
+                //nothing for the moment. the local search initialize at the first use.
             }
     }
 
