@@ -19,8 +19,6 @@ for (var z = 0; z < 20; ++z) {
 
 var map;
 var view;
-var onSearchItemClick;
-var featuresToList;
 var config = {};
 var customConfig = {};
 var hardConfig = {
@@ -794,8 +792,6 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                       '<gml:upperCorner>'+ol.extent.getTopRight(extent).join(" ")+'</gml:upperCorner>',
                     '</gml:Envelope>',
                   '</ogc:BBOX>'].join( ' ' );
-                  
-                console.log('bbox : ', bboxFilter);
                 
                 if (config.searchparams.searchfields.length > 1) {
                     ogcfilter.unshift('<ogc:Or>');
@@ -806,9 +802,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                     ogcfilter.unshift('<ogc:And>');
                     ogcfilter.push(bboxFilter);
                     ogcfilter.push('</ogc:And>');
-                }                 
-               
-                  
+                } 
                 var getFeaturesRequest = ['<?xml version="1.0" encoding="UTF-8"?>',
                     '<wfs:GetFeature',
                         'xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.1.0"',
@@ -821,16 +815,14 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                                ogcfilter.join(' '),
                             '</ogc:Filter>',
                         '</wfs:Query>',
-                    '</wfs:GetFeature>'].join (' ');
-               console.log("getFeaturesRequest", getFeaturesRequest);
+                    '</wfs:GetFeature>'].join (' ');               
                     
                 $.ajax({
                         url: ajaxURL(config.searchparams.url),
                         type: 'POST',
                         data: getFeaturesRequest ,  
                         contentType: "application/xml",
-                        success: function(response) {
-                            console.log(response);
+                        success: function(response) {                            
                             var features =  new ol.format.GeoJSON().readFeatures(response);
                             if (features.length > 0) {                                
                                 featuresToList(features);
@@ -896,8 +888,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                                     "SERVICE=WFS&VERSION=1.0.0&REQUEST=DescribeFeatureType&TYPENAME="
                                     +$(response).find("Query").attr("typeName")),
                                 type: 'GET',                                              
-                                success: function(response) {
-                                    console.log("describeFeaturetype",response);
+                                success: function(response) {                                    
                                     var fields = [];                            
                                     $(response.getElementsByTagNameNS("*","sequence")).find('[type="xsd\\:string"]')
                                         .each(function( i ) {
@@ -927,6 +918,63 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 //nothing for the moment. the local search initialize at the first use.
             }
     }
+    
+    function onSearchItemClick (item) {
+        var data = $(item).data();
+        var coordinates = data.location;                
+        var extent = data.extent;
+        var zoom = parseInt(data.zoom);
+        // test if extent is valid (with width and height - not a simple point)
+        // invalidate extent if extent is not valid
+        if (extent.length===4) {
+            if (extent[0] == extent[2] && extent[1] == extent[3]) {
+                extent = false; 
+            }
+        } else {
+            extent = false;
+        }
+        marker.setPosition(coordinates);
+        if (extent) {
+            view.fitExtent(extent, map.getSize());                     
+        } else {
+            view.setCenter(coordinates,map.getSize());
+            view.setZoom(zoom || 16);                    
+        }
+        $('#marker').show();
+    };
+    
+    function featuresToList (features) {
+        var lib = config.searchparams.title || 'Top layer';
+        $("#searchResults").append('<li data-role="list-divider">'+lib+'</li>');
+        for (var i = 0; i < features.length; ++i) {
+            var geom = features[i].getGeometry();
+            var svgeometry = getCentroidAndExtent(geom);                            
+            var attributes = features[i].getProperties();
+            var tips = [];
+            var title = [];
+            $.map( attributes, function( val, i ) {
+                if (typeof(val)=== 'string') {
+                    tips.push(i + ' : ' + val);
+                    if (val.toLowerCase().search(config.searchparams.term.toLowerCase())!= -1) {
+                        title.push(val);
+                    }
+                }
+            });                         
+            
+            var item =$('<li class="sv-feature" data-icon="star"><a href="#"></a></li>')                                                              
+                .find("a")                                
+                .text(title.join(", "))
+                .attr("data-extent", '['+svgeometry.extent+']')
+                .attr("data-location", '['+svgeometry.extent+']')  
+                .click(function() {
+                  onSearchItemClick($( this ));                                  
+                })
+                .parent()
+                .attr("title",tips.join('\n'));                                
+            $("#searchResults").append(item);
+        }
+        $("#searchResults").listview().listview('refresh');
+    }       
 
     // search form submit
     function searchPlace() {
@@ -1165,63 +1213,6 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         //activate search for WMS layer (origin : ?layers=...)
         if (config.search && config.layersQueryable.length > 0) { 
             activateSearchFeatures('remote');
-        }
-        
-        onSearchItemClick = function (item) {
-            var data = $(item).data();
-            var coordinates = data.location;                
-            var extent = data.extent;
-            var zoom = parseInt(data.zoom);
-            // test if extent is valid (with width and height - not a simple point)
-            // invalidate extent if extent is not valid
-            if (extent.length===4) {
-                if (extent[0] == extent[2] && extent[1] == extent[3]) {
-                    extent = false; 
-                }
-            } else {
-                extent = false;
-            }
-            marker.setPosition(coordinates);
-            if (extent) {
-                view.fitExtent(extent, map.getSize());                     
-            } else {
-                view.setCenter(coordinates,map.getSize());
-                view.setZoom(zoom || 16);                    
-            }
-            $('#marker').show();
-        };
-        
-        featuresToList = function (features) {
-            var lib = config.searchparams.title || 'Top layer';
-            $("#searchResults").append('<li data-role="list-divider">'+lib+'</li>');
-            for (var i = 0; i < features.length; ++i) {
-                var geom = features[i].getGeometry();
-                var svgeometry = getCentroidAndExtent(geom);                            
-                var attributes = features[i].getProperties();
-                var tips = [];
-                var title = [];
-                $.map( attributes, function( val, i ) {
-                    if (typeof(val)=== 'string') {
-                        tips.push(i + ' : ' + val);
-                        if (val.toLowerCase().search(config.searchparams.term.toLowerCase())!= -1) {
-                            title.push(val);
-                        }
-                    }
-                });                         
-                
-                var item =$('<li class="sv-feature" data-icon="star"><a href="#"></a></li>')                                                              
-                    .find("a")                                
-                    .text(title.join(", "))
-                    .attr("data-extent", '['+svgeometry.extent+']')
-                    .attr("data-location", '['+svgeometry.extent+']')  
-                    .click(function() {
-                      onSearchItemClick($( this ));                                  
-                    })
-                    .parent()
-                    .attr("title",tips.join('\n'));                                
-                $("#searchResults").append(item);
-            }
-            $("#searchResults").listview().listview('refresh');
         }       
 
         // adding kml overlay
