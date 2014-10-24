@@ -783,8 +783,10 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                     propertynames.push('<ogc:PropertyName>'+config.searchparams.searchfields[i]+'</ogc:PropertyName>');
                 }
                 propertynames.push('<ogc:PropertyName>'+config.searchparams.geom+'</ogc:PropertyName>');
-
-                var extent = map.getView().calculateExtent(map.getSize());
+                //to filter in current map extent use this extent
+                //var extent = map.getView().calculateExtent(map.getSize());
+                //to filter in map maxExtent use this extent
+                var extent = config.initialExtent;
                 var bboxFilter = ['<ogc:BBOX>',
                     '<ogc:PropertyName>'+config.searchparams.geom+'</ogc:PropertyName>',
                     '<gml:Envelope xmlns:gml="http://www.opengis.net/gml" srsName="'+config.projection.getCode()+'">',
@@ -900,7 +902,6 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                                     config.searchparams.ns = $(response.getElementsByTagNameNS("*","schema"))
                                         .attr("targetNamespace");
                                     config.searchparams.name = config.searchparams.typename.split(":")[1];
-                                    config.searchparams.bboxfilter = true;
                                 },
                                 failure: function() {
                                     alert('error');
@@ -1170,6 +1171,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         if (qs.s) {
             config.search = true;
             config.searchparams = {};
+            config.searchparams.bboxfilter = true;
         }
     }
 
