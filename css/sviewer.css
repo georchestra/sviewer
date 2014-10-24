@@ -231,6 +231,16 @@ p.center {
     font-size: small;
 }
 
+.sv-feature a {
+    font-size: 0.7em;
+}
+.sv-location a {
+    font-size: 0.7em;
+    /*color: red !important;*/
+}
+
+
+
 
 
 

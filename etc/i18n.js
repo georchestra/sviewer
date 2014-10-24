@@ -7,7 +7,7 @@ $.extend(hardConfig, {
 
             'Query': 'Interroger',
             'Legend': 'Légende',
-            'Locate': 'Localiser',
+            'Locate': 'Rechercher',
             'Map': 'Carte',
             'initial view': 'vue initiale',
             'zoom +': 'zoom +',
@@ -32,6 +32,7 @@ $.extend(hardConfig, {
             'Permalink': 'Lien permanent',
             'Permalink to this map': 'Lien permanent vers cette carte',
             'Address and/or city': 'Adresse et/ou commune',
+            'Features or Address and/or city': 'Entités ou Adresse et/ou commune',
             'share on ' : 'partager sur ',
             'Edit with geOrchestra': 'éditer carte avec geOrchestra'
         },
