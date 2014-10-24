@@ -1174,6 +1174,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             config.search = true;
             config.searchparams = {};
             config.searchparams.bboxfilter = true;
+            $("#addressForm label").text('Features or ' + $("#addressForm label").text())
         }
     }
 
