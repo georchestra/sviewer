@@ -42,6 +42,7 @@ p.center {
     left: auto !important;
     z-index: 8020 !important;
 }
+
 .sv-panel {
     min-width: 300px;
     overflow-y: auto;
