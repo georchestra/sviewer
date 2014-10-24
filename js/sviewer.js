@@ -982,7 +982,9 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         $("#searchResults").html("");
         try {
             openLsRequest($("#addressInput").val());
-            searchInFeatures($("#addressInput").val());
+            if (config.search) {
+                searchInFeatures($("#addressInput").val());
+            }
         }
         catch(err) {
             messagePopup(tr('Geolocation failed'));
