@@ -44,7 +44,7 @@ p.center {
 }
 .sv-panel {
     min-width: 300px;
-    overflow-y: auto;    
+    overflow-y: auto;
 }
 
 #panelShareBtn {
@@ -55,7 +55,7 @@ p.center {
 @media screen and (max-width: 800px), screen and (max-height: 600px) {
     #panelInfo-popup,#panelLocate-popup,#panelShare-popup, #panelQuery-popup {
         top: 54px !important;
-        margin-left: 4px !important;        
+        margin-left: 4px !important;
     }
     #panelShareBtn {
         max-width: 10em;
