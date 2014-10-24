@@ -208,7 +208,7 @@ function initmap() {
                     Ol.Console.error.apply(Ol.Console, arguments);
                 }
             });
-        };       
+        };
 
         /**
          * constructor
@@ -222,7 +222,7 @@ function initmap() {
                 $.extend(this.options, options);
             }
             createLayer();
-            getMetadata(self);            
+            getMetadata(self);
         };
 
         this.construct(options);
@@ -384,12 +384,12 @@ function initmap() {
                     var l = new LayerQueryable(options);
                     config.layersQueryable.push(l);
                     map.addLayer(l.wmslayer);
-                    $.mobile.loading('hide');                    
+                    $.mobile.loading('hide');
                 }
             });
-            
+
             //activate search if required
-            if (config.search) {                                    
+            if (config.search) {
                 activateSearchFeatures('remote');
             }
 
@@ -527,14 +527,14 @@ function initmap() {
                     for (var i = 0; i < results.length; ++i) {
                         var a = results[i].getElementsByTagNameNS('http://www.opengis.net/gml', 'pos')[0].textContent.split(' ');
                         var lonlat = [parseFloat(a[1]), parseFloat(a[0])];
-                        var matchType = results.find('GeocodeMatchCode').attr('matchType');                
+                        var matchType = results.find('GeocodeMatchCode').attr('matchType');
                         switch (matchType) {
                             /*case 'City': zoom = 15; break;
                             case 'Street': zoom = 17; break;*/
                             case 'Street enhanced': zoom = 18; break;
                             case 'Street number': zoom = 18; break;
                         }
-                        var ptResult = ol.proj.transform(lonlat, 'EPSG:4326', projcode);                    
+                        var ptResult = ol.proj.transform(lonlat, 'EPSG:4326', projcode);
                         var street = $(results[i]).find("Street").text();
                         var municipality = $(results[i]).find('[type="Municipality"]').text();
                         if (!zoom) {
@@ -545,18 +545,18 @@ function initmap() {
                         var resultElems = [municipality, code];
                         (street.length>1)?resultElems.unshift(street):false;
                         var label = resultElems.join (" ");
-                        var item =$('<li class="sv-location" data-icon="location"><a href="#"></a></li>')                                                              
-                                .find("a")                                
+                        var item =$('<li class="sv-location" data-icon="location"><a href="#"></a></li>')
+                                .find("a")
                                 .text(label)
                                 .attr("data-extent", '['+extent+']')
-                                .attr("data-location", '['+ptResult+']')  
+                                .attr("data-location", '['+ptResult+']')
                                 .attr("data-zoom", zoom)
                                 .click(function() {
-                                  onSearchItemClick($( this ));                                  
+                                  onSearchItemClick($( this ));
                                 })
                                 .parent()
-                                .attr("title",resultElems.join('\n'));                            
-                        items.push(item);                        
+                                .attr("title",resultElems.join('\n'));
+                        items.push(item);
                     }
                     $("#searchResults").prepend(items);
                     $("#searchResults").prepend('<li data-role="list-divider">Localit&eacute;s</li>');
@@ -754,20 +754,20 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         config.gfiz = null;
         config.gfiok = false;
     };
-    
+
     function getCentroidAndExtent(geom) {
-        var obj = {};        
+        var obj = {};
         switch (geom.getType()) {
-            case 'Point': 
+            case 'Point':
                 obj.coordinates =  geom.getCoordinates();
-                break;             
+                break;
              default:
-                obj.coordinates = ol.extent.getCenter(geom.getExtent());            
+                obj.coordinates = ol.extent.getCenter(geom.getExtent());
         }
         obj.extent = geom.getExtent();
         return obj;
-    };    
-    
+    };
+
     function searchInFeatures (value) {
         if (value.length>1) {
             config.searchparams.term = value;
@@ -779,12 +779,12 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                     ogcfilter.push(
                     '<ogc:PropertyIsLike wildCard="*" singleChar="." escapeChar="!" matchCase="false" >' +
                     '<ogc:PropertyName>'+config.searchparams.searchfields[i]+'</ogc:PropertyName>' +
-                    '<ogc:Literal>*'+value+'*</ogc:Literal></ogc:PropertyIsLike>'); 
+                    '<ogc:Literal>*'+value+'*</ogc:Literal></ogc:PropertyIsLike>');
                     propertynames.push('<ogc:PropertyName>'+config.searchparams.searchfields[i]+'</ogc:PropertyName>');
                 }
                 propertynames.push('<ogc:PropertyName>'+config.searchparams.geom+'</ogc:PropertyName>');
-                
-                var extent = map.getView().calculateExtent(map.getSize());            
+
+                var extent = map.getView().calculateExtent(map.getSize());
                 var bboxFilter = ['<ogc:BBOX>',
                     '<ogc:PropertyName>'+config.searchparams.geom+'</ogc:PropertyName>',
                     '<gml:Envelope xmlns:gml="http://www.opengis.net/gml" srsName="'+config.projection.getCode()+'">',
@@ -792,7 +792,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                       '<gml:upperCorner>'+ol.extent.getTopRight(extent).join(" ")+'</gml:upperCorner>',
                     '</gml:Envelope>',
                   '</ogc:BBOX>'].join( ' ' );
-                
+
                 if (config.searchparams.searchfields.length > 1) {
                     ogcfilter.unshift('<ogc:Or>');
                     ogcfilter.push('</ogc:Or>');
@@ -802,36 +802,36 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                     ogcfilter.unshift('<ogc:And>');
                     ogcfilter.push(bboxFilter);
                     ogcfilter.push('</ogc:And>');
-                } 
+                }
                 var getFeaturesRequest = ['<?xml version="1.0" encoding="UTF-8"?>',
                     '<wfs:GetFeature',
                         'xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.1.0"',
                         'xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"',
                         'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" maxFeatures="'+config.maxFeatures+'" outputFormat="application/json">',
-                          '<wfs:Query xmlns:ogc="http://www.opengis.net/ogc"' + 
+                          '<wfs:Query xmlns:ogc="http://www.opengis.net/ogc"' +
                            ' typeName="'+config.searchparams.typename+'" srsName="'+config.projection.getCode()+'">',
                             propertynames.join(' '),
                             '<ogc:Filter>',
                                ogcfilter.join(' '),
                             '</ogc:Filter>',
                         '</wfs:Query>',
-                    '</wfs:GetFeature>'].join (' ');               
-                    
+                    '</wfs:GetFeature>'].join (' ');
+
                 $.ajax({
                         url: ajaxURL(config.searchparams.url),
                         type: 'POST',
-                        data: getFeaturesRequest ,  
+                        data: getFeaturesRequest ,
                         contentType: "application/xml",
-                        success: function(response) {                            
+                        success: function(response) {
                             var features =  new ol.format.GeoJSON().readFeatures(response);
-                            if (features.length > 0) {                                
+                            if (features.length > 0) {
                                 featuresToList(features);
-                            }                          
+                            }
                         },
                         failure: function() {
                             alert('error');
                         }
-                    });    
+                    });
             }
             if (config.searchparams.mode === 'local') {
                 // construct a pseudo index the first use
@@ -843,12 +843,12 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                         var id = features[i].getId();
                         var feat = features[i].getProperties();
                         var idx = "";
-                        for (var name in feat) {                             
-                             if (feat.hasOwnProperty(name) && typeof(feat[name])==='string') {                
-                                idx+='|' + String(feat[name]).toLowerCase();                                
+                        for (var name in feat) {
+                             if (feat.hasOwnProperty(name) && typeof(feat[name])==='string') {
+                                idx+='|' + String(feat[name]).toLowerCase();
                               }
                         }
-                        pseudoIndex.push({id:id, data:idx});                    
+                        pseudoIndex.push({id:id, data:idx});
                   }
                   config.searchindex = pseudoIndex;
               }
@@ -857,9 +857,9 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 var features = [];
                 var responses = 0;
                 for (var i=0;i<config.searchindex.length && responses <config.maxFeatures;i++) {
-                    if (config.searchindex[i].data.indexOf(value.toLowerCase())!=-1) {                        
+                    if (config.searchindex[i].data.indexOf(value.toLowerCase())!=-1) {
                         features.push(config.kmlLayer.getSource().getFeatureById(config.searchindex[i].id));
-                        responses +=1;                       
+                        responses +=1;
                     }
                 }
                 featuresToList(features);
@@ -868,31 +868,31 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         }
     };
     // enables search on features attributes
-    function activateSearchFeatures(mode) {        
+    function activateSearchFeatures(mode) {
         config.searchparams.mode = mode ;
-        if (mode === 'remote') {            
+        if (mode === 'remote') {
             var searchLayer = config.layersQueryable[config.layersQueryable.length -1];
-            if (searchLayer) {            
+            if (searchLayer) {
                 config.searchparams.title = searchLayer.md.title;
                 // get DescribeLayer from last Layer
                 var describeLayerUrl = searchLayer.options.wmsurl_ns;
                 $.ajax({
                         url: ajaxURL(describeLayerUrl + "?SERVICE=WMS&VERSION=1.1.1&REQUEST=DescribeLayer&LAYERS="+
                             searchLayer.options.layername),
-                        type: 'GET',                                              
+                        type: 'GET',
                         success: function(response) {
                             config.searchparams.url = $(response).find("LayerDescription").attr("wfs");
                             config.searchparams.typename = $(response).find("Query").attr("typeName");
                             $.ajax({
-                                url: ajaxURL($(response).find("LayerDescription").attr("wfs") + 
+                                url: ajaxURL($(response).find("LayerDescription").attr("wfs") +
                                     "SERVICE=WFS&VERSION=1.0.0&REQUEST=DescribeFeatureType&TYPENAME="
                                     +$(response).find("Query").attr("typeName")),
-                                type: 'GET',                                              
-                                success: function(response) {                                    
-                                    var fields = [];                            
+                                type: 'GET',
+                                success: function(response) {
+                                    var fields = [];
                                     $(response.getElementsByTagNameNS("*","sequence")).find('[type="xsd\\:string"]')
                                         .each(function( i ) {
-                                            fields.push($(this).attr("name"));                                
+                                            fields.push($(this).attr("name"));
                                     });
                                     config.searchparams.geom = $(response.getElementsByTagNameNS("*",
                                         "sequence")).find('[type*="gml\\:"]').attr("name");
@@ -900,13 +900,13 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                                     config.searchparams.ns = $(response.getElementsByTagNameNS("*","schema"))
                                         .attr("targetNamespace");
                                     config.searchparams.name = config.searchparams.typename.split(":")[1];
-                                    config.searchparams.bboxfilter = true;                                                          
+                                    config.searchparams.bboxfilter = true;
                                 },
                                 failure: function() {
                                     alert('error');
                                 }
                             });
-                            
+
                         },
                         failure: function() {
                             alert('error');
@@ -914,41 +914,41 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                     });
                 }
             }
-            if (mode === 'local') {                
+            if (mode === 'local') {
                 //nothing for the moment. the local search initialize at the first use.
             }
     }
-    
+
     function onSearchItemClick (item) {
         var data = $(item).data();
-        var coordinates = data.location;                
+        var coordinates = data.location;
         var extent = data.extent;
         var zoom = parseInt(data.zoom);
         // test if extent is valid (with width and height - not a simple point)
         // invalidate extent if extent is not valid
         if (extent.length===4) {
             if (extent[0] == extent[2] && extent[1] == extent[3]) {
-                extent = false; 
+                extent = false;
             }
         } else {
             extent = false;
         }
         marker.setPosition(coordinates);
         if (extent) {
-            view.fitExtent(extent, map.getSize());                     
+            view.fitExtent(extent, map.getSize());
         } else {
             view.setCenter(coordinates,map.getSize());
-            view.setZoom(zoom || 16);                    
+            view.setZoom(zoom || 16);
         }
         $('#marker').show();
     };
-    
+
     function featuresToList (features) {
         var lib = config.searchparams.title || 'Top layer';
         $("#searchResults").append('<li data-role="list-divider">'+lib+'</li>');
         for (var i = 0; i < features.length; ++i) {
             var geom = features[i].getGeometry();
-            var svgeometry = getCentroidAndExtent(geom);                            
+            var svgeometry = getCentroidAndExtent(geom);
             var attributes = features[i].getProperties();
             var tips = [];
             var title = [];
@@ -959,22 +959,22 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                         title.push(val);
                     }
                 }
-            });                         
-            
-            var item =$('<li class="sv-feature" data-icon="star"><a href="#"></a></li>')                                                              
-                .find("a")                                
+            });
+
+            var item =$('<li class="sv-feature" data-icon="star"><a href="#"></a></li>')
+                .find("a")
                 .text(title.join(", "))
                 .attr("data-extent", '['+svgeometry.extent+']')
-                .attr("data-location", '['+svgeometry.extent+']')  
+                .attr("data-location", '['+svgeometry.extent+']')
                 .click(function() {
-                  onSearchItemClick($( this ));                                  
+                  onSearchItemClick($( this ));
                 })
                 .parent()
-                .attr("title",tips.join('\n'));                                
+                .attr("title",tips.join('\n'));
             $("#searchResults").append(item);
         }
         $("#searchResults").listview().listview('refresh');
-    }       
+    }
 
     // search form submit
     function searchPlace() {
@@ -1165,11 +1165,11 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         if (qs.q) {
             config.gfiok = true;
         }
-        
+
         // querystring param: activate search based on layer text attributes
         if (qs.s) {
             config.search = true;
-            config.searchparams = {};            
+            config.searchparams = {};
         }
     }
 
@@ -1202,18 +1202,18 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         // adding WMS layers from georchestra map (WMC)
         // try wmc=58a713a089cf408419b871b73110b7cb on dev.geobretagne.fr
         if (config.wmc) {
-            parseWMC(config.wmc);           
+            parseWMC(config.wmc);
         }
 
         // adding queryable WMS layers from querystring
         $.each(config.layersQueryable, function() {
             map.addLayer(this.wmslayer);
         });
-        
+
         //activate search for WMS layer (origin : ?layers=...)
-        if (config.search && config.layersQueryable.length > 0) { 
+        if (config.search && config.layersQueryable.length > 0) {
             activateSearchFeatures('remote');
-        }       
+        }
 
         // adding kml overlay
         if (config.kmlUrl) {
@@ -1224,9 +1224,9 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 })
             });
             map.addLayer(config.kmlLayer);
-            
+
             //activate search for kml layer (origin : ?kml=...)
-            if (config.search) {                                    
+            if (config.search) {
                 activateSearchFeatures('local');
             }
         }
