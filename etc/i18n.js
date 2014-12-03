@@ -19,7 +19,7 @@ $.extend(hardConfig, {
             'Query results :': 'Résultats :',
             'no item found': 'aucun objet n\'a été trouvé',
             'query failed': 'l\'interrogation a échoué',
-
+            'unsupported query format': 'format d\'interrogation non supporté',
             'metadata': 'voir métadonnée',
 
             'Results are off map': 'Résultats hors carte',

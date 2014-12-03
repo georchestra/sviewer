@@ -75,6 +75,7 @@ function initmap() {
             wmsurl_layer: '',
             sldurl: null,
             format: 'image/png',
+            info_format: ['application/vnd.ogc.gml'],
             opacity: 1
         };
         this.md = {
@@ -140,6 +141,8 @@ function initmap() {
                     var html = [];
                     var capabilities, mdLayer, legendArgs;
                     capabilities = parser.read(response);
+                    // gfi capabilities
+                    self.options.info_format = capabilities.Capability.Request.GetFeatureInfo.Format;
                     // searching for the layer in the capabilities
                     $.each(capabilities.Capability.Layer.Layer, function() {
                         if (this.Name === self.options.layername) {
@@ -668,12 +671,24 @@ ol.extent.getTopRight(extent).reverse().join(" "),
 
         // WMS getFeatureInfo
         $.each(config.layersQueryable, function() {
+            var info_format = 'application/vnd.ogc.gml';
+            var dataType = 'xml';
+            if ($.inArray('text/plain', this.options.info_format)!==-1) {
+                info_format =  'text/plain';
+                dataType = 'text';
+            }
+            if ($.inArray('text/html', this.options.info_format)!==-1) {
+                info_format =  'text/html';
+                dataType = 'html';
+            }
             var url = this.wmslayer.getSource().getGetFeatureInfoUrl(
                 config.gficoord,
                 viewResolution,
                 projection,
-                {'INFO_FORMAT': 'text/html',
-                'FEATURE_COUNT': config.maxFeatures}
+                {
+                    'INFO_FORMAT': info_format,
+                    'FEATURE_COUNT': config.maxFeatures
+                }
             );
 
             // response order = layer order
@@ -681,34 +696,73 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             $('#querycontent').append(domResponse);
             // ajax request
             $.mobile.loading('show');
-            $.ajax({
-                url: ajaxURL(url),
-                type: 'GET',
-                dataType: 'html',
-                context: domResponse,
-                success: function(response) {
-                    // nonempty reponse detection
-                    if (response.search(config.nodata)<0) {
-                        $.each(['#panelInfo', '#panelLocate', '#panelShare'], function(i, p) {
-                            $(p).popup('close');
-                        });
-                        $(this).append(response);
-                        config.gfiok = true;
-                        $('#panelQuery').popup('open');
+            // html or plain text, direct insert
+            if (info_format == 'text/html' || info_format == 'text/plain') {
+                $.ajax({
+                    url: ajaxURL(url),
+                    type: 'GET',
+                    dataType: dataType,
+                    context: domResponse,
+                    success: function(response) {
+                        // nonempty reponse detection
+                        if (response.search(config.nodata)<0) {
+                            $.each(['#panelInfo', '#panelLocate', '#panelShare'], function(i, p) {
+                                $(p).popup('close');
+                            });
+                            if (info_format == 'text/html') {
+                                $(this).append(response);
+                            }
+                            else if (info_format == 'text/plain') {
+                                $(this).append($('<pre class="sv-value"/>').text(response));
+                            }
+                            config.gfiok = true;
+                            $('#panelQuery').popup('open');
+                        }
+                        else {
+                            $('#panelQuery').popup('open');
+                            $(this).append('<p class="sv-noitem">' + tr('no item found') + '</p>');
+                            config.gfiok = false;
+                        }
+                        $.mobile.loading('hide');
+                    },
+                    failure: function() {
+                        $.mobile.loading('hide');
+                        $(this).append('<p class="sv-noitem">' + tr('query failed') + '</p>');
                     }
-                    else {
+                });
+            }
+            // gml, work in progress
+            else if (info_format == 'application/vnd.ogc.gml') {
+                $.ajax({
+                    url: ajaxURL(url),
+                    type: 'GET',
+                    dataType: dataType,
+                    context: domResponse,
+                    success: function(response) {
+                        console.log(response.responseText);
+                        //~ var f = ol.format.GML();
+                        //~ f.readFeatures(response);
+                        //~ console.log(f);
+                        //~ config.gfiok = true;
                         $('#panelQuery').popup('open');
-                        $(this).append('<p class="sv-noitem">' + tr('no item found') + '</p>');
-                        config.gfiok = false;
+                        $.mobile.loading('hide');
+                    },
+                    failure: function() {
+                        $.mobile.loading('hide');
+                        $(this).append('<p class="sv-noitem">' + tr('query failed') + '</p>');
                     }
-                    $.mobile.loading('hide');
-
-                },
-                failure: function() {
-                    $.mobile.loading('hide');
-                    $(this).append('<p class="sv-noitem">' + tr('query failed') + '</p>');
-                }
-            });
+                });
+            }
+            // gml
+            else {
+                $.each(['#panelInfo', '#panelLocate', '#panelShare'], function(i, p) {
+                    $(p).popup('close');
+                });
+                config.gfiok = false;
+                $('#panelQuery').popup('open');
+                    domResponse.append('<p class="sv-noitem">' + tr('unsupported query format') + '</p>');
+                $.mobile.loading('hide');
+            }
         });
 
         // KML getFeatureInfo
