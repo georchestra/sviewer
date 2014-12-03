@@ -136,6 +136,12 @@ Opens the permalink/QR code on startup. Convenient for the geOrchestra 'send to 
 as one can immediately scan the permalink.
 
 
+s {string}
+------------------
+Activate search features based on text attributes layer (only first layer for the moment).
+
+
+
 geOrchestra integration
 =======================
 
