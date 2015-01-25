@@ -40,6 +40,10 @@ html, body {
     background-color: #626161;
 }
 
+.ol-control button:hover,
+.ol-control button:focus {
+    background-color: #888;
+}
 
 
 label {
