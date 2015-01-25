@@ -5,6 +5,43 @@ html, body {
     background-color: #333333;
 }
 
+
+/* Overrides jquery ui theme styles */
+.ui-page-theme-b .ui-btn, html .ui-bar-b .ui-btn, html .ui-body-b .ui-btn, html body .ui-group-theme-b .ui-btn, html head+body .ui-btn.ui-btn-b, .ui-page-theme-b .ui-btn:visited, html .ui-bar-b .ui-btn:visited, html .ui-body-b .ui-btn:visited, html body .ui-group-theme-b .ui-btn:visited, html head+body .ui-btn.ui-btn-b:visited {
+    background-color: #626161;
+    border-color: #aaa;
+    color: #fff;
+    text-shadow: 0 1px 0 #111;
+}
+
+.ui-page-theme-b .ui-btn:hover, html .ui-bar-b .ui-btn:hover, html .ui-body-b .ui-btn:hover, html body .ui-group-theme-b .ui-btn:hover, html head+body .ui-btn.ui-btn-b:hover, .ui-page-theme-b .ui-btn:visited:hover, html .ui-bar-b .ui-btn:visited:hover, html .ui-body-b .ui-btn:visited:hover, html body .ui-group-theme-b .ui-btn:visited:hover, html head+body .ui-btn.ui-btn-b:visited:hover {
+    background-color: #3f3f3f;
+    border-color: #888;
+}
+
+.ui-page-theme-b .ui-btn:focus, html .ui-bar-b .ui-btn:focus, html .ui-body-b .ui-btn:focus, html body .ui-group-theme-b .ui-btn:focus, html head+body .ui-btn.ui-btn-b:focus, .ui-page-theme-b .ui-focus, html .ui-bar-b .ui-focus, html .ui-body-b .ui-focus, html body .ui-group-theme-b .ui-focus, html head+body .ui-btn-b.ui-focus, html head+body .ui-body-b.ui-focus {
+    -webkit-box-shadow: 0 0 5px #fff;
+    -moz-box-shadow: 0 0 5px #fff;
+    box-shadow: 0 0 5px #fff;
+}
+
+.ui-page-theme-b .ui-btn.ui-btn-active, html .ui-bar-b .ui-btn.ui-btn-active, html .ui-body-b .ui-btn.ui-btn-active, html body .ui-group-theme-b .ui-btn.ui-btn-active, html head+body .ui-btn.ui-btn-b.ui-btn-active, .ui-page-theme-b .ui-checkbox-on:after, html .ui-bar-b .ui-checkbox-on:after, html .ui-body-b .ui-checkbox-on:after, html body .ui-group-theme-b .ui-checkbox-on:after, .ui-btn.ui-checkbox-on.ui-btn-b:after, .ui-page-theme-b .ui-flipswitch-active, html .ui-bar-b .ui-flipswitch-active, html .ui-body-b .ui-flipswitch-active, html body .ui-group-theme-b .ui-flipswitch-active, html body .ui-flipswitch.ui-bar-b.ui-flipswitch-active, .ui-page-theme-b .ui-slider-track .ui-btn-active, html .ui-bar-b .ui-slider-track .ui-btn-active, html .ui-body-b .ui-slider-track .ui-btn-active, html body .ui-group-theme-b .ui-slider-track .ui-btn-active, html body div.ui-slider-track.ui-body-b .ui-btn-active {
+    background-color: #aaa;
+    border-color: #888;
+    color: #fff;
+    text-shadow: 0 1px 0 #555;
+}
+
+
+
+/* Overrides openlayers styles */
+.ol-control button {
+    color: #fff;
+    background-color: #626161;
+}
+
+
+
 label {
     font-size: small !important;
 }
@@ -88,10 +125,6 @@ p.center {
     background-position: 50% 50% !important;
 }
 
-.sv-map-controls .ui-btn:hover {
-	background-color: #fff !important;
-}
-
 .sv-map-controls .ui-btn-active {
 	background-color: #fff !important;
 }
@@ -99,32 +132,21 @@ p.center {
 .ui-icon-home-c {
     background-image: url('images/home.png') !important;
 }
-.ui-icon-home-c:hover {
-    background-image: url('images/home_a.png') !important;
-}
 .ui-icon-plus-c {
-    background-image: url('images/plus.png') !important;
-}
-.ui-icon-plus-c:hover {
-    background-image: url('images/plus_a.png') !important;
+    background-image: url('images/zoom-plus.png') !important;
 }
 .ui-icon-minus-c {
-    background-image: url('images/minus.png') !important;
-}
-.ui-icon-minus-c:hover {
-    background-image: url('images/minus_a.png') !important;
+    background-image: url('images/zoom-minus.png') !important;
 }
 .ui-icon-layer-c {
-    background-image: url('images/layer.png') !important;
-}
-.ui-icon-layer-c:hover {
-    background-image: url('images/layer_a.png') !important;
+    background-image: url('images/map.png') !important;
 }
 
+
 #marker {
-    width: 24px;
-    height: 30px;
-    background: transparent url('images/arrow.png') no-repeat bottom left;
+    width: 40px;
+    height: 40px;
+    background: transparent url('images/pin-red.png') no-repeat bottom left;
 }
 
 .sv-map .ol-zoom a {
@@ -185,7 +207,7 @@ p.center {
     background-color: #ffffff;
 }
 .sv-md-title {
-    font-size: x-small;svè
+    font-size: x-small;
 }
 .sv-md-abstract {
 }
@@ -236,17 +258,4 @@ p.center {
 }
 .sv-location a {
     font-size: 0.7em;
-    /*color: red !important;*/
 }
-
-
-
-
-
-
-
-
-
-
-
-
