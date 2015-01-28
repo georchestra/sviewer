@@ -32,6 +32,17 @@ html, body {
     text-shadow: 0 1px 0 #555;
 }
 
+.ui-page-theme-a .ui-btn:hover, html .ui-bar-a .ui-btn:hover, html .ui-body-a .ui-btn:hover, html body .ui-group-theme-a .ui-btn:hover, html head + body .ui-btn.ui-btn-a:hover {
+    -webkit-box-shadow: 0 0 7px #999;
+    -moz-box-shadow: 0 0 7px #999;
+    box-shadow: 0 0 7px #999;
+}
+
+.ui-page-theme-a .ui-btn:focus, html .ui-bar-a .ui-btn:focus, html .ui-body-a .ui-btn:focus, html body .ui-group-theme-a .ui-btn:focus, html head + body .ui-btn.ui-btn-a:focus, .ui-page-theme-a .ui-focus, html .ui-bar-a .ui-focus, html .ui-body-a .ui-focus, html body .ui-group-theme-a .ui-focus, html head + body .ui-btn-a.ui-focus, html head + body .ui-body-a.ui-focus {
+    -webkit-box-shadow: 0 0 7px #999;
+    -moz-box-shadow: 0 0 7px #999;
+    box-shadow: 0 0 7px #999;
+}
 
 
 /* Overrides openlayers styles */
