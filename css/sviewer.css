@@ -40,6 +40,15 @@ html, body {
     background-color: #626161;
 }
 
+.ol-control button:hover,
+.ol-control button:focus {
+    background-color: #888;
+}
+
+.ol-attribution ul {
+    max-width: 100%;
+}
+
 
 
 label {
