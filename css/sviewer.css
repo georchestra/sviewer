@@ -40,10 +40,6 @@ html, body {
     background-color: #626161;
 }
 
-.ol-control button:hover,
-.ol-control button:focus {
-    background-color: #888;
-}
 
 
 label {
@@ -148,9 +144,9 @@ p.center {
 
 
 #marker {
-    width: 40px;
-    height: 40px;
-    background: transparent url('images/pin-red.png') no-repeat bottom left;
+    width: 30px;
+    height: 38px;
+    background: transparent url('images/pin-red.png') no-repeat;
 }
 
 .sv-map .ol-zoom a {
