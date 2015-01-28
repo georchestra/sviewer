@@ -110,18 +110,31 @@ p.center {
     text-overflow: ellipsis !important;
 }
 
-@media screen and (max-width: 800px), screen and (max-height: 600px) {
-    #panelInfo-popup,#panelLocate-popup,#panelShare-popup, #panelQuery-popup {
-        top: 54px !important;
-        margin-left: 4px !important;
+
+@media screen and (max-width: 600px) {
+    .ui-controlgroup-controls .ui-btn {
+        font-size: 10pt;
     }
+}
+
+@media screen and (max-width: 460px) {
     #panelShareBtn {
-        max-width: 10em;
-        text-overflow: ellipsis !important;
+        max-width: 8em;
+    }
+}
+
+@media screen and (max-width: 380px) {
+    #panelShareBtn {
+        max-width: 6em;
     }
 }
 
 
+@media screen and (max-height: 400px) {
+    .ui-controlgroup-controls .ui-btn {
+        font-size: 10pt;
+    }
+}
 
 /* map components */
 
@@ -144,6 +157,17 @@ p.center {
     background-repeat: no-repeat !important;
     background-position: 50% 50% !important;
 }
+
+
+@media screen and (max-width: 600px),
+screen and (max-height: 300px) {
+    .sv-map-controls .ui-btn {
+        width: 32px;
+        height: 32px;
+        background-size: 85% 85%;
+    }
+}
+
 
 .sv-map-controls .ui-btn-active {
 	background-color: #fff !important;
