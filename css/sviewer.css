@@ -160,7 +160,7 @@ p.center {
 
 
 @media screen and (max-width: 600px),
-screen and (max-height: 300px) {
+screen and (max-height: 400px) {
     .sv-map-controls .ui-btn {
         width: 32px;
         height: 32px;
