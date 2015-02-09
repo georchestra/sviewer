@@ -1133,11 +1133,41 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             config.layersQueryString = qs.layers;
             var ns_layer_style_list = [];
             // parser to retrieve serialized namespace:name[*style[*cql_filter]] and store the description in config
-            ns_layer_style_list = (typeof qs.layers === 'string') ? qs.layers.split(';') : qs.layers;
+            ns_layer_style_list = (typeof qs.layers === 'string') ? qs.layers.split(',') : qs.layers;
             $.each(ns_layer_style_list, function() {
                 config.layersQueryable.push(new LayerQueryable(this));
             });
         }
+        
+        // querystring param: qcl_filters
+		if (qs.qcl_filters) {
+			var qcl_filters_list = [];
+			qcl_filters_list = (typeof qs.qcl_filters === 'string') ? qs.qcl_filters.split(';') : qs.qcl_filters;
+			
+			$.each(qcl_filters_list, function(index) {
+				if( index < config.layersQueryable.length ) {
+					var wms_params = {
+						'url': config.layersQueryable[index].options.wmsurl_ns,
+						params: {
+							'LAYERS': config.layersQueryable[index].options.layername,
+							'FORMAT': config.layersQueryable[index].options.format,
+							'TRANSPARENT': true,
+							'STYLES': config.layersQueryable[index].options.stylename
+						},
+						extent: config.maxExtent
+					};
+					wms_params.params.CQL_FILTER = this;
+					
+					if (config.layersQueryable[index].options.sldurl) {
+						wms_params.params.SLD = config.layersQueryable[index].options.sldurl;
+					}
+					config.layersQueryable[index].wmslayer = new ol.layer.Tile({
+						opacity: isNaN(config.layersQueryable[index].options.opacity)?1:config.layersQueryable[index].options.opacity,
+						source: new ol.source.TileWMS(wms_params)
+					});
+				}
+            });
+		}
 
         // querystring param: xyz
         if (qs.x&&qs.y&&qs.z) {
