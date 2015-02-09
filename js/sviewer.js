@@ -1133,7 +1133,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             config.layersQueryString = qs.layers;
             var ns_layer_style_list = [];
             // parser to retrieve serialized namespace:name[*style[*cql_filter]] and store the description in config
-            ns_layer_style_list = (typeof qs.layers === 'string') ? qs.layers.split(',') : qs.layers;
+            ns_layer_style_list = (typeof qs.layers === 'string') ? qs.layers.split(';') : qs.layers;
             $.each(ns_layer_style_list, function() {
                 config.layersQueryable.push(new LayerQueryable(this));
             });
