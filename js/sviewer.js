@@ -1138,6 +1138,36 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 config.layersQueryable.push(new LayerQueryable(this));
             });
         }
+        
+        // querystring param: qcl_filters
+	if (qs.qcl_filters) {
+		var qcl_filters_list = [];
+		qcl_filters_list = (typeof qs.qcl_filters === 'string') ? qs.qcl_filters.split(';') : qs.qcl_filters;
+			
+		$.each(qcl_filters_list, function(index) {
+			if( index < config.layersQueryable.length ) {
+				var wms_params = {
+					'url': config.layersQueryable[index].options.wmsurl_ns,
+					params: {
+						'LAYERS': config.layersQueryable[index].options.layername,
+						'FORMAT': config.layersQueryable[index].options.format,
+						'TRANSPARENT': true,
+						'STYLES': config.layersQueryable[index].options.stylename
+					},
+					extent: config.maxExtent
+				};
+				wms_params.params.CQL_FILTER = this;
+					
+				if (config.layersQueryable[index].options.sldurl) {
+					wms_params.params.SLD = config.layersQueryable[index].options.sldurl;
+				}
+				config.layersQueryable[index].wmslayer = new ol.layer.Tile({
+					opacity: isNaN(config.layersQueryable[index].options.opacity)?1:config.layersQueryable[index].options.opacity,
+					source: new ol.source.TileWMS(wms_params)
+				});
+			}
+                });
+	}
 
         // querystring param: xyz
         if (qs.x&&qs.y&&qs.z) {
