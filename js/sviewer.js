@@ -1138,6 +1138,20 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 config.layersQueryable.push(new LayerQueryable(this));
             });
         }
+        
+        // querystring param: qcl_filters
+        if (qs.qcl_filters) {
+		    var qcl_filters_list = [];
+		    qcl_filters_list = (typeof qs.qcl_filters === 'string') ? qs.qcl_filters.split(';') : qs.qcl_filters;
+			
+		    $.each(qcl_filters_list, function(index) {
+			    if( index < config.layersQueryable.length ) {
+			        var opt = config.layersQueryable[index].options;
+			        opt.cql_filter = this;
+			        config.layersQueryable[index] = new LayerQueryable(opt);
+			    }
+		    });
+        }
 
         // querystring param: xyz
         if (qs.x&&qs.y&&qs.z) {
