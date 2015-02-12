@@ -68,27 +68,39 @@ $.extend(hardConfig, {
             'No result': 'Результаты отсутствуют ou bien результатов нет',
             'Geolocation failed': 'Геолокализация провалилась',
             'searching...': 'поиск',
-
             'Permalink': 'постоянная ссылка',
             'Address and/or city': 'внести адрес или место'
         },
         de: {
             'geOrchestra mobile': 'geOrchestra mobile',
 
+            'Query': 'abfragen',
             'Legend': 'Beschriftung',
             'Locate': 'Finden',
             'Map': 'Karte',
             'initial view': 'Startansicht',
+            'zoom +': 'zoom +',
+            'zoom -': 'zoom -',
             'background': 'Basis Karte',
             'Close': 'Schließen',
 
+            'Query the map': 'Karte abfragen',
+            'Query results :': 'Ergebnis :',
+            'no item found': 'kein Treffer',
+            'query failed': 'Abfrage nicht erfolgt',
+            'metadata': 'Metadaten',
             'Results are off map': 'Ergebnisse sind außerhalb der Karte',
             'No result': 'kein Ergebnis',
             'Geolocation failed': 'Geolocation failed',
             'searching...': 'suche...',
 
+            'Address and/or city': 'Adresse eingeben',
+            'Title': 'Kartentitel',
+            'change title': 'Titel ändern',
             'Permalink': 'Permalink',
-            'Address and/or city': 'Adresse eingeben'
+            'Permalink to this map': 'Permanenter link zur Karte',
+            'share on ' : 'teilen',
+            'Edit with geOrchestra': 'Karte mittels georchestra ändern'
         }
     }
 });
