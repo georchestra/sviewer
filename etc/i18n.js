@@ -29,7 +29,7 @@ $.extend(hardConfig, {
 
             'Title': 'Titre de la carte',
             'change title': 'changer le titre',
-            'Permalink': 'Lien permanent',
+            'Permalink': 'Permalien',
             'Permalink to this map': 'Lien permanent vers cette carte',
             'Address and/or city': 'Adresse et/ou commune',
             'Features or Address and/or city': 'Entités ou Adresse et/ou commune',
