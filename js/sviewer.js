@@ -694,15 +694,16 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                         });
                         $(this).append(response);
                         config.gfiok = true;
+                        $('#panelQuery a').attr("rel","external");
                         $('#panelQuery').popup('open');
                     }
                     else {
+                        // disable jquery ajax for links
                         $('#panelQuery').popup('open');
                         $(this).append('<p class="sv-noitem">' + tr('no item found') + '</p>');
                         config.gfiok = false;
                     }
                     $.mobile.loading('hide');
-
                 },
                 failure: function() {
                     $.mobile.loading('hide');
