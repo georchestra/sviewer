@@ -74,6 +74,7 @@ function initmap() {
             wmsurl_ns: '',
             wmsurl_layer: '',
             sldurl: null,
+            singletile: 'false',
             format: 'image/png',
             opacity: 1
         };
@@ -122,10 +123,18 @@ function initmap() {
             if (self.options.sldurl) {
                 wms_params.params.SLD = self.options.sldurl;
             }
-            self.wmslayer = new ol.layer.Tile({
-                opacity: isNaN(self.options.opacity)?1:self.options.opacity,
-                source: new ol.source.TileWMS(wms_params)
-            });
+            
+            if( self.options.singletile ) {
+            	self.wmslayer = new ol.layer.Image({
+                    opacity: isNaN(self.options.opacity)?1:self.options.opacity,
+                    source: new ol.source.ImageWMS(wms_params)
+            	});
+            } else {
+                self.wmslayer = new ol.layer.Tile({
+                    opacity: isNaN(self.options.opacity)?1:self.options.opacity,
+                    source: new ol.source.TileWMS(wms_params)
+                });
+            }
         };
 
         /**
@@ -366,6 +375,17 @@ function initmap() {
                 var extent = [vgb.attr('minx'), vgb.attr('miny'), vgb.attr('maxx'), vgb.attr('maxy')];
                 view.fitExtent(ol.proj.transformExtent(extent, srs, projcode), map.getSize());
             }
+            
+            function parseBoolean(string) {
+                switch (String(string).toLowerCase()) {
+                    case "true":
+                        return true;
+                    case "false":
+                        return false;
+                    default:
+                        return undefined;
+                }
+            }
 
             // we only consider visible and queryable layers
             $(wmc).find('LayerList > Layer[queryable=1]').each(function() {
@@ -381,6 +401,7 @@ function initmap() {
                     options.sldurl = ($(this).find("StyleList  > Style[current='1'] > SLD > OnlineResource").attr('xlink:href'));
                     options.stylename = $(this).find("StyleList  > Style[current='1'] > Name").text();
                     options.opacity = parseFloat($(this).find("opacity").text());
+                    options.singletile = parseBoolean($(this).find("Extension  > singleTile").text());
                     var l = new LayerQueryable(options);
                     config.layersQueryable.push(l);
                     map.addLayer(l.wmslayer);
