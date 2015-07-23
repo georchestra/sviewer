@@ -303,3 +303,8 @@ screen and (max-height: 400px) {
 .sv-location a {
     font-size: 0.7em;
 }
+
+/* SLD controls */
+#SLDsliders label {
+    font-size: 1.4em !important;
+}

@@ -1098,7 +1098,27 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         });
     }
 
-        // ----- configuration --------------------------------------------------------------------------------
+    // display SLD parametric layer
+    function updateSLDLayer(props, value) {
+        var sld = "<?xml version='1.0' encoding='ISO-8859-1'?> \
+<StyledLayerDescriptor version='1.0.0' \
+xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' \
+xmlns='http://www.opengis.net/sld' xmlns:ogc='http://www.opengis.net/ogc' \
+xmlns:xlink='http://www.w3.org/1999/xlink' \
+xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" + props.SLD_BODY + "</StyledLayerDescriptor>";
+        props.layer.getSource()
+            .updateParams({
+                'FORMAT': 'image/png',
+                'TRANSPARENT': true,
+                'SLD_BODY': sld.replace(props.param_re, ''+value),
+                'salt': Math.random()
+            });
+    }
+    
+
+
+
+    // ----- configuration --------------------------------------------------------------------------------
 
     /**
      * reads configuration from querystring
@@ -1235,6 +1255,22 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             activateSearchFeatures('remote');
         }
 
+        // adding parametric SLD layers
+        $.each(config.layersSLD, function(i, props) {
+            var layer = new ol.layer.Tile();
+            layer.setSource(
+                new ol.source.TileWMS({
+                    'url': props.url,
+                    params: {
+                        'FORMAT': 'image/png',
+                        'TRANSPARENT': true
+                    }
+                })
+            );
+            map.addLayer(layer);
+            config.layersSLD[i]["layer"] = layer;
+        });
+
         // adding kml overlay
         if (config.kmlUrl) {
             config.kmlLayer = new ol.layer.Vector({
@@ -1321,6 +1357,33 @@ ol.extent.getTopRight(extent).reverse().join(" "),
     $('.sv-panel').bind('popupafteropen', setPermalink);
     $('.sv-panel').bind('popupafterclose popupafteropen', panelToggle);
     $('#panelcontrols a').bind('click', panelButton);
+    
+    // dynamic SLD controls
+    $.each(config.layersSLD, function(i, props) {
+        var id = "sldslider-"+props.id;
+        var input = $('<input/>')
+            .attr({
+                'id': id,
+                'name': id,
+                'value': props.param_value,
+                'min': props.param_value_min,
+                'max': props.param_value_max,
+                'step': props.param_step,
+                'data-highlight': 'true'
+            }
+        );
+        $('#SLDsliders').append($('<label>')
+            .attr({
+                'for': id,
+            })
+            .text(props.param_label)
+        );
+        $('#SLDsliders').append($('<p>').append(input));
+        input.slider().slider("refresh")
+            .on("slidestop", function(event, ui) {
+                updateSLDLayer(props, parseInt(event.target.value));
+            });
+    });
 
     // i18n
     if (config.lang !== 'en') {

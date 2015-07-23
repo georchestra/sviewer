@@ -71,6 +71,39 @@ customConfig = {
             })
         })
     ],
+        
+    /**
+     * parametric SLD layers
+     * allows dynamic overlays; each overlay relies on a WMS+SLD service.
+     * layers and styles are being specified by a SLD_BODY fragment.
+     * the GUI displays a slider control for each overlay, allowing the user
+     * to dynamically alter one parameter within the style and 
+     * immediately see the resulting map.
+
+    layersSLD: [
+        {
+            'id': 'elevation',
+            'url': 'http://sdi.georchestra.org/geoserver/ows',
+            'param_label': 'elevation',
+            'param_value': 0,
+            'param_value_min': 0,
+            'param_value_max': 2000,
+            'param_step': 1,
+            'param_re': /ELEVATION/g,
+            'SLD_BODY': "<NamedLayer> \
+<Name>dem:srtm</Name> \
+<UserStyle><FeatureTypeStyle><Rule> \
+<RasterSymbolizer><ColorMap type='intervals'> \
+<ColorMapEntry color='#b5d0d0' quantity='0' opacity='1' /> \
+<ColorMapEntry color='#b5d0d0' quantity='ELEVATION' opacity='1' /> \
+<ColorMapEntry color='#b5d0d0' quantity='100000' opacity='0' /> \
+</ColorMap></RasterSymbolizer></Rule></FeatureTypeStyle></UserStyle> \
+</NamedLayer>"
+        }
+     */
+    ],
+
+
 
     /**
      * social media links (prefixes)
