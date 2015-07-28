@@ -79,11 +79,12 @@ customConfig = {
      * the GUI displays a slider control for each overlay, allowing the user
      * to dynamically alter one parameter within the style and 
      * immediately see the resulting map.
-
     layersSLD: [
         {
             'id': 'elevation',
             'url': 'http://sdi.georchestra.org/geoserver/ows',
+            'visible': true,
+            'opacity': 0.8,
             'param_label': 'elevation',
             'param_value': 0,
             'param_value_min': 0,
@@ -100,9 +101,8 @@ customConfig = {
 </ColorMap></RasterSymbolizer></Rule></FeatureTypeStyle></UserStyle> \
 </NamedLayer>"
         }
-     */
     ],
-
+     */
 
 
     /**
