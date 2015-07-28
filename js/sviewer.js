@@ -1110,8 +1110,7 @@ xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" + props.SLD_BODY + "</St
             .updateParams({
                 'FORMAT': 'image/png',
                 'TRANSPARENT': true,
-                'SLD_BODY': sld.replace(props.param_re, ''+value),
-                'salt': Math.random()
+                'SLD_BODY': sld.replace(props.param_re, ''+value)
             });
     }
     
@@ -1256,20 +1255,22 @@ xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" + props.SLD_BODY + "</St
         }
 
         // adding parametric SLD layers
-        $.each(config.layersSLD, function(i, props) {
-            var layer = new ol.layer.Tile();
-            layer.setSource(
-                new ol.source.TileWMS({
-                    'url': props.url,
-                    params: {
-                        'FORMAT': 'image/png',
-                        'TRANSPARENT': true
-                    }
-                })
-            );
-            map.addLayer(layer);
-            config.layersSLD[i]["layer"] = layer;
-        });
+        if (config.hasOwnProperty('layersSLD')) {
+            $.each(config.layersSLD, function(i, props) {
+                var layer = new ol.layer.Tile();
+                layer.setSource(
+                    new ol.source.TileWMS({
+                        'url': props.url,
+                        params: {
+                            'FORMAT': 'image/png',
+                            'TRANSPARENT': true
+                        }
+                    })
+                )
+                map.addLayer(layer);
+                config.layersSLD[i]["layer"] = layer;
+            })
+        }
 
         // adding kml overlay
         if (config.kmlUrl) {
