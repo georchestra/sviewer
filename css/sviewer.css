@@ -219,7 +219,7 @@ screen and (max-height: 400px) {
 
 /* panels */
 
-#panelInfo-screen, #panelLocate-screen, #panelShare-screen, #panelQuery-screen,, #panelSLD-screen {
+#panelInfo-screen, #panelLocate-screen, #panelShare-screen, #panelQuery-screen, #panelSLD-screen {
     display: none;
 }
 
