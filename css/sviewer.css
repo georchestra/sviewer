@@ -91,9 +91,10 @@ p.center {
     right: 4px;
     margin-left: 56px;
     z-index: 8010;
+    min-width: 400px;
 }
 
-#panelInfo-popup,#panelLocate-popup,#panelShare-popup, #panelQuery-popup {
+#panelInfo-popup,#panelLocate-popup,#panelShare-popup, #panelQuery-popup, #panelSLD-popup {
     top: 54px !important;
     right: 4px !important;
     left: auto !important;
@@ -218,7 +219,7 @@ screen and (max-height: 400px) {
 
 /* panels */
 
-#panelInfo-screen, #panelLocate-screen, #panelShare-screen, #panelQuery-screen {
+#panelInfo-screen, #panelLocate-screen, #panelShare-screen, #panelQuery-screen,, #panelSLD-screen {
     display: none;
 }
 
@@ -304,7 +305,4 @@ screen and (max-height: 400px) {
     font-size: 0.7em;
 }
 
-/* SLD controls */
-#SLDsliders label {
-    font-size: 1.4em !important;
-}
+

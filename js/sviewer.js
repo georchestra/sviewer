@@ -1,4 +1,5 @@
 // supported (re)projections. add more in customConfig.js
+/*jshint multistr: true */
 proj4.defs([
     ["EPSG:4326", "+title=WGS 84, +proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"],
     ["EPSG:3857", "+title=Web Spherical Mercator, +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs"],
@@ -80,7 +81,7 @@ function initmap() {
         this.md = {
             title: '',
             abstract: ''
-        }
+        };
         this.wmslayer = null;
 
         // to allow usage of this. in jquery statements
@@ -100,7 +101,7 @@ function initmap() {
             self.options.wmsurl_global = config.geOrchestraBaseUrl + '/geoserver/wms'; // global getcap
             self.options.wmsurl_ns = config.geOrchestraBaseUrl + '/geoserver/' + self.options.namespace + '/wms'; // virtual getcap namespace
             self.options.wmsurl_layer = config.geOrchestraBaseUrl + '/geoserver/' + self.options.namespace + '/' + self.options.layername + '/wms'; // virtual getcap layer
-        };
+        }
 
         /**
          * Creates the ol3 WMS layer
@@ -126,7 +127,7 @@ function initmap() {
                 opacity: isNaN(self.options.opacity)?1:self.options.opacity,
                 source: new ol.source.TileWMS(wms_params)
             });
-        };
+        }
 
         /**
          * Queries the layer capabilities to display its legend and metadata
@@ -208,7 +209,7 @@ function initmap() {
                     Ol.Console.error.apply(Ol.Console, arguments);
                 }
             });
-        };
+        }
 
         /**
          * constructor
@@ -226,8 +227,7 @@ function initmap() {
         };
 
         this.construct(options);
-    };
-
+    }
 
 
     // ----- methods ------------------------------------------------------------------------------------
@@ -248,7 +248,7 @@ function initmap() {
      */
     function ajaxURL (url) {
         // relative path
-        if (url.indexOf('http')!=0) {
+        if (url.indexOf('http')!==0) {
             return url;
         }
         // same domain
@@ -396,7 +396,7 @@ function initmap() {
             // perform gfi if requied
             if (config.gfiok) {
                 queryMap(view.getCenter());
-            };
+            }
         }
 
         // wmc comes from a geOrchestra map id
@@ -421,7 +421,7 @@ function initmap() {
                     }
                     else {
                         messagePopup(tr("map context error"));
-                    };
+                    }
                     $.mobile.loading('hide');
                 }
             });
@@ -689,8 +689,8 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 success: function(response) {
                     // nonempty reponse detection
                     if (response.search(config.nodata)<0) {
-                        $.each(['#panelInfo', '#panelLocate', '#panelShare'], function(i, p) {
-                            $(p).popup('close');
+                        $.each($('.sv-panel'), function(i, p) {
+                            p.popup('close');
                         });
                         $(this).append(response);
                         config.gfiok = true;
@@ -717,7 +717,8 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             var features = [];
             var domResponse =  $('<div class="sv-kml"></div>');
             map.forEachFeatureAtPixel(p, function(feature, layer) {
-                features.push(feature) }
+                    features.push(feature);
+                }
             );
             if (features.length > 0) {
                 $.each(features, function() {
@@ -731,17 +732,15 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                             if ($.type(v)==="string") {
                                 html += '<span class="sv-key">' + k + '</span>' + ' : ';
                                 html += '<span class="sv-value">' + v + '</span>';
-                                html += '<br />'
+                                html += '<br />';
                             }
                         });
                         domResponse.append(html);
-                    };
+                    }
                 });
                 $('#querycontent').append(domResponse);
             }
-        };
-
-
+        }
     }
 
     /**
@@ -754,7 +753,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         config.gficoord = null;
         config.gfiz = null;
         config.gfiok = false;
-    };
+    }
 
     function getCentroidAndExtent(geom) {
         var obj = {};
@@ -767,7 +766,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         }
         obj.extent = geom.getExtent();
         return obj;
-    };
+    }
 
     function searchInFeatures (value) {
         if (value.length>1) {
@@ -801,7 +800,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                     ogcfilter.push('</ogc:Or>');
                 }
 
-                if (config.searchparams.bboxfilter == true) {
+                if (config.searchparams.bboxfilter === true) {
                     ogcfilter.unshift('<ogc:And>');
                     ogcfilter.push(bboxFilter);
                     ogcfilter.push('</ogc:And>');
@@ -841,10 +840,10 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 if (!config.searchindex) {
                     var pseudoIndex = [];
                     var features = config.kmlLayer.getSource().getFeatures();
-                    for (var i=0;i<features.length;i++) {
+                    for (var j=0;j<features.length;j++) {
                         // construct an index with all text attributes
-                        var id = features[i].getId();
-                        var feat = features[i].getProperties();
+                        var id = features[j].getId();
+                        var feat = features[j].getProperties();
                         var idx = "";
                         for (var name in feat) {
                              if (feat.hasOwnProperty(name) && typeof(feat[name])==='string') {
@@ -859,9 +858,9 @@ ol.extent.getTopRight(extent).reverse().join(" "),
               if (config.searchindex) {
                 var features = [];
                 var responses = 0;
-                for (var i=0;i<config.searchindex.length && responses <config.maxFeatures;i++) {
-                    if (config.searchindex[i].data.indexOf(value.toLowerCase())!=-1) {
-                        features.push(config.kmlLayer.getSource().getFeatureById(config.searchindex[i].id));
+                for (var k=0;k<config.searchindex.length && responses <config.maxFeatures;k++) {
+                    if (config.searchindex[k].data.indexOf(value.toLowerCase())!=-1) {
+                        features.push(config.kmlLayer.getSource().getFeatureById(config.searchindex[k].id));
                         responses +=1;
                     }
                 }
@@ -869,7 +868,8 @@ ol.extent.getTopRight(extent).reverse().join(" "),
               }
            }
         }
-    };
+    }
+
     // enables search on features attributes
     function activateSearchFeatures(mode) {
         config.searchparams.mode = mode ;
@@ -888,8 +888,8 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                             config.searchparams.typename = $(response).find("Query").attr("typeName");
                             $.ajax({
                                 url: ajaxURL($(response).find("LayerDescription").attr("wfs") +
-                                    "SERVICE=WFS&VERSION=1.0.0&REQUEST=DescribeFeatureType&TYPENAME="
-                                    +$(response).find("Query").attr("typeName")),
+                                    "SERVICE=WFS&VERSION=1.0.0&REQUEST=DescribeFeatureType&TYPENAME=" +
+                                    $(response).find("Query").attr("typeName")),
                                 type: 'GET',
                                 success: function(response) {
                                     var fields = [];
@@ -943,7 +943,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             view.setZoom(zoom || 16);
         }
         $('#marker').show();
-    };
+    }
 
     function featuresToList (features) {
         var lib = config.searchparams.title || 'Top layer';
@@ -1106,12 +1106,17 @@ xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' \
 xmlns='http://www.opengis.net/sld' xmlns:ogc='http://www.opengis.net/ogc' \
 xmlns:xlink='http://www.w3.org/1999/xlink' \
 xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" + props.SLD_BODY + "</StyledLayerDescriptor>";
-        props.layer.getSource()
-            .updateParams({
-                'FORMAT': 'image/png',
-                'TRANSPARENT': true,
-                'SLD_BODY': sld.replace(props.param_re, ''+value)
-            });
+        if (typeof value === 'boolean') {
+            props.layer.setVisible(value);
+        } else {
+            props.layer.getSource()
+                .updateParams({
+                    'FORMAT': 'image/png',
+                    'TRANSPARENT': true,
+                    'SLD_BODY': sld.replace(props.param_re, ''+value)
+                }
+            )
+            }
     }
     
 
@@ -1161,16 +1166,15 @@ xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" + props.SLD_BODY + "</St
         
         // querystring param: qcl_filters
         if (qs.qcl_filters) {
-	    var qcl_filters_list = [];
-	    qcl_filters_list = (typeof qs.qcl_filters === 'string') ? qs.qcl_filters.split(';') : qs.qcl_filters;
-			
-	    $.each(qcl_filters_list, function(index) {
-	        if( index < config.layersQueryable.length ) {
-	            var opt = config.layersQueryable[index].options;
-		    opt.cql_filter = this;
-		    config.layersQueryable[index] = new LayerQueryable(opt);
-		}
-	    });
+            var qcl_filters_list = [];
+            qcl_filters_list = (typeof qs.qcl_filters === 'string') ? qs.qcl_filters.split(';') : qs.qcl_filters;
+            $.each(qcl_filters_list, function(index) {
+                if (index < config.layersQueryable.length) {
+                    var opt = config.layersQueryable[index].options;
+                    opt.cql_filter = this;
+                    config.layersQueryable[index] = new LayerQueryable(opt);
+                }
+            });
         }
 
         // querystring param: xyz
@@ -1208,7 +1212,7 @@ xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" + props.SLD_BODY + "</St
             config.search = true;
             config.searchparams = {};
             config.searchparams.bboxfilter = true;
-            $("#addressForm label").text('Features or ' + $("#addressForm label").text())
+            $("#addressForm label").text('Features or ' + $("#addressForm label").text());
         }
     }
 
@@ -1257,19 +1261,22 @@ xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" + props.SLD_BODY + "</St
         // adding parametric SLD layers
         if (config.hasOwnProperty('layersSLD')) {
             $.each(config.layersSLD, function(i, props) {
-                var layer = new ol.layer.Tile();
+                var layer = new ol.layer.Image();
                 layer.setSource(
-                    new ol.source.TileWMS({
+                    new ol.source.ImageWMS({
                         'url': props.url,
                         params: {
                             'FORMAT': 'image/png',
                             'TRANSPARENT': true
                         }
                     })
-                )
+                );
+                layer.setOpacity(isNaN(props.opacity)?1:props.opacity);
+                layer.setVisible(props.visible);
                 map.addLayer(layer);
-                config.layersSLD[i]["layer"] = layer;
-            })
+                config.layersSLD[i].layer = layer;
+                updateSLDLayer(config.layersSLD[i], config.layersSLD[i].param_value);
+            });
         }
 
         // adding kml overlay
@@ -1350,6 +1357,56 @@ xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" + props.SLD_BODY + "</St
     $('#georchestraForm').submit(function(e) {
         sendMapTo('georchestra_viewer');
     });
+    
+    // dynamic SLD controls
+    if (config.hasOwnProperty('layersSLD')) {
+        $.each(config.layersSLD, function(i, props) {
+            var sldslider = $('<input/>')
+                .attr({
+                    'id': "sldslider-"+props.id,
+                    'name': "sldslider-"+props.id,
+                    'value': props.param_value,
+                    'min': props.param_value_min,
+                    'max': props.param_value_max,
+                    'step': props.param_step,
+                    'data-highlight': 'true',
+                }
+            );
+            var sldswitch = $('<input/>')
+                .attr({
+                    'id': "sldswitch-"+props.id,
+                    'name': "sldswitch-"+props.id,
+                    'type': 'checkbox',
+                    'data-mini': 'true',
+                }
+            );
+            sldswitch.prop("checked", props.visible);
+            $('#SLDsliders').append(sldswitch);
+            $('#SLDsliders').append($('<label>')
+                .attr({
+                    'for': sldswitch.prop('id'),
+                })
+                .text(props.param_label)
+            );
+            $('#SLDsliders').append(sldslider);
+            // control events
+            sldswitch.checkboxradio().checkboxradio("refresh")
+                .on("change", function(event, ui) {
+                    updateSLDLayer(props, event.target.checked);
+                    sldslider.slider(event.target.checked ? "enable" : "disable");
+                });
+            sldslider.slider()
+                .slider(props.visible ? "enable" : "disable")
+                .slider("refresh")
+                .on("slidestop", function(event, ui) {
+                    updateSLDLayer(props, parseInt(event.target.value));
+                });
+            $('#panelSLD').popup('open');
+        });
+    }
+    else {
+        $('#panelLSLDBtn').css('display', 'none');
+    }
 
     // dynamic resize
     $(window).bind('orientationchange resize pageshow updatelayout', panelLayout);
@@ -1358,43 +1415,18 @@ xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" + props.SLD_BODY + "</St
     $('.sv-panel').bind('popupafteropen', setPermalink);
     $('.sv-panel').bind('popupafterclose popupafteropen', panelToggle);
     $('#panelcontrols a').bind('click', panelButton);
-    
-    // dynamic SLD controls
-    $.each(config.layersSLD, function(i, props) {
-        var id = "sldslider-"+props.id;
-        var input = $('<input/>')
-            .attr({
-                'id': id,
-                'name': id,
-                'value': props.param_value,
-                'min': props.param_value_min,
-                'max': props.param_value_max,
-                'step': props.param_step,
-                'data-highlight': 'true'
-            }
-        );
-        $('#SLDsliders').append($('<label>')
-            .attr({
-                'for': id,
-            })
-            .text(props.param_label)
-        );
-        $('#SLDsliders').append($('<p>').append(input));
-        input.slider().slider("refresh")
-            .on("slidestop", function(event, ui) {
-                updateSLDLayer(props, parseInt(event.target.value));
-            });
-    });
 
     // i18n
     if (config.lang !== 'en') {
         translateDOM('.i18n', ['title', 'placeholder', 'value']);
     }
 
-    if (config.gfiok && (!(config.wmc.length>0))) {
+    if (config.gfiok && (config.wmc.length<=0)) {
         //~ queryMap(view.getCenter());
         setTimeout(
-            function() { queryMap(view.getCenter()) },
+            function() {
+                queryMap(view.getCenter());
+            },
             300
         );
     }
