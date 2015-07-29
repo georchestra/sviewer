@@ -1105,7 +1105,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
 xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' \
 xmlns='http://www.opengis.net/sld' xmlns:ogc='http://www.opengis.net/ogc' \
 xmlns:xlink='http://www.w3.org/1999/xlink' \
-xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" + props.SLD_BODY + "</StyledLayerDescriptor>";
+xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" + props.sld_body + "</StyledLayerDescriptor>";
         if (typeof value === 'boolean') {
             props.layer.setVisible(value);
         } else {
@@ -1113,7 +1113,7 @@ xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" + props.SLD_BODY + "</St
                 .updateParams({
                     'FORMAT': 'image/png',
                     'TRANSPARENT': true,
-                    'SLD_BODY': sld.replace(props.param_re, ''+value)
+                    'SLD_BODY': sld.replace('{PARAM}', ''+value)
                 }
             )
             }
