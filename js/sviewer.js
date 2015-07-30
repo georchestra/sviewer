@@ -543,7 +543,9 @@ function initmap() {
                         }
                         var code =  $(results[i]).find('[type="INSEE"]').text();
                         var resultElems = [municipality, code];
-                        (street.length>1)?resultElems.unshift(street):false;
+                        if (street.length>1) {
+                            resultElems.unshift(street);
+                        }
                         var label = resultElems.join (" ");
                         var item =$('<li class="sv-location" data-icon="location"><a href="#"></a></li>')
                                 .find("a")
@@ -690,7 +692,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                     // nonempty reponse detection
                     if (response.search(config.nodata)<0) {
                         $.each($('.sv-panel'), function(i, p) {
-                            p.popup('close');
+                            $(p).popup('close');
                         });
                         $(this).append(response);
                         config.gfiok = true;
@@ -925,7 +927,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         var data = $(item).data();
         var coordinates = data.location;
         var extent = data.extent;
-        var zoom = parseInt(data.zoom);
+        var zoom = parseInt(data.zoom, 10);
         // test if extent is valid (with width and height - not a simple point)
         // invalidate extent if extent is not valid
         if (extent.length===4) {
@@ -1114,9 +1116,8 @@ xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" + props.sld_body + "</St
                     'FORMAT': 'image/png',
                     'TRANSPARENT': true,
                     'SLD_BODY': sld.replace('{PARAM}', ''+value)
-                }
-            )
-            }
+                });
+        }
     }
     
 
@@ -1145,7 +1146,7 @@ xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" + props.sld_body + "</St
 
         // querystring param: lb (selected background)
         if (qs.lb) {
-            config.lb = parseInt(qs.lb) % config.layersBackground.length;
+            config.lb = parseInt(qs.lb, 10) % config.layersBackground.length;
         }
 
         // querystring param: map id
@@ -1179,8 +1180,8 @@ xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" + props.sld_body + "</St
 
         // querystring param: xyz
         if (qs.x&&qs.y&&qs.z) {
-            config.z = parseInt(qs.z);
-            var p = [parseFloat(qs.x), parseFloat(qs.y)];
+            config.z = parseInt(qs.z, 10);
+            var p = [parseFloat(qs.x, 10), parseFloat(qs.y, 10)];
             // is this lonlat ? anyway don't use sviewer for the vendee globe
             if (Math.abs(p[0])<=180&&Math.abs(p[1])<=180&&config.z>7) {
                 p = ol.proj.transform(p, 'EPSG:4326', projcode);
@@ -1370,27 +1371,28 @@ xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" + props.sld_body + "</St
                     'max': props.param_value_max,
                     'step': props.param_step,
                     'data-highlight': 'true',
-                }
-            );
-            var sldswitch = $('<input/>')
+                }),
+            sldswitch = $('<input/>')
                 .attr({
                     'id': "sldswitch-"+props.id,
                     'name': "sldswitch-"+props.id,
                     'type': 'checkbox',
                     'data-mini': 'true',
-                }
-            );
-            sldswitch.prop("checked", props.visible);
-            $('#SLDsliders').append(sldswitch);
-            $('#SLDsliders').append($('<label>')
+                    'checked': props.visible
+                }),
+                sldlabel = $('<label>')
                 .attr({
                     'for': sldswitch.prop('id'),
                 })
-                .text(props.param_label)
-            );
-            $('#SLDsliders').append(sldslider);
-            // control events
-            sldswitch.checkboxradio().checkboxradio("refresh")
+                .text(props.param_label);
+            source = props.layer.getSource();
+            // first append controls in the DOM
+            $('#SLDsliders').append(sldswitch)
+                .append(sldlabel)
+                .append(sldslider);
+            // then activate widgets
+            sldswitch.checkboxradio()
+                .checkboxradio("refresh")
                 .on("change", function(event, ui) {
                     updateSLDLayer(props, event.target.checked);
                     sldslider.slider(event.target.checked ? "enable" : "disable");
