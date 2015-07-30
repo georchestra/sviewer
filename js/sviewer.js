@@ -364,7 +364,7 @@ function initmap() {
                 var vgb = $(wmc).children('General').children('BoundingBox');
                 var srs = vgb.attr('SRS');
                 var extent = [vgb.attr('minx'), vgb.attr('miny'), vgb.attr('maxx'), vgb.attr('maxy')];
-                view.fitExtent(ol.proj.transformExtent(extent, srs, projcode), map.getSize());
+                view.fit(ol.proj.transformExtent(extent, srs, projcode), map.getSize());
             }
 
             // we only consider visible and queryable layers
@@ -937,7 +937,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         }
         marker.setPosition(coordinates);
         if (extent) {
-            view.fitExtent(extent, map.getSize());
+            view.fit(extent, map.getSize());
         } else {
             view.setCenter(coordinates,map.getSize());
             view.setZoom(zoom || 16);
@@ -1077,7 +1077,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             start: start
         });
         map.beforeRender(pan, zoom);
-        view.fitExtent(config.initialExtent, map.getSize());
+        view.fit(config.initialExtent, map.getSize());
         view.setRotation(0);
     }
 
@@ -1238,9 +1238,10 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         // adding kml overlay
         if (config.kmlUrl) {
             config.kmlLayer = new ol.layer.Vector({
-                source: new ol.source.KML({
+                source: new ol.source.Vector({
                     projection: 'EPSG:3857',
-                    url: ajaxURL(config.kmlUrl)
+                    url: ajaxURL(config.kmlUrl),
+                    format: new ol.format.KML()
                 })
             });
             map.addLayer(config.kmlLayer);
@@ -1257,7 +1258,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             view.setZoom(config.z);
         }
          else {
-            view.fitExtent(config.initialExtent, map.getSize());
+            view.fit(config.initialExtent, map.getSize());
             view.setRotation(0);
         }
 
