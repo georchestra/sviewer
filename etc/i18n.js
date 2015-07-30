@@ -31,10 +31,13 @@ $.extend(hardConfig, {
             'change title': 'changer le titre',
             'Permalink': 'Permalien',
             'Permalink to this map': 'Lien permanent vers cette carte',
-            'Address and/or city': 'Adresse et/ou commune',
+            'Addreparámetrosss and/or city': 'Adresse et/ou commune',
             'Features or Address and/or city': 'Entités ou Adresse et/ou commune',
             'share on ' : 'partager sur ',
-            'Edit with geOrchestra': 'éditer carte avec geOrchestra'
+            'Edit with geOrchestra': 'éditer carte avec geOrchestra',
+            
+            'Parameters': 'Paramètres',
+            'source': 'source'
         },
         es: {
             'geOrchestra mobile': 'geOrchestra móvil',
@@ -52,7 +55,10 @@ $.extend(hardConfig, {
             'searching...': 'búsqueda...',
 
             'Permalink': 'Vínculo permanente',
-            'Address and/or city': 'Entrar dirección o lugar'
+            'Address and/or city': 'Entrar dirección o lugar',
+            
+            'Parameters': 'parámetros',
+            'source': 'fuente'
         },
         ru: {
             'geOrchestra mobile': 'мобильная версия программы geOrchestra',
@@ -100,7 +106,10 @@ $.extend(hardConfig, {
             'Permalink': 'Permalink',
             'Permalink to this map': 'Permanenter link zur Karte',
             'share on ' : 'teilen',
-            'Edit with geOrchestra': 'Karte mittels georchestra ändern'
+            'Edit with geOrchestra': 'Karte mittels georchestra ändern',
+            
+            'Parameters': 'Parametrieren',
+            'source': 'datenquelle'
         }
     }
 });

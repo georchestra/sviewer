@@ -1381,11 +1381,20 @@ xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" + props.sld_body + "</St
                     'data-mini': 'true',
                     'checked': props.visible
                 }),
-                sldlabel = $('<label>')
+                sldlabel = $('<label/>')
                 .attr({
                     'for': sldswitch.prop('id'),
                 })
                 .text(props.param_label);
+            if (props.hasOwnProperty('metadata_url')) {
+                sldlabel.append($('<a/>')
+                    .attr({
+                        'href': props.metadata_url,
+                        'class': 'sv-source'
+                    })
+                    .text(tr('source'))
+                );
+            }
             source = props.layer.getSource();
             // first append controls in the DOM
             $('#SLDsliders').append(sldswitch)

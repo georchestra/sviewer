@@ -228,6 +228,13 @@ screen and (max-height: 400px) {
     padding-bottom:.1em;
 }
 
+/* dynamic sld layout */
+.sv-source {
+	font-size: small;
+	float: right;
+	text-decoration: none;
+}
+
 /* legend layout */
 
 .sv-legend {
