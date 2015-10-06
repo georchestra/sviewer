@@ -26,6 +26,10 @@ $.extend(hardConfig, {
             'No result': 'Aucun résultat',
             'Geolocation failed': 'Localisation impossible',
             'searching...': 'recherche...',
+            
+            'Where am I ?': 'Où suis-je ?',
+            'device position not available': 'localisation de l\'appareil non disponible',
+            'device position error': 'la localisation de l\'appareil a échoué',
 
             'Title': 'Titre de la carte',
             'change title': 'changer le titre',

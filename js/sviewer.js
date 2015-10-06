@@ -1084,6 +1084,42 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         view.fit(config.initialExtent, map.getSize());
         view.setRotation(0);
     }
+    
+    // recenter on device position
+    function showPosition(pos) {
+        var p = ol.proj.transform([pos.coords.longitude, pos.coords.latitude], 'EPSG:4326', projcode),
+            start = +new Date(),
+            pan = ol.animation.pan({
+                duration: 1000,
+                source: view.getCenter(),
+                start: start
+            }),
+            zoom = ol.animation.zoom({
+                duration: 1000,
+                source: view.getCenter(),
+                resolution: view.getResolution(),
+                start: start
+            });
+        map.beforeRender(pan, zoom);
+        view.setCenter(p);
+        if (view.getZoom()<17) view.setZoom(20) ;
+    }
+    
+    // get device position
+    function locateMe() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                showPosition, 
+                function(e) {
+                    messagePopup(tr("device position error"));
+                },
+                {maximumAge: 500000, enableHighAccuracy: true, timeout: 6000}
+            )
+        } else {
+            messagePopup(tr("device position not available"));
+        }
+        return false;
+    };
 
     //  info popup
     function messagePopup(msg){
@@ -1102,7 +1138,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         });
     }
 
-        // ----- configuration --------------------------------------------------------------------------------
+    // ----- configuration --------------------------------------------------------------------------------
 
     /**
      * reads configuration from querystring
@@ -1309,6 +1345,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
     $('#bgBt').click(switchBackground);
 
     // geolocation form
+    $('#zpBt').click(locateMe);
     $('#addressForm').on('submit', searchPlace);
 
     // set title dialog
