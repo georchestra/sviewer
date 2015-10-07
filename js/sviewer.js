@@ -1100,23 +1100,25 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 resolution: view.getResolution(),
                 start: start
             });
+        marker.setPosition(p);
         map.beforeRender(pan, zoom);
         view.setCenter(p);
-        if (view.getZoom()<17) view.setZoom(20) ;
+        if (view.getZoom()<17) view.setZoom(18) ;
     }
     
     // get device position
     function locateMe() {
         if (navigator.geolocation) {
+            messagePopup(tr("estimating device position ..."));
             navigator.geolocation.getCurrentPosition(
                 showPosition, 
                 function(e) {
                     messagePopup(tr("device position error"));
                 },
-                {maximumAge: 500000, enableHighAccuracy: true, timeout: 6000}
-            )
+                {maximumAge: 60000, enableHighAccuracy: true, timeout: 30000}
+            );
         } else {
-            messagePopup(tr("device position not available"));
+            messagePopup(tr("device position not available on this device"));
         }
         return false;
     };
@@ -1129,6 +1131,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             position: "fixed",
             padding: "7px",
             "text-align": "center",
+            "background-color": "#ffffff",
             width: "270px",
             left: ($(window).width() - 284)/2,
             top: $(window).height()/2 })

@@ -28,7 +28,8 @@ $.extend(hardConfig, {
             'searching...': 'recherche...',
             
             'Where am I ?': 'Où suis-je ?',
-            'device position not available': 'localisation de l\'appareil non disponible',
+            'estimating device position ...': 'estimation de la position ...',
+            'device position not available on this device': 'localisation non disponible sur cet appareil',
             'device position error': 'la localisation de l\'appareil a échoué',
 
             'Title': 'Titre de la carte',
