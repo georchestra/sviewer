@@ -1,3 +1,4 @@
+
 // supported (re)projections. add more in customConfig.js
 proj4.defs([
     ["EPSG:4326", "+title=WGS 84, +proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"],
@@ -17,8 +18,6 @@ for (var z = 0; z < 20; ++z) {
     matrixIds[z] =projcode + ':' + z;
 }
 
-var map;
-var view;
 var config = {};
 var customConfig = {};
 var hardConfig = {
@@ -51,9 +50,9 @@ var hardConfig = {
 
 
 
-
-function initmap() {
-
+var SViewer = function() {
+    var map;
+    var view;
     var marker;
 
     // ----- pseudoclasses ------------------------------------------------------------------------------------
@@ -294,6 +293,28 @@ function initmap() {
             });
         });
     }
+
+    /**
+     * Adjust map size on resize
+     */
+    function fixContentHeight() {
+        /**
+         * 
+         */
+        var header = $("#header"),
+            content = $("#frameMap"),
+            viewHeight = $(window).height(),
+            contentHeight = viewHeight - header.outerHeight();
+        
+        if ((content.outerHeight() + header.outerHeight()) !== viewHeight) {
+            contentHeight -= (content.outerHeight() - content.height());
+            content.height(contentHeight);
+        }
+        if (window.map) {
+            map.updateSize();
+        }
+    }
+
 
     /**
      * Parses the query string
@@ -1144,6 +1165,33 @@ ol.extent.getTopRight(extent).reverse().join(" "),
     // ----- configuration --------------------------------------------------------------------------------
 
     /**
+     * reads optional "c" querystring arg,
+     * loads application profile
+     * ie &c=cadastral& : loads etc/catastral.js instead of customConfig.js
+     * c MUST MATCH ^[A-Za-z0-9_-]+$
+     */
+    function init() {
+        var qsconfig = "customConfig"
+        if (qs.c && qs.c.match(/^[A-Za-z0-9_-]+$/)) {
+            qsconfig = qs.c
+        };
+        $.ajax({
+            url: "etc/"+qsconfig+".js",
+            dataType: "script",
+            success: function() {
+                doConfiguration();
+                doMap();
+                doGUI();
+            },
+            failure: function() {
+                doConfiguration();
+                doMap();
+                doGUI();
+            }
+        })
+    }
+    
+    /**
      * reads configuration from querystring
      */
     function doConfiguration() {
@@ -1316,68 +1364,77 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         map.addOverlay(marker);
     }
 
+    /**
+     * initiates GUI
+     */
+    function doGUI() {
+        // opens permalink tab if required
+        if (qs.qr) {
+            setPermalink();
+            $('#panelShare').popup('open');
+        }
+
+        // map events
+        map.on('singleclick', function(e) {
+            queryMap(e.coordinate);
+        });
+        map.on('moveend', setPermalink);
+        $('#marker').click(clearQuery);
 
 
+        // map buttons
+        $('#ziBt').click(zoomIn);
+        $('#zoBt').click(zoomOut);
+        $('#zeBt').click(zoomInit);
+        $('#bgBt').click(switchBackground);
 
+        // geolocation form
+        $('#zpBt').click(locateMe);
+        $('#addressForm').on('submit', searchPlace);
 
+        // set title dialog
+        $('#setTitle').keyup(onTitle);
+        $('#setTitle').blur(setPermalink);
+
+        // sendto form
+        $('#georchestraForm').submit(function(e) {
+            sendMapTo('georchestra_viewer');
+        });
+
+        // dynamic resize
+        $(window).bind('orientationchange resize pageshow updatelayout', panelLayout);
+        $('.sv-panel').bind('popupbeforeposition popupafteropen', panelLayout);
+        $.each($('.sv-panel'), panelLayout);
+        $('.sv-panel').bind('popupafteropen', setPermalink);
+        $('.sv-panel').bind('popupafterclose popupafteropen', panelToggle);
+        $('#panelcontrols a').bind('click', panelButton);
+
+        // i18n
+        if (config.lang !== 'en') {
+            translateDOM('.i18n', ['title', 'placeholder', 'value']);
+        }
+        
+
+        // resize map
+        $(window).bind("orientationchange resize pageshow", fixContentHeight);
+        fixContentHeight();
+
+        if (config.gfiok && (!(config.wmc.length>0))) {
+            //~ queryMap(view.getCenter());
+            setTimeout(
+                function() { queryMap(view.getCenter()) },
+                300
+            );
+        }
+    }
 
 
     // ------ Main ------------------------------------------------------------------------------------------
 
-    doConfiguration();
-    doMap();
+    init();
+    
 
-    // opens permalink tab if required
-    if (qs.qr) {
-        setPermalink();
-        $('#panelShare').popup('open');
-    }
-
-    // map events
-    map.on('singleclick', function(e) {
-        queryMap(e.coordinate);
-    });
-    map.on('moveend', setPermalink);
-    $('#marker').click(clearQuery);
-
-
-    // map buttons
-    $('#ziBt').click(zoomIn);
-    $('#zoBt').click(zoomOut);
-    $('#zeBt').click(zoomInit);
-    $('#bgBt').click(switchBackground);
-
-    // geolocation form
-    $('#zpBt').click(locateMe);
-    $('#addressForm').on('submit', searchPlace);
-
-    // set title dialog
-    $('#setTitle').keyup(onTitle);
-    $('#setTitle').blur(setPermalink);
-
-    // sendto form
-    $('#georchestraForm').submit(function(e) {
-        sendMapTo('georchestra_viewer');
-    });
-
-    // dynamic resize
-    $(window).bind('orientationchange resize pageshow updatelayout', panelLayout);
-    $('.sv-panel').bind('popupbeforeposition popupafteropen', panelLayout);
-    $.each($('.sv-panel'), panelLayout);
-    $('.sv-panel').bind('popupafteropen', setPermalink);
-    $('.sv-panel').bind('popupafterclose popupafteropen', panelToggle);
-    $('#panelcontrols a').bind('click', panelButton);
-
-    // i18n
-    if (config.lang !== 'en') {
-        translateDOM('.i18n', ['title', 'placeholder', 'value']);
-    }
-
-    if (config.gfiok && (!(config.wmc.length>0))) {
-        //~ queryMap(view.getCenter());
-        setTimeout(
-            function() { queryMap(view.getCenter()) },
-            300
-        );
-    }
 }
+
+
+$(document).ready(SViewer);

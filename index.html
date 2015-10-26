@@ -39,33 +39,6 @@ $(document).bind("mobileinit", function(){
     <link rel="stylesheet" href="css/sviewer.css" type="text/css" />
     <script src="js/sviewer.js" type="text/javascript"></script>
     <script src="etc/i18n.js" type="text/javascript"></script>
-    <script src="etc/customConfig.js" type="text/javascript"></script>
-
-    <script type="text/javascript">
-//<![CDATA[
-            $(document).ready(function() {
-                // fix height of content to allow for header
-                function fixContentHeight() {
-                    var header = $("#header");
-                    var content = $("#frameMap");
-                    var viewHeight = $(window).height();
-
-                    var contentHeight = viewHeight - header.outerHeight();
-                    if ((content.outerHeight() + header.outerHeight()) !== viewHeight) {
-                        contentHeight -= (content.outerHeight() - content.height());
-                        content.height(contentHeight);
-                    }
-                    if (window.map) {
-                        map.updateSize();
-                    } else {
-                        initmap();
-                    }
-                }
-                $(window).bind("orientationchange resize pageshow", fixContentHeight);
-                fixContentHeight();
-            });
-//]]>
-</script>
   </head>
   <body>
     <div data-role="page">
