@@ -79,7 +79,7 @@ var SViewer = function() {
         this.md = {
             title: '',
             abstract: ''
-        }
+        };
         this.wmslayer = null;
 
         // to allow usage of this. in jquery statements
@@ -99,7 +99,7 @@ var SViewer = function() {
             self.options.wmsurl_global = config.geOrchestraBaseUrl + '/geoserver/wms'; // global getcap
             self.options.wmsurl_ns = config.geOrchestraBaseUrl + '/geoserver/' + self.options.namespace + '/wms'; // virtual getcap namespace
             self.options.wmsurl_layer = config.geOrchestraBaseUrl + '/geoserver/' + self.options.namespace + '/' + self.options.layername + '/wms'; // virtual getcap layer
-        };
+        }
 
         /**
          * Creates the ol3 WMS layer
@@ -125,7 +125,7 @@ var SViewer = function() {
                 opacity: isNaN(self.options.opacity)?1:self.options.opacity,
                 source: new ol.source.TileWMS(wms_params)
             });
-        };
+        }
 
         /**
          * Queries the layer capabilities to display its legend and metadata
@@ -207,7 +207,7 @@ var SViewer = function() {
                     Ol.Console.error.apply(Ol.Console, arguments);
                 }
             });
-        };
+        }
 
         /**
          * constructor
@@ -225,7 +225,7 @@ var SViewer = function() {
         };
 
         this.construct(options);
-    };
+    }
 
 
 
@@ -247,7 +247,7 @@ var SViewer = function() {
      */
     function ajaxURL (url) {
         // relative path
-        if (url.indexOf('http')!=0) {
+        if (url.indexOf('http')!==0) {
             return url;
         }
         // same domain
@@ -417,7 +417,7 @@ var SViewer = function() {
             // perform gfi if requied
             if (config.gfiok) {
                 queryMap(view.getCenter());
-            };
+            }
         }
 
         // wmc comes from a geOrchestra map id
@@ -442,7 +442,7 @@ var SViewer = function() {
                     }
                     else {
                         messagePopup(tr("map context error"));
-                    };
+                    }
                     $.mobile.loading('hide');
                 }
             });
@@ -745,8 +745,8 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             var features = [];
             var domResponse =  $('<div class="sv-kml"></div>');
             map.forEachFeatureAtPixel(p, function(feature, layer) {
-                features.push(feature) }
-            );
+                features.push(feature);
+            });
             if (features.length > 0) {
                 $.each(features, function() {
                     $('#panelQuery').popup('open');
@@ -759,15 +759,15 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                             if ($.type(v)==="string") {
                                 html += '<span class="sv-key">' + k + '</span>' + ' : ';
                                 html += '<span class="sv-value">' + v + '</span>';
-                                html += '<br />'
+                                html += '<br />';
                             }
                         });
                         domResponse.append(html);
-                    };
+                    }
                 });
                 $('#querycontent').append(domResponse);
             }
-        };
+        }
 
 
     }
@@ -782,7 +782,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         config.gficoord = null;
         config.gfiz = null;
         config.gfiok = false;
-    };
+    }
 
 
     /**
@@ -843,9 +843,9 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                     dataType: 'json',
                     contentType: "application/xml",
                     success: function(response) {
-                        var features =  new ol.format.GeoJSON().readFeatures(response);
-                        if (features.length > 0) {
-                            featuresToList(features);
+                        var f =  new ol.format.GeoJSON().readFeatures(response);
+                        if (f.length > 0) {
+                            featuresToList(f);
                         }
                     },
                     failure: function() {
@@ -886,7 +886,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
               }
            }
         }
-    };
+    }
     
     /**
      * method: activateSearchFeatures
@@ -911,8 +911,8 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                             config.searchparams.typename = $(response).find("Query").attr("typeName");
                             $.ajax({
                                 url: ajaxURL($(response).find("LayerDescription").attr("wfs") +
-                                    "SERVICE=WFS&VERSION=1.0.0&REQUEST=DescribeFeatureType&TYPENAME="
-                                    +$(response).find("Query").attr("typeName")),
+                                    "SERVICE=WFS&VERSION=1.0.0&REQUEST=DescribeFeatureType&TYPENAME=" +
+                                    $(response).find("Query").attr("typeName")),
                                 type: 'GET',
                                 success: function(response) {
                                     var fields = [];
@@ -959,7 +959,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             view.setZoom(data.zoom || 16);
         }
         $('#marker').show();
-    };
+    }
 
     
     /**
@@ -1142,7 +1142,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             messagePopup(tr("device position not available on this device"));
         }
         return false;
-    };
+    }
 
     //  info popup
     function messagePopup(msg){
@@ -1166,17 +1166,20 @@ ol.extent.getTopRight(extent).reverse().join(" "),
 
     /**
      * reads optional "c" querystring arg,
-     * loads application profile
-     * ie &c=cadastral& : loads etc/catastral.js instead of customConfig.js
-     * c MUST MATCH ^[A-Za-z0-9_-]+$
+     * loads application profile located in etc/customConfig_[configname].js
+     * ie &c=cadastral& : loads etc/customConfig_cadastral.js instead of customConfig.js
+     * configname MUST MATCH ^[A-Za-z0-9_-]+$
      */
     function init() {
-        var qsconfig = "customConfig"
+        var qsconfig;
         if (qs.c && qs.c.match(/^[A-Za-z0-9_-]+$/)) {
-            qsconfig = qs.c
-        };
+            qsconfig = "etc/customConfig_"+qs.c+".js";
+        }
+        else {
+            qsconfig = "etc/customConfig.js";
+        }
         $.ajax({
-            url: "etc/"+qsconfig+".js",
+            url: qsconfig,
             dataType: "script",
             success: function() {
                 doConfiguration();
@@ -1188,7 +1191,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 doMap();
                 doGUI();
             }
-        })
+        });
     }
     
     /**
@@ -1281,7 +1284,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         if (qs.s) {
             config.search = true;
             config.searchparams = {};
-            $("#addressForm label").text('Features or ' + $("#addressForm label").text())
+            $("#addressForm label").text('Features or ' + $("#addressForm label").text());
         }
     }
 
@@ -1422,7 +1425,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         if (config.gfiok && (!(config.wmc.length>0))) {
             //~ queryMap(view.getCenter());
             setTimeout(
-                function() { queryMap(view.getCenter()) },
+                function() { queryMap(view.getCenter()); },
                 300
             );
         }
@@ -1434,7 +1437,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
     init();
     
 
-}
+};
 
 
 $(document).ready(SViewer);

@@ -1,4 +1,5 @@
 etc/customConfig.js
+etc/customConfig_*
 *~
 *.swp
 *.swo
