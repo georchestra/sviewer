@@ -1178,20 +1178,17 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         else {
             qsconfig = "etc/customConfig.js";
         }
-        $.ajax({
-            url: qsconfig,
-            dataType: "script",
-            success: function() {
+        $.getScript(qsconfig)
+            .done(function() {
                 doConfiguration();
                 doMap();
                 doGUI();
-            },
-            failure: function() {
+            })
+            .fail(function() {
                 doConfiguration();
                 doMap();
                 doGUI();
-            }
-        });
+            });
     }
     
     /**
