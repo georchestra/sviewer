@@ -130,6 +130,17 @@ Queries the map on startup. Convenient to enlight a specific feature on the map.
 shares the map. Click on the marker to remove it and disable autoquery.
 
 
+c {string}
+--------------
+is persistent
+
+Chooses a particular SViewer configuration See "multiple configurations".
+
+Example :
+
+    http://sdi.georchestra.org/sviewer/?c=myconf
+
+
 qr {string}
 ------------------
 Opens the permalink/QR code on startup. Convenient for the geOrchestra 'send to mobile' action,
@@ -140,6 +151,13 @@ s {string}
 ------------------
 Activate search features based on text attributes layer (only first layer for the moment).
 
+
+multiple configurations
+=======================
+You may provide several configurations for one SViewer instance. Copy etc/customConfig.js into etc/customConfig_myconf.js
+and edit this file according to your needs. You can call this profile using &c=myconf&
+
+The profile name MUST MATCH ^[A-Za-z0-9-_]$, ie "myconf" is valid, "myconf.myorg" isn't.
 
 
 geOrchestra integration

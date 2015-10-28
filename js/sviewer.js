@@ -472,6 +472,7 @@ var SViewer = function() {
                 linkParams.z = encodeURIComponent(view.getZoom());
             }
             linkParams.lb = encodeURIComponent(config.lb);
+            if (config.customConfigName) { linkParams.c = config.customConfigName; }
             if (config.kmlUrl) { linkParams.kml = config.kmlUrl; }
             if (config.search) { linkParams.s = '1'; }
             if (config.layersQueryString) { linkParams.layers = config.layersQueryString; }
@@ -1180,6 +1181,8 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         }
         $.getScript(qsconfig)
             .done(function() {
+                // transmits config name for persistency
+                customConfig['customConfigName'] = qs.c;
                 doConfiguration();
                 doMap();
                 doGUI();
