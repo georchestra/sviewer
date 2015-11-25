@@ -554,8 +554,8 @@ var SViewer = function() {
                             street = $(res).find("Street").text(),
                             municipality = $(res).find('[type="Municipality"]').text();
                         switch (matchType) {
-                            /*case 'City': zoom = 15; break;
-                            case 'Street': zoom = 17; break;*/
+                            case 'City': zoom = 15; break;
+                            case 'Street': zoom = 17; break;
                             case 'Street enhanced': zoom = 18; break;
                             case 'Street number': zoom = 18; break;
                         }
@@ -582,7 +582,7 @@ var SViewer = function() {
                                 .attr("title", resultElems.join('\n'))
                                 .click({
                                     'extent': extent,
-                                    'location': ptResult,
+                                    'coordinates': ptResult,
                                     'zoom': zoom
                                 }, onSearchItemClick);
                         items.push(item);
