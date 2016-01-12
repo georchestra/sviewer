@@ -1360,7 +1360,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
 
         // marker overlay for geoloc and queries
         marker =  new ol.Overlay({
-            element: $('#marker'),
+            element: $('#marker')[0],
             positioning: 'bottom-left',
             stopEvent: false
         });
