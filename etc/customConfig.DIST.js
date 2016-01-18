@@ -79,22 +79,25 @@ customConfig = {
      * the GUI displays a slider control for each overlay, allowing the user
      * to dynamically alter one parameter within the style and 
      * immediately see the resulting map.
+     * This sample SLD parametric layer displays a particular evelation level in Brittany, France.
+     */
     layersSLD: [
         {
             'id': 'elevation',
-            'url': 'http://sdi.georchestra.org/geoserver/ows',
+            'url': 'http://geobretagne.fr/geoserver/alti/ows',
             'visible': true,
             'opacity': 0.8,
             'param_label': 'elevation',
             'param_value': 0,
             'param_value_min': 0,
-            'param_value_max': 2000,
-            'param_step': 1,
+            'param_value_max': 10,
+            'param_step': 0.1,
             'param_re': /ELEVATION/g,
             'SLD_BODY': "<NamedLayer> \
-<Name>dem:srtm</Name> \
+<Name>alti:litto3d</Name> \
 <UserStyle><FeatureTypeStyle><Rule> \
 <RasterSymbolizer><ColorMap type='intervals'> \
+<ColorMapEntry color='#b5d0d0' quantity='-100' opacity='0' /> \
 <ColorMapEntry color='#b5d0d0' quantity='0' opacity='1' /> \
 <ColorMapEntry color='#b5d0d0' quantity='ELEVATION' opacity='1' /> \
 <ColorMapEntry color='#b5d0d0' quantity='100000' opacity='0' /> \
@@ -102,7 +105,6 @@ customConfig = {
 </NamedLayer>"
         }
     ],
-     */
 
 
     /**

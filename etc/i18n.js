@@ -26,18 +26,20 @@ $.extend(hardConfig, {
             'No result': 'Aucun résultat',
             'Geolocation failed': 'Localisation impossible',
             'searching...': 'recherche...',
+            
+            'Where am I ?': 'Où suis-je ?',
+            'estimating device position ...': 'estimation de la position ...',
+            'device position not available on this device': 'localisation non disponible sur cet appareil',
+            'device position error': 'la localisation de l\'appareil a échoué',
 
             'Title': 'Titre de la carte',
             'change title': 'changer le titre',
             'Permalink': 'Permalien',
             'Permalink to this map': 'Lien permanent vers cette carte',
-            'Addreparámetrosss and/or city': 'Adresse et/ou commune',
+            'Address and/or city': 'Adresse et/ou commune',
             'Features or Address and/or city': 'Entités ou Adresse et/ou commune',
             'share on ' : 'partager sur ',
-            'Edit with geOrchestra': 'éditer carte avec geOrchestra',
-            
-            'Parameters': 'Paramètres',
-            'source': 'source'
+            'Edit with geOrchestra': 'éditer carte avec geOrchestra'
         },
         es: {
             'geOrchestra mobile': 'geOrchestra móvil',
@@ -55,10 +57,7 @@ $.extend(hardConfig, {
             'searching...': 'búsqueda...',
 
             'Permalink': 'Vínculo permanente',
-            'Address and/or city': 'Entrar dirección o lugar',
-            
-            'Parameters': 'parámetros',
-            'source': 'fuente'
+            'Address and/or city': 'Entrar dirección o lugar'
         },
         ru: {
             'geOrchestra mobile': 'мобильная версия программы geOrchestra',
@@ -106,10 +105,7 @@ $.extend(hardConfig, {
             'Permalink': 'Permalink',
             'Permalink to this map': 'Permanenter link zur Karte',
             'share on ' : 'teilen',
-            'Edit with geOrchestra': 'Karte mittels georchestra ändern',
-            
-            'Parameters': 'Parametrieren',
-            'source': 'datenquelle'
+            'Edit with geOrchestra': 'Karte mittels georchestra ändern'
         }
     }
 });
