@@ -162,10 +162,10 @@ var SViewer = function() {
 
                         // attribution
                         if (mdLayer.Attribution) {
-                            html.push('<span class="sv-md-attrib">' + tr('source'));
-                            html.push(' : <a target="_blank" href="' + mdLayer.Attribution.OnlineResource + '" >');
+                            html.push('<span class="sv-md-attrib">' + escHTML(tr('source')));
+                            html.push(' : <a target="_blank" href="' + escHTML(mdLayer.Attribution.OnlineResource) + '" >');
                             if (mdLayer.Attribution.LogoURL) {
-                                html.push('<img class="sv-md-logo" src="' + mdLayer.Attribution.LogoURL.OnlineResource + '" /><br />');
+                                html.push('<img class="sv-md-logo" src="' + escHTML(mdLayer.Attribution.LogoURL.OnlineResource) + '" /><br />');
                             }
                             html.push(escHTML(mdLayer.Attribution.Title));
                             html.push('</a></span>');
@@ -186,7 +186,7 @@ var SViewer = function() {
                         if (mdLayer.hasOwnProperty('MetadataURL')) {
                             $.each(mdLayer.MetadataURL, function() {
                                 if (this.Format === "text/html") {
-                                    html.push('&nbsp;<a target="_blank" class="sv-md-meta" href="' + this.OnlineResource + '">');
+                                    html.push('&nbsp;<a target="_blank" class="sv-md-meta" href="' + escHTML(this.OnlineResource) + '">');
                                     html.push(tr('metadata'));
                                     html.push(" ... </a>");
                                 }
@@ -706,7 +706,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             );
 
             // response order = layer order
-            var domResponse =  $('<div><span class="sv-md-title">' + escHTML(this.md.title) + '</span></div>');
+            var domResponse =  $($('<div>').append($('<span class="sv-md-title">').text(this.md.title)));
             $('#querycontent').append(domResponse);
             // ajax request
             $.mobile.loading('show');
@@ -729,14 +729,14 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                     else {
                         // disable jquery ajax for links
                         $('#panelQuery').popup('open');
-                        $(this).append('<p class="sv-noitem">' + tr('no item found') + '</p>');
+                        $(this).append($('<p class="sv-noitem">').text(tr('no item found')));
                         config.gfiok = false;
                     }
                     $.mobile.loading('hide');
                 },
                 failure: function() {
                     $.mobile.loading('hide');
-                    $(this).append('<p class="sv-noitem">' + tr('query failed') + '</p>');
+                    $(this).append($('<p class="sv-noitem">').text(tr('query failed')));
                 }
             });
         });
@@ -755,12 +755,12 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                         domResponse.append(this.get('description'));
                     }
                     else {
-                        var html = '';
                         $.each(this.getProperties(), function(k, v) {
                             if ($.type(v)==="string") {
-                                html += '<span class="sv-key">' + k + '</span>' + ' : ';
-                                html += '<span class="sv-value">' + v + '</span>';
-                                html += '<br />';
+                                domResponse.append($('<span class="sv-key">').text(k + ':'));
+                                domResponse.append($('<span class="sv-value">').text(v));
+                                domResponse.append($('<br>'));
+
                             }
                         });
                         domResponse.append(html);
@@ -779,7 +779,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
     function clearQuery() {
         $('#marker').hide('fast');
         $('#panelQuery').popup('close');
-        $('#querycontent').html(tr('Query the map'));
+        $('#querycontent').text(tr('Query the map'));
         config.gficoord = null;
         config.gfiz = null;
         config.gfiok = false;
@@ -912,7 +912,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                             config.searchparams.typename = $(response).find("Query").attr("typeName");
                             $.ajax({
                                 url: ajaxURL($(response).find("LayerDescription").attr("wfs") +
-                                    "SERVICE=WFS&VERSION=1.0.0&REQUEST=DescribeFeatureType&TYPENAME=" +
+                                    "&SERVICE=WFS&VERSION=1.0.0&REQUEST=DescribeFeatureType&TYPENAME=" +
                                     $(response).find("Query").attr("typeName")),
                                 type: 'GET',
                                 success: function(response) {
@@ -970,7 +970,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
      */
     function featuresToList (features) {
         var lib = config.searchparams.title || tr('Top layer');
-        $("#searchResults").append('<li data-role="list-divider">'+lib+'</li>');
+        $("#searchResults").append($('<li data-role="list-divider">').text(lib));
 
         $.each(features, function(i, feature) {
             var geom = feature.getGeometry(),
@@ -1147,7 +1147,8 @@ ol.extent.getTopRight(extent).reverse().join(" "),
 
     //  info popup
     function messagePopup(msg){
-        $("<div class='ui-loader ui-overlay-shadow ui-body-e ui-corner-all'><h3>"+msg+"</h3></div>")
+        $("<div class='ui-loader ui-overlay-shadow ui-body-e ui-corner-all'>")
+            .append($('<h3>').text(msg))
         .css({
             display: "block",
             position: "fixed",
