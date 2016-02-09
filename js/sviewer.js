@@ -452,35 +452,44 @@ var SViewer = function() {
 
 
     /**
+     * Method: buildPermalink
+     * constructs a permalink
+     */
+    function buildPermalink () {
+        var permalinkHash, permalinkQuery;
+        var c = view.getCenter();
+        var linkParams = {};
+        if (config.gficoord && config.gfiz && config.gfiok) {
+            linkParams.x = encodeURIComponent(Math.round(config.gficoord[0]));
+            linkParams.y = encodeURIComponent(Math.round(config.gficoord[1]));
+            linkParams.z = encodeURIComponent(config.gfiz);
+            linkParams.q = '1';
+        }
+        else {
+            linkParams.x = encodeURIComponent(Math.round(c[0]));
+            linkParams.y = encodeURIComponent(Math.round(c[1]));
+            linkParams.z = encodeURIComponent(view.getZoom());
+        }
+        linkParams.lb = encodeURIComponent(config.lb);
+        if (config.customConfigName) { linkParams.c = config.customConfigName; }
+        if (config.kmlUrl) { linkParams.kml = config.kmlUrl; }
+        if (config.search) { linkParams.s = '1'; }
+        if (config.layersQueryString) { linkParams.layers = config.layersQueryString; }
+        if (config.title&&config.wmctitle!=config.title) { linkParams.title = config.title; }
+        if (config.wmc) { linkParams.wmc = config.wmc; }
+        permalinkHash = window.location.origin + window.location.pathname + "#" + jQuery.param(linkParams);
+        permalinkQuery = window.location.origin + window.location.pathname + "?" + jQuery.param(linkParams);
+        return permalinkQuery;
+    }
+        
+    /**
      * Method: setPermalink
-     * keeps permalinks synchronized with the map extent
+     * keeps permalinks display synchronized with map extent
      */
     function setPermalink () {
         // permalink, social links & QR code update only if frame is visible
         if ($('#panelShare').css('visibility')==='visible') {
-            var permalinkHash, permalinkQuery;
-            var c = view.getCenter();
-            var linkParams = {};
-            if (config.gficoord && config.gfiz && config.gfiok) {
-                linkParams.x = encodeURIComponent(Math.round(config.gficoord[0]));
-                linkParams.y = encodeURIComponent(Math.round(config.gficoord[1]));
-                linkParams.z = encodeURIComponent(config.gfiz);
-                linkParams.q = '1';
-            }
-            else {
-                linkParams.x = encodeURIComponent(Math.round(c[0]));
-                linkParams.y = encodeURIComponent(Math.round(c[1]));
-                linkParams.z = encodeURIComponent(view.getZoom());
-            }
-            linkParams.lb = encodeURIComponent(config.lb);
-            if (config.customConfigName) { linkParams.c = config.customConfigName; }
-            if (config.kmlUrl) { linkParams.kml = config.kmlUrl; }
-            if (config.search) { linkParams.s = '1'; }
-            if (config.layersQueryString) { linkParams.layers = config.layersQueryString; }
-            if (config.title&&config.wmctitle!=config.title) { linkParams.title = config.title; }
-            if (config.wmc) { linkParams.wmc = config.wmc; }
-            permalinkHash = window.location.origin + window.location.pathname + "#" + jQuery.param(linkParams);
-            permalinkQuery = window.location.origin + window.location.pathname + "?" + jQuery.param(linkParams);
+            permalinkQuery = buildPermalink();
 
             $('#socialLinks').empty();
             $.each(config.socialMedia, function(name, socialUrl) {
@@ -1000,6 +1009,82 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         });
         $("#searchResults").listview().listview('refresh');
     }
+    
+    /**
+     * method: feedbackForm
+     * use retrodata service to record user feedback
+     */
+    function feedbackForm() {
+        var minlength = 3,
+            maxlength = 200;
+
+        $('#feedbackForm').validate({
+            debug: true,
+            rules: {
+                feedbackComment: {
+                    required: true,
+                    minlength: minlength,
+                    maxlength: maxlength
+                },
+                feedbackEmail: {
+                    email: true
+                },
+                feedbackGCU: {
+                    required: true
+                }
+            },
+            submitHandler: function(form) {
+                var geojson = new ol.format.GeoJSON(),
+                    feature = new ol.Feature({
+                    "sv:title": config.title,
+                    "sv:email": $('#feedbackEmail').val(),
+                    "sv:comment" : $('#feedbackComment').val(),
+                    "sv:permalink": buildPermalink()
+                }),
+                    p = marker.getPosition();
+                if (p) {
+                    feature.setGeometry(new ol.geom.Point(ol.proj.transform(marker.getPosition(), projcode, 'EPSG:4326')));
+                };
+                console.log({
+                    "type": "FeatureCollection",
+                    "features": [geojson.writeFeatureObject(feature)]
+                });
+                $.ajax({
+                    url: ajaxURL("http://dev.geobretagne.fr/retrodata/"),
+                    type:"POST",
+                    contentType : 'application/json',
+                    dataType: "json",
+                    data: JSON.stringify({
+                        "type": "FeatureCollection",
+                        "features": [geojson.writeFeatureObject(feature)]
+                    }),
+                    success: function(response) {
+                        if (response.result==="success") {
+                            messagePopup(tr('Comment saved. Thanks for your contribution.'));
+                            $(form).trigger('reset');
+                        }
+                        else {
+                            messagePopup(tr('Error submitting your comment. Please try again.'));
+                        }
+                    },
+                    error: function(reponse) {
+                        messagePopup(tr('Error submitting your comment. Please try again.'));
+                    }
+                })
+            },
+            messages: {
+                feedbackComment: {
+                    required: tr("comment is mandatory"),
+                    minlength: tr("at least {0} characters required"),
+                    maxlength: tr("at most {0} characters required")
+                },
+                feedbackMail:  {
+                    email: tr("you must provide a valid email address")
+                },
+                feedbackGCU: tr("you must accept the conditions before submitting your comment")
+            }
+        });
+    }
 
     /**
      * method: searchPlace
@@ -1399,7 +1484,6 @@ xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" + props.SLD_BODY + "</St
             view.setRotation(0);
         }
 
-
         // marker overlay for geoloc and queries
         marker =  new ol.Overlay({
             element: $('#marker')[0],
@@ -1445,6 +1529,16 @@ xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" + props.SLD_BODY + "</St
         $('#georchestraForm').submit(function(e) {
             sendMapTo('georchestra_viewer');
         });
+        
+        // feedback form handled by validation plugin
+        if (config.feedback) {
+            if (config.feedback.url) {
+                feedbackForm();
+            }
+            else {
+                $('#panelFeedbackBtn').hide()
+            }
+        }
 
         // dynamic resize
         $(window).bind('orientationchange resize pageshow updatelayout', panelLayout);
@@ -1530,7 +1624,6 @@ xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" + props.SLD_BODY + "</St
         fixContentHeight();
 
         if (config.gfiok && (!(config.wmc.length>0))) {
-            //~ queryMap(view.getCenter());
             setTimeout(
                 function() { queryMap(view.getCenter()); },
                 300

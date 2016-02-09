@@ -160,6 +160,42 @@ and edit this file according to your needs. You can call this profile using &c=m
 The profile name MUST MATCH ^[A-Za-z0-9-_]$, ie "myconf" is valid, "myconf.myorg" isn't.
 
 
+Retrodata
+=======================
+sViewer may allow georeferenced comments aka "retrodatas". In the customConfig file, specify the retrodata service endpoint like this :
+
+    retrodata: {
+        url: "http://geobretagne.fr/retrodata/"
+    },
+
+A new toolbar entry will show up, allowing users to post their comments.
+
+The service endpoint shall accept a POST request with a geoJSON payload like that :
+
+    {
+        "type": "FeatureCollection",
+        "features": [{
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -1.82,
+                    48.25
+                ]
+            },
+            "properties": {
+                "sv:title": "sviewer current title",
+                "sv:email": "optional.mail.provided@by.user",
+                "sv:comment" : "this is a useless comment",
+                "sv:permalink" : "permalink to the current view"
+            }
+        }]
+    }
+
+... and store it for whatever use. With geOrchestra you can benefit from security-proxy authentication and store the comment in a PostGIS database with a certified user mail, unique id... And retrieve results as featureTypes in all WFS formats.
+
+
+
 geOrchestra integration
 =======================
 
@@ -179,7 +215,6 @@ First item, highest priority
 * customisable splashscreen
 * check the genericity of the openLS helper
 * GPS geocoding, tracking, events based on feature proximity
-* CQL filters support
 * mobile OS manifest
 
 Before using this project, read the LICENSE.en terms.

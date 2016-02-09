@@ -94,7 +94,7 @@ p.center {
     min-width: 400px;
 }
 
-#panelInfo-popup,#panelLocate-popup,#panelShare-popup, #panelQuery-popup, #panelSLD-popup {
+#panelInfo-popup,#panelLocate-popup,#panelShare-popup, #panelQuery-popup, #panelFeedback-popup, #panelSLD-popup {
     top: 54px !important;
     right: 4px !important;
     left: auto !important;
@@ -219,7 +219,7 @@ screen and (max-height: 400px) {
 
 /* panels */
 
-#panelInfo-screen, #panelLocate-screen, #panelShare-screen, #panelQuery-screen, #panelSLD-screen {
+#panelInfo-screen, #panelLocate-screen, #panelShare-screen, #panelQuery-screen, #panelFeedback-screen, #panelSLD-screen {
     display: none;
 }
 
@@ -310,4 +310,9 @@ screen and (max-height: 400px) {
 }
 .sv-location a {
     font-size: 0.7em;
+}
+
+/* validation */
+form label.error {
+	color: #f00;
 }
