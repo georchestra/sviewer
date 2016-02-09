@@ -19,6 +19,26 @@ $.extend(hardConfig, {
             'Query results :': 'Résultats :',
             'no item found': 'aucun objet n\'a été trouvé',
             'query failed': 'l\'interrogation a échoué',
+            
+            'Feedback': 'Vos retours',
+            'Your feedback about this map': 'Votre commentaire à propos de cette carte',
+            'type your comment here...': 'tapez votre commentaire ici ...',
+            'Your email address (optional)' : 'Votre adresse mail (optionnel)',
+            'type your mail here...': 'tapez votre adresse mail ici...',
+            'Optionally place a pin on the map to locate your comment.': 'Placez éventuellement un marqueur sur la carte pour localiser votre commentaire',
+            'I accept terms and conditions': 'J\'accepte les conditions d\'utilisation',
+            'send': 'envoyer',
+            'send feedback': 'envoyer le commentaire',
+            'reset': 'réinitialiser',
+            'reset form': 'réinitialiser le formulaire',
+            'comment is mandatory': 'un commentaire doit être rédigé',
+            'at least {0} characters required': 'le commentaire doit comprendre au moins {0} caractères',
+            'at most {0} characters required': 'le commentaire doit comprendre au plus {0} caractères',
+            'you must provide a valid email address': 'vous devez préciser une adresse mail valide',
+            'you must accept the conditions before submitting your comment': 'vous devez accepter les conditions avant d\'envoyer votre commentaire',
+            'Comment saved. Thanks for your contribution.': 'Commentaire reçu. Merci pour votre contribution',
+            'Error submitting your comment. Please try again.': 'Erreur lors de l\'envoi. Merci de réessayer plus tard.',
+            
 
             'metadata': 'voir métadonnée',
 

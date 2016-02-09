@@ -7,16 +7,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=100" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="generator" content="HTML Tidy for Linux (vers 25 March 2009), see www.w3.org" />
     <!-- external libraries -->
     <script type="text/javascript" src="lib/jquery/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="lib/jquery.validate/jquery.validate.min.js"></script>
     <script type="text/javascript" src="lib/qrcode.js/qrcode.min.js"></script>
     <script src="build/proj4.js"></script>
-    <!-- OpenLayers -->
-    <!--
-    <link rel="stylesheet" href="build/ol.css" type="text/css" />
-    <script src="build/ol-simple.js" type="text/javascript"></script>
-    -->
     <link rel="stylesheet" href="build/ol.css" type="text/css" />
     <script src="build/ol.js" type="text/javascript"></script>
     <!-- jquery mobile -->
@@ -62,6 +57,7 @@ $(document).bind("mobileinit", function(){
           <a href="#panelShare" accesskey="m" id="panelShareBtn" class="i18n ui-btn ui-icon-edit ui-btn-icon-right" data-rel="popup" data-position-to="window" title="Map">&nbsp;</a>
           <a href="#panelInfo" accesskey="i" id="panelInfoBtn" class="i18n ui-btn ui-icon-bullets ui-btn-icon-notext" data-rel="popup" data-position-to="window" title="Legend">Legend</a>
           <a href="#panelQuery" accesskey="q" id="panelQueryBtn" class="i18n ui-btn ui-icon-info ui-btn-icon-notext" data-rel="popup" data-position-to="window" title="Query">Query</a>
+          <a href="#panelFeedback" accesskey="f" id="panelFeedbackBtn" class="i18n ui-btn ui-icon-comment ui-btn-icon-notext" data-rel="popup" data-position-to="window" title="Feedback">Feedback</a>
           <a href="#panelLocate" accesskey="l" id="panelLocateBtn" class="i18n ui-btn ui-icon-search ui-btn-icon-notext" data-rel="popup" data-position-to="window" title="Locate">Locate</a>
         </div>
       </div>
@@ -85,6 +81,29 @@ $(document).bind("mobileinit", function(){
           <div id="legend" class="sv-legend"></div>
         </div>
       </div>
+      <!-- 
+      feedback panel 
+      -->
+      <div id="panelFeedback" class="sv-panel" data-role="popup">
+        <div data-role="header">
+          <h3 class="i18n">Feedback</h3>
+          <a href="#" data-rel="back" class="i18n ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-btn-right" title="Close">Close</a>
+        </div>
+        <div data-role="content" class="ui-mini">
+            <form id="feedbackForm" method="POST" action="">
+                <label for="feedbackComment" class="i18n">Your feedback about this map</label>
+                <textarea id="feedbackComment" name="feedbackComment" placeholder="type your comment here..." class="i18n"></textarea>
+                <label for="feedbackEmail" class="i18n">Your email address (optional)</label>
+                <input id="feedbackEmail" name="feedbackEmail" type="text" class="i18n" placeholder="type your mail here..." />
+                <p class="i18n">Optionally place a pin on the map to locate your comment.</p>
+                <input id="feedbackGCU" name="feedbackGCU" type="checkbox" />
+                <label for="feedbackGCU"><a href="#" target="_blank" class="i18n">I accept terms and conditions</a></label>
+                <fieldset data-role="controlgroup" data-type="horizontal">
+                    <button type="submit" data-icon="check" class="i18n">send</button>
+                </fieldset>
+            </form>
+        </div>
+      </div>
       <!-- locate panel -->
       <div id="panelLocate" class="sv-panel" data-role="popup">
         <div data-role="header">
@@ -100,7 +119,7 @@ $(document).bind("mobileinit", function(){
                     id="searchInput"
                     data-wrapper-class="controlgroup-textinput ui-btn ui-mini"
                     value=""
-                    title="Address and/or city" /><button class="i18n ui-btn ui-icon-search ui-btn-icon-notext " title="Locate">Locate</button>
+                    title="Address and/or city" /><button class="i18n ui-btn ui-icon-search ui-btn-icon-notext" title="Locate">Locate</button>
             </div>
             <button id="zpBt" class="i18n ui-btn ui-icon-navigation ui-corner-all ui-mini " title="Where am I ?">Where am I ?</button>
             <span id="locateMsg"></span>
@@ -151,7 +170,9 @@ $(document).bind("mobileinit", function(){
           </div>
         </div>
       </div>
-      <!-- end page -->
+
+      
     </div>
+    <!-- end page -->
   </body>
 </html>
