@@ -1489,14 +1489,19 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             sendMapTo('georchestra_viewer');
         });
         
-        // feedback form handled by validation plugin
-        if (config.feedback) {
-            if (config.feedback.url) {
+        // feedback form handled by validation plugin,
+        // activated if config.retrodata.url is valid
+        console.log(config.feedback);
+        if (config.hasOwnProperty('retrodata')) {
+            if (config.retrodata.hasOwnProperty('url')) {
                 feedbackForm();
             }
             else {
                 $('#panelFeedbackBtn').hide()
             }
+        }
+        else {
+            $('#panelFeedbackBtn').hide()
         }
 
         // dynamic resize
