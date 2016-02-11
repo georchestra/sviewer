@@ -10,7 +10,7 @@ customConfig = {
      * base url of the geOrchetra SDI. Layers coming from this SDI
      * will have enhanced features.
      */
-    geOrchestraBaseUrl: 'http://sdi.georchestra.org/',
+    geOrchestraBaseUrl: 'https://sdi.georchestra.org/',
 
     /**
      * map bounds
@@ -39,7 +39,7 @@ customConfig = {
         }),
         new ol.layer.Tile({
             source: new ol.source.TileWMS({
-                url: 'http://sdi.georchestra.org/geoserver/dem/wms',
+                url: 'https://sdi.georchestra.org/geoserver/dem/wms',
                 params: {
                     'LAYERS': 'altitude',
                     'TILED': true
@@ -50,7 +50,7 @@ customConfig = {
         }),
         new ol.layer.Tile({
             source: new ol.source.TileWMS({
-                url: 'http://sdi.georchestra.org/geoserver/unearthedoutdoors/wms',
+                url: 'https://sdi.georchestra.org/geoserver/unearthedoutdoors/wms',
                 params: {
                     'LAYERS': 'truemarble',
                     'TILED': true
@@ -61,7 +61,7 @@ customConfig = {
         }),
         new ol.layer.Tile({
             source: new ol.source.TileWMS({
-                url: 'http://sdi.georchestra.org/geoserver/nasa/wms',
+                url: 'https://sdi.georchestra.org/geoserver/nasa/wms',
                 params: {
                     'LAYERS': 'night_2012',
                     'TILED': true
