@@ -110,6 +110,10 @@ p.center {
     text-overflow: ellipsis !important;
 }
 
+#panelFeedbackBtn {
+    display: none;
+}
+
 
 @media screen and (max-width: 600px) {
     .ui-controlgroup-controls .ui-btn {

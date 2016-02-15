@@ -1491,17 +1491,11 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         
         // feedback form handled by validation plugin,
         // activated if config.retrodata.url is valid
-        console.log(config.feedback);
         if (config.hasOwnProperty('retrodata')) {
             if (config.retrodata.hasOwnProperty('url')) {
+                $('#panelFeedbackBtn').show()
                 feedbackForm();
             }
-            else {
-                $('#panelFeedbackBtn').hide()
-            }
-        }
-        else {
-            $('#panelFeedbackBtn').hide()
         }
 
         // dynamic resize
