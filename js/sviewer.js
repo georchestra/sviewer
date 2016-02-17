@@ -378,7 +378,9 @@ var SViewer = function() {
         function parseWMCResponse(response) {
             var wmc = $('ViewContext', response);
             config.wmctitle = $(wmc).children('General').children('Title').text();
-            setTitle(config.wmctitle);
+            if (config.wmctitle!="") {
+                setTitle(config.wmctitle);
+            }
 
             // recenter on  WMC extent if xyz not specified
             if (isNaN(config.x)) {
@@ -1018,6 +1020,9 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         var minlength = 3,
             maxlength = 200;
 
+        /* CGU */
+        $('#feedbackGCUURL').attr('href', config.retrodata.url_gcu);
+        
         $('#feedbackForm').validate({
             debug: true,
             rules: {
@@ -1045,12 +1050,8 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 if (p) {
                     feature.setGeometry(new ol.geom.Point(ol.proj.transform(marker.getPosition(), projcode, 'EPSG:4326')));
                 };
-                console.log({
-                    "type": "FeatureCollection",
-                    "features": [geojson.writeFeatureObject(feature)]
-                });
                 $.ajax({
-                    url: ajaxURL("http://dev.geobretagne.fr/retrodata/"),
+                    url: ajaxURL(config.retrodata.url),
                     type:"POST",
                     contentType : 'application/json',
                     dataType: "json",
@@ -1079,7 +1080,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                     maxlength: tr("at most {0} characters required")
                 },
                 feedbackMail:  {
-                    email: tr("you must provide a valid email address")
+                    email: tr("invalid email address")
                 },
                 feedbackGCU: tr("you must accept the conditions before submitting your comment")
             }
@@ -1319,7 +1320,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 config.layersQueryable.push(new LayerQueryable(this));
             });
         }
-        
+
         // querystring param: qcl_filters
         if (qs.qcl_filters) {
             var qcl_filters_list = [];
@@ -1510,7 +1511,6 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         if (config.lang !== 'en') {
             translateDOM('.i18n', ['title', 'placeholder', 'value']);
         }
-        
 
         // resize map
         $(window).bind("orientationchange resize pageshow", fixContentHeight);
@@ -1528,7 +1528,6 @@ ol.extent.getTopRight(extent).reverse().join(" "),
     // ------ Main ------------------------------------------------------------------------------------------
 
     init();
-    
 
 };
 
