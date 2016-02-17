@@ -378,7 +378,7 @@ var SViewer = function() {
         function parseWMCResponse(response) {
             var wmc = $('ViewContext', response);
             config.wmctitle = $(wmc).children('General').children('Title').text();
-            if (config.wmctitle!="") {
+            if (config.wmctitle!=="") {
                 setTitle(config.wmctitle);
             }
 
@@ -886,15 +886,15 @@ ol.extent.getTopRight(extent).reverse().join(" "),
               }
               // use pseudo index to retrieve matching features
               if (config.searchindex) {
-                var features = [];
+                var f = [];
                 var responses = 0;
                 for (var i=0;i<config.searchindex.length && responses <config.maxFeatures;i++) {
                     if (config.searchindex[i].data.indexOf(value.toLowerCase())!=-1) {
-                        features.push(config.kmlLayer.getSource().getFeatureById(config.searchindex[i].id));
+                        f.push(config.kmlLayer.getSource().getFeatureById(config.searchindex[i].id));
                         responses +=1;
                     }
                 }
-                featuresToList(features);
+                featuresToList(f);
               }
            }
         }
@@ -1049,7 +1049,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                     p = marker.getPosition();
                 if (p) {
                     feature.setGeometry(new ol.geom.Point(ol.proj.transform(marker.getPosition(), projcode, 'EPSG:4326')));
-                };
+                }
                 $.ajax({
                     url: ajaxURL(config.retrodata.url),
                     type:"POST",
@@ -1071,7 +1071,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                     error: function(reponse) {
                         messagePopup(tr('Error submitting your comment. Please try again.'));
                     }
-                })
+                });
             },
             messages: {
                 feedbackComment: {
@@ -1269,7 +1269,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         $.getScript(qsconfig)
             .done(function() {
                 // transmits config name for persistency
-                customConfig['customConfigName'] = qs.c;
+                customConfig.customConfigName = qs.c;
                 doConfiguration();
                 doMap();
                 doGUI();
@@ -1494,7 +1494,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         // activated if config.retrodata.url is valid
         if (config.hasOwnProperty('retrodata')) {
             if (config.retrodata.hasOwnProperty('url')) {
-                $('#panelFeedbackBtn').show()
+              $('#panelFeedbackBtn').show();
                 feedbackForm();
             }
         }
