@@ -586,9 +586,6 @@ var SViewer = function() {
                         var item =$('<li class="sv-location" data-icon="location"><a href="#"></a></li>')
                                 .find("a")
                                 .text(label)
-                                //~ .attr("data-extent", '['+extent+']')
-                                //~ .attr("data-location", '['+ptResult+']')
-                                //~ .attr("data-zoom", zoom)
                                 .parent()
                                 .attr("title", resultElems.join('\n'))
                                 .click({
@@ -728,7 +725,10 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 context: domResponse,
                 success: function(response) {
                     // nonempty reponse detection
-                    if (response.search(config.nodata)<0) {
+                    if (response.search('ServiceExceptionReport')>0) {
+                        console.log('getFeatureInfo exception');
+                    }
+                    else if (response.search(config.nodata)<0) {
                         $.each(['#panelInfo', '#panelLocate', '#panelShare'], function(i, p) {
                             $(p).popup('close');
                         });
@@ -738,7 +738,6 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                         $('#panelQuery').popup('open');
                     }
                     else {
-                        // disable jquery ajax for links
                         $('#panelQuery').popup('open');
                         $(this).append($('<p class="sv-noitem">').text(tr('no item found')));
                         config.gfiok = false;
