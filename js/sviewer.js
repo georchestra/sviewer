@@ -22,7 +22,7 @@ var config = {};
 var customConfig = {};
 var hardConfig = {
     title: 'geOrchestra mobile',
-    geOrchestraBaseUrl: 'http://sdi.georchestra.org/',
+    geOrchestraBaseUrl: 'https://sdi.georchestra.org/',
     projection: projection,
     initialExtent: [-12880000,-1080000,5890000,7540000],
     maxExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
