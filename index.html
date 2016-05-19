@@ -43,6 +43,7 @@ $(document).bind("mobileinit", function(){
         <!-- map -->
         <div id="map" class="sv-map" tabindex="0">
             <div id="marker"></div>
+            <div data-role="popup" class="ui-content sv-feedbackTip"></div>
         </div>
 
         <!-- map controls -->
@@ -84,7 +85,7 @@ $(document).bind("mobileinit", function(){
       <!-- 
       feedback panel 
       -->
-      <div id="panelFeedback" class="sv-panel" data-role="popup">
+      <div id="panelFeedback" class="sv-panel sv-panelfeedback" data-role="popup">
         <div data-role="header">
           <h3 class="i18n">Feedback</h3>
           <a href="#" data-rel="back" class="i18n ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-btn-right" title="Close">Close</a>

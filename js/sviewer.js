@@ -478,8 +478,8 @@ var SViewer = function() {
         if (config.layersQueryString) { linkParams.layers = config.layersQueryString; }
         if (config.title&&config.wmctitle!=config.title) { linkParams.title = config.title; }
         if (config.wmc) { linkParams.wmc = config.wmc; }
-        permalinkHash = window.location.origin + window.location.pathname + "#" + jQuery.param(linkParams);
-        permalinkQuery = window.location.origin + window.location.pathname + "?" + jQuery.param(linkParams);
+        permalinkHash = window.location.origin + window.location.pathname + "#" + $.param(linkParams);
+        permalinkQuery = window.location.origin + window.location.pathname + "?" + $.param(linkParams);
         return permalinkQuery;
     }
         
@@ -490,7 +490,7 @@ var SViewer = function() {
     function setPermalink () {
         // permalink, social links & QR code update only if frame is visible
         if ($('#panelShare').css('visibility')==='visible') {
-            permalinkQuery = buildPermalink();
+            var permalinkQuery = buildPermalink();
 
             $('#socialLinks').empty();
             $.each(config.socialMedia, function(name, socialUrl) {
@@ -773,7 +773,6 @@ ol.extent.getTopRight(extent).reverse().join(" "),
 
                             }
                         });
-                        domResponse.append(html);
                     }
                 });
                 $('#querycontent').append(domResponse);
@@ -1022,6 +1021,31 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         /* CGU */
         $('#feedbackGCUURL').attr('href', config.retrodata.url_gcu);
         
+        /* tooltip over feedbacks */
+        var bubble = $('.sv-feedbackTip')[0];
+        var feedbackTip = new ol.Overlay({
+            element: bubble,
+            positioning: 'bottom-center',
+            stopEvent: false
+          });
+        map.addOverlay(feedbackTip);
+
+        // display tooltip on hover or click
+        map.on('pointermove', function(e) {
+            var feature = map.forEachFeatureAtPixel(e.pixel,
+                function(feature) {
+                    return feature;
+            });
+            if (feature) {
+                feedbackTip.setPosition(e.coordinate);
+                $(bubble).html(feature.get('comment'));
+                $(bubble).show();
+            } else {
+                $(bubble).html('');
+                $(bubble).hide();
+            }
+        });
+        
         $('#feedbackForm').validate({
             debug: true,
             rules: {
@@ -1061,6 +1085,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                     success: function(response) {
                         if (response.result==="success") {
                             messagePopup(tr('Comment saved. Thanks for your contribution.'));
+                            feedbackLayerUpdate();
                             $(form).trigger('reset');
                         }
                         else {
@@ -1084,6 +1109,39 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 feedbackGCU: tr("you must accept the conditions before submitting your comment")
             }
         });
+    }
+
+    /**
+     * method: feedbackLayer
+     * display retrodata features on map, filtered by map title
+     */
+    function feedbackLayerUpdate() {
+        config.retrodata.layer.setSource(
+            new ol.source.Vector({
+                projection: 'EPSG:4326',
+                url: ajaxURL(config.retrodata.url_wfs+$.param({
+                        'SERVICE': 'WFS',
+                        'VERSION': "2.0.0",
+                        'REQUEST': 'getFeature',
+                        'TYPENAME': config.retrodata.featuretype,
+                        'OUTPUTFORMAT':'json',
+                        /* using CQL_FILTER for POC */
+                        'CQL_FILTER': "title='"+escHTML(config.title.replace("'","\\'"))+"'"
+                    })
+                ),
+                format: new ol.format.GeoJSON()
+            })
+        );
+        map.getLayers().setAt(map.getLayers().getArray().length, config.retrodata.layer)
+        config.retrodata.layer.setVisible(true);
+    }
+    
+    /**
+     * method: feedbackLayer
+     * display retrodata features on map, filtered by map title
+     */
+    function feedbackLayerHide() {
+        config.retrodata.layer.setVisible(false);
     }
 
     /**
@@ -1416,11 +1474,11 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             activateSearchFeatures('remote');
         }
 
-        // adding kml overlay
+        // adding custom kml overlay
         if (config.kmlUrl) {
             config.kmlLayer = new ol.layer.Vector({
                 source: new ol.source.Vector({
-                    projection: 'EPSG:3857',
+                    projection: 'EPSG:4326',
                     url: ajaxURL(config.kmlUrl),
                     format: new ol.format.KML()
                 })
@@ -1431,6 +1489,21 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             if (config.search) {
                 activateSearchFeatures('local');
             }
+        }
+        
+        // adding retrodata overlay
+        if (config.retrodata) {
+            config.retrodata.layer = new ol.layer.Vector({
+                style: new ol.style.Style({
+                    image: new ol.style.Icon({
+                        anchor: [0.5, 0.5],
+                        anchorXUnits: 'fraction',
+                        anchorYUnits: 'fraction',
+                        src: 'css/images/retrodata.png'
+                    })
+                })
+            });
+            map.addLayer(config.retrodata.layer);
         }
 
         // map recentering
@@ -1469,7 +1542,6 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         map.on('moveend', setPermalink);
         $('#marker').click(clearQuery);
 
-
         // map buttons
         $('#ziBt').click(zoomIn);
         $('#zoBt').click(zoomOut);
@@ -1495,6 +1567,8 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             if (config.retrodata.hasOwnProperty('url')) {
               $('#panelFeedbackBtn').show();
                 feedbackForm();
+                $('.sv-panelfeedback').bind('popupafteropen', feedbackLayerUpdate)
+                    .bind('popupafterclose', feedbackLayerHide);
             }
         }
 
@@ -1502,9 +1576,12 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         $(window).bind('orientationchange resize pageshow updatelayout', panelLayout);
         $('.sv-panel').bind('popupbeforeposition popupafteropen', panelLayout);
         $.each($('.sv-panel'), panelLayout);
+        
+        // panel events
         $('.sv-panel').bind('popupafteropen', setPermalink);
         $('.sv-panel').bind('popupafterclose popupafteropen', panelToggle);
         $('#panelcontrols a').bind('click', panelButton);
+
 
         // i18n
         if (config.lang !== 'en') {

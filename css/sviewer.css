@@ -162,6 +162,10 @@ p.center {
     background-position: 50% 50% !important;
 }
 
+.sv-feedbackTip {
+    max-width: 10em;
+}
+
 
 @media screen and (max-width: 600px),
 screen and (max-height: 400px) {
