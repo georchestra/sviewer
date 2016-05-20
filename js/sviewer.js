@@ -1,3 +1,4 @@
+/*globals $:false, ol:false, proj4:false, QRCode:false*/
 
 // supported (re)projections. add more in customConfig.js
 proj4.defs([
@@ -204,7 +205,6 @@ var SViewer = function() {
                     }
                 },
                 failure: function() {
-                    Ol.Console.error.apply(Ol.Console, arguments);
                 }
             });
         }
@@ -298,14 +298,11 @@ var SViewer = function() {
      * Adjust map size on resize
      */
     function fixContentHeight() {
-        /**
-         * 
-         */
         var header = $("#header"),
             content = $("#frameMap"),
             viewHeight = $(window).height(),
             contentHeight = viewHeight - header.outerHeight();
-        
+
         if ((content.outerHeight() + header.outerHeight()) !== viewHeight) {
             contentHeight -= (content.outerHeight() - content.height());
             content.height(contentHeight);
@@ -668,7 +665,8 @@ ol.extent.getTopRight(extent).reverse().join(" "),
 </Request> \
 </XLS>'].join(""),
                     contentType: "application/xml",
-                    success: onOpenLSSuccess
+                    success: onOpenLSSuccess,
+                    failure: onOpenLSFailure
                 });
                 $.mobile.loading('show', {
                     text: tr("searching...")
@@ -867,34 +865,33 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 // construct a pseudo index the first use
                 if (!config.searchindex) {
                     var pseudoIndex = [];
-                    var features = config.kmlLayer.getSource().getFeatures();
-                    $.each(features, function(i, feature) {
+                    $.each(config.kmlLayer.getSource().getFeatures(), function(i, feature) {
                         // construct an index with all text attributes
                         var id = feature.getId();
-                        var feat = feature.getProperties();
+                        var props = feature.getProperties();
                         var idx = "";
-                        for (var name in feat) {
-                             if (feat.hasOwnProperty(name) && typeof(feat[name])==='string') {
-                                idx+='|' + String(feat[name]).toLowerCase();
-                              }
-                        }
+                        $.each(props, function(key, value) {
+                            if (key=="name" && typeof(value==='string')) {
+                                idx+='|' + value.toLowerCase();
+                            }
+                        })
                         pseudoIndex.push({id:id, data:idx});
-                  });
-                  config.searchindex = pseudoIndex;
-              }
-              // use pseudo index to retrieve matching features
-              if (config.searchindex) {
-                var f = [];
-                var responses = 0;
-                for (var i=0;i<config.searchindex.length && responses <config.maxFeatures;i++) {
-                    if (config.searchindex[i].data.indexOf(value.toLowerCase())!=-1) {
-                        f.push(config.kmlLayer.getSource().getFeatureById(config.searchindex[i].id));
-                        responses +=1;
-                    }
+                    });
+                    config.searchindex = pseudoIndex;
                 }
-                featuresToList(f);
-              }
-           }
+                // use pseudo index to retrieve matching features
+                if (config.searchindex) {
+                    var features = [];
+                    var responses = 0;
+                    $.each(config.searchindex.slice(0,config.maxFeatures), function(i, v) {
+                        if (config.searchindex[i].data.indexOf(value.toLowerCase())!=-1) {
+                            features.push(config.kmlLayer.getSource().getFeatureById(config.searchindex[i].id));
+                            responses +=1;
+                        }
+                    })
+                    featuresToList(features);
+                }
+            }
         }
     }
     
@@ -913,16 +910,26 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 // get DescribeLayer from last Layer
                 var describeLayerUrl = searchLayer.options.wmsurl_ns;
                 $.ajax({
-                        url: ajaxURL(describeLayerUrl + "?SERVICE=WMS&VERSION=1.1.1&REQUEST=DescribeLayer&LAYERS="+
-                            searchLayer.options.layername),
+                        url: ajaxURL(describeLayerUrl + "?" + $.param({
+                                'SERVICE': 'WMS',
+                                'VERSION': '1.1.1',
+                                'REQUEST': 'DescribeLayer',
+                                'LAYERS': searchLayer.options.layername
+                        })),
                         type: 'GET',
                         success: function(response) {
                             config.searchparams.url = $(response).find("LayerDescription").attr("wfs");
                             config.searchparams.typename = $(response).find("Query").attr("typeName");
                             $.ajax({
-                                url: ajaxURL($(response).find("LayerDescription").attr("wfs") +
-                                    "&SERVICE=WFS&VERSION=1.0.0&REQUEST=DescribeFeatureType&TYPENAME=" +
-                                    $(response).find("Query").attr("typeName")),
+                                url: ajaxURL(
+                                        $(response).find("LayerDescription").attr("wfs") + 
+                                        $.param({
+                                            'SERVICE': 'WFS',
+                                            'VERSION': '1.0.0',
+                                            'REQUEST': 'DescribeFeatureType',
+                                            'TYPENAME': $(response).find("Query").attr("typeName")
+                                        })
+                                    ),
                                 type: 'GET',
                                 success: function(response) {
                                     var fields = [];
@@ -1037,9 +1044,15 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                     return feature;
             });
             if (feature) {
+                var content = $('<div />')
+                // KML
+                content.append($('<p />').html(feature.get('description')));
+                // feedback
+                content.append($('<p />').html(feature.get('sv:comment')));
                 feedbackTip.setPosition(e.coordinate);
-                $(bubble).html(feature.get('comment'));
-                $(bubble).show();
+                $(bubble).empty()
+                    .append(content)
+                    .show();
             } else {
                 $(bubble).html('');
                 $(bubble).hide();

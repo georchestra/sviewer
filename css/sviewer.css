@@ -163,7 +163,8 @@ p.center {
 }
 
 .sv-feedbackTip {
-    max-width: 10em;
+    max-width: 16em;
+    font-size: small;
 }
 
 
