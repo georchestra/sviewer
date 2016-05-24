@@ -1017,6 +1017,10 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         $("#searchResults").listview().listview('refresh');
     }
     
+    
+    
+    
+    
     /**
      * method: feedbackForm
      * use retrodata service to record user feedback
@@ -1048,7 +1052,8 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 // KML
                 content.append($('<p />').html(feature.get('description')));
                 // feedback
-                content.append($('<p />').html(feature.get('sv:comment')));
+                content.append($('<p class="sv-date" />').html(feature.get('datetime').split('.')[0]));
+                content.append($('<p class="sv-comment" />').html(feature.get('sv_comment')));
                 feedbackTip.setPosition(e.coordinate);
                 $(bubble).empty()
                     .append(content)
@@ -1139,7 +1144,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                         'TYPENAME': config.retrodata.featuretype,
                         'OUTPUTFORMAT':'json',
                         /* using CQL_FILTER for POC */
-                        'CQL_FILTER': "title='"+escHTML(config.title.replace("'","\\'"))+"'"
+                        'CQL_FILTER': "sv_title='"+escHTML(config.title.replace("'","\\'"))+"'"
                     })
                 ),
                 format: new ol.format.GeoJSON()

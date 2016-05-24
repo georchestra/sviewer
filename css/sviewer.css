@@ -167,6 +167,13 @@ p.center {
     font-size: small;
 }
 
+.sv-feedbackTip .sv-date {
+    color: #666;
+}
+
+.sv-feedbackTip .sv-comment {
+}
+
 
 @media screen and (max-width: 600px),
 screen and (max-height: 400px) {
