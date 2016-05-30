@@ -13,6 +13,7 @@ $.extend(hardConfig, {
             'zoom +': 'zoom +',
             'zoom -': 'zoom -',
             'background': 'fond de plan',
+			'3D': '3D',	
             'Close': 'Fermer',
 
             'Query the map': 'Interrogez la carte',
@@ -49,6 +50,7 @@ $.extend(hardConfig, {
             'Map': 'Mapa',
             'initial view': 'Vista inicial',
             'background': 'fondo de plano',
+			'3D': '3D',	
             'Close': 'Cerrar',
 
             'Results are off map': 'Los resultados están fuera de mapa',
@@ -67,6 +69,7 @@ $.extend(hardConfig, {
             'Share this map': 'делиться',
             'initial view': 'изначальный вид',
             'background': 'плановый фон',
+			'3D': '3D',	
             'Close': 'закрыть',
 
             'Results are off map': 'результаты вне карты',
@@ -87,6 +90,7 @@ $.extend(hardConfig, {
             'zoom +': 'zoom +',
             'zoom -': 'zoom -',
             'background': 'Basis Karte',
+			'3D': '3D',	
             'Close': 'Schließen',
 
             'Query the map': 'Karte abfragen',

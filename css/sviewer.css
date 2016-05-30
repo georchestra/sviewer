@@ -185,6 +185,12 @@ screen and (max-height: 400px) {
 .ui-icon-layer-c {
     background-image: url('images/map.png') !important;
 }
+.ui-icon-3d-c {
+    background-image: url('images/3d.png') !important;
+}
+.ui-icon-north-c {
+    background-image: url('images/compass.png') !important;
+}
 
 
 #marker {
