@@ -1,7 +1,7 @@
 sViewer - simple viewer for geOrchestra
 =======================================
 
-This branch is a complete rewrite of sviewer based on OpenLayers3.
+3d-enabled sviewer
 
 Quick start
 ----------------
