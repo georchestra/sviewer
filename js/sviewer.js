@@ -1,4 +1,3 @@
-/*globals $:false, ol:false, proj4:false, QRCode:false*/
 
 // supported (re)projections. add more in customConfig.js
 proj4.defs([
@@ -20,6 +19,7 @@ for (var z = 0; z < 20; ++z) {
 }
 
 var config = {};
+var map;
 var customConfig = {};
 var hardConfig = {
     title: 'geOrchestra mobile',
@@ -52,7 +52,7 @@ var hardConfig = {
 
 
 var SViewer = function() {
-    var map;
+    //var map;
     var view;
     var marker;
 
@@ -205,6 +205,7 @@ var SViewer = function() {
                     }
                 },
                 failure: function() {
+                    Ol.Console.error.apply(Ol.Console, arguments);
                 }
             });
         }
@@ -298,11 +299,14 @@ var SViewer = function() {
      * Adjust map size on resize
      */
     function fixContentHeight() {
+        /**
+         * 
+         */
         var header = $("#header"),
             content = $("#frameMap"),
             viewHeight = $(window).height(),
             contentHeight = viewHeight - header.outerHeight();
-
+        
         if ((content.outerHeight() + header.outerHeight()) !== viewHeight) {
             contentHeight -= (content.outerHeight() - content.height());
             content.height(contentHeight);
@@ -475,8 +479,8 @@ var SViewer = function() {
             if (config.layersQueryString) { linkParams.layers = config.layersQueryString; }
             if (config.title&&config.wmctitle!=config.title) { linkParams.title = config.title; }
             if (config.wmc) { linkParams.wmc = config.wmc; }
-            permalinkHash = window.location.origin + window.location.pathname + "#" + $.param(linkParams);
-            permalinkQuery = window.location.origin + window.location.pathname + "?" + $.param(linkParams);
+            permalinkHash = window.location.origin + window.location.pathname + "#" + jQuery.param(linkParams);
+            permalinkQuery = window.location.origin + window.location.pathname + "?" + jQuery.param(linkParams);
 
             $('#socialLinks').empty();
             $.each(config.socialMedia, function(name, socialUrl) {
@@ -572,6 +576,9 @@ var SViewer = function() {
                         var item =$('<li class="sv-location" data-icon="location"><a href="#"></a></li>')
                                 .find("a")
                                 .text(label)
+                                //~ .attr("data-extent", '['+extent+']')
+                                //~ .attr("data-location", '['+ptResult+']')
+                                //~ .attr("data-zoom", zoom)
                                 .parent()
                                 .attr("title", resultElems.join('\n'))
                                 .click({
@@ -654,8 +661,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
 </Request> \
 </XLS>'].join(""),
                     contentType: "application/xml",
-                    success: onOpenLSSuccess,
-                    failure: onOpenLSFailure
+                    success: onOpenLSSuccess
                 });
                 $.mobile.loading('show', {
                     text: tr("searching...")
@@ -758,6 +764,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
 
                             }
                         });
+                        domResponse.append(html);
                     }
                 });
                 $('#querycontent').append(domResponse);
@@ -852,33 +859,34 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 // construct a pseudo index the first use
                 if (!config.searchindex) {
                     var pseudoIndex = [];
-                    $.each(config.kmlLayer.getSource().getFeatures(), function(i, feature) {
+                    var features = config.kmlLayer.getSource().getFeatures();
+                    $.each(features, function(i, feature) {
                         // construct an index with all text attributes
                         var id = feature.getId();
-                        var props = feature.getProperties();
+                        var feat = feature.getProperties();
                         var idx = "";
-                        $.each(props, function(key, value) {
-                            if (key=="name" && typeof(value==='string')) {
-                                idx+='|' + value.toLowerCase();
-                            }
-                        })
-                        pseudoIndex.push({id:id, data:idx});
-                    });
-                    config.searchindex = pseudoIndex;
-                }
-                // use pseudo index to retrieve matching features
-                if (config.searchindex) {
-                    var features = [];
-                    var responses = 0;
-                    $.each(config.searchindex.slice(0,config.maxFeatures), function(i, v) {
-                        if (config.searchindex[i].data.indexOf(value.toLowerCase())!=-1) {
-                            features.push(config.kmlLayer.getSource().getFeatureById(config.searchindex[i].id));
-                            responses +=1;
+                        for (var name in feat) {
+                             if (feat.hasOwnProperty(name) && typeof(feat[name])==='string') {
+                                idx+='|' + String(feat[name]).toLowerCase();
+                              }
                         }
-                    })
-                    featuresToList(features);
+                        pseudoIndex.push({id:id, data:idx});
+                  });
+                  config.searchindex = pseudoIndex;
+              }
+              // use pseudo index to retrieve matching features
+              if (config.searchindex) {
+                var features = [];
+                var responses = 0;
+                for (var i=0;i<config.searchindex.length && responses <config.maxFeatures;i++) {
+                    if (config.searchindex[i].data.indexOf(value.toLowerCase())!=-1) {
+                        features.push(config.kmlLayer.getSource().getFeatureById(config.searchindex[i].id));
+                        responses +=1;
+                    }
                 }
-            }
+                featuresToList(features);
+              }
+           }
         }
     }
     
@@ -897,26 +905,16 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 // get DescribeLayer from last Layer
                 var describeLayerUrl = searchLayer.options.wmsurl_ns;
                 $.ajax({
-                        url: ajaxURL(describeLayerUrl + "?" + $.param({
-                                'SERVICE': 'WMS',
-                                'VERSION': '1.1.1',
-                                'REQUEST': 'DescribeLayer',
-                                'LAYERS': searchLayer.options.layername
-                        })),
+                        url: ajaxURL(describeLayerUrl + "?SERVICE=WMS&VERSION=1.1.1&REQUEST=DescribeLayer&LAYERS="+
+                            searchLayer.options.layername),
                         type: 'GET',
                         success: function(response) {
                             config.searchparams.url = $(response).find("LayerDescription").attr("wfs");
                             config.searchparams.typename = $(response).find("Query").attr("typeName");
                             $.ajax({
-                                url: ajaxURL(
-                                        $(response).find("LayerDescription").attr("wfs") + 
-                                        $.param({
-                                            'SERVICE': 'WFS',
-                                            'VERSION': '1.0.0',
-                                            'REQUEST': 'DescribeFeatureType',
-                                            'TYPENAME': $(response).find("Query").attr("typeName")
-                                        })
-                                    ),
+                                url: ajaxURL($(response).find("LayerDescription").attr("wfs") +
+                                    "&SERVICE=WFS&VERSION=1.0.0&REQUEST=DescribeFeatureType&TYPENAME=" +
+                                    $(response).find("Query").attr("typeName")),
                                 type: 'GET',
                                 success: function(response) {
                                     var fields = [];
@@ -1070,25 +1068,41 @@ ol.extent.getTopRight(extent).reverse().join(" "),
     }
 
     // Zoom +
-    function zoomIn() {
-        var zoom = ol.animation.zoom({
+     function zoomIn() {
+        /*var zoom = ol.animation.zoom({
             duration: 500,
             source: view.getCenter(),
             resolution: view.getResolution()
         });
         map.beforeRender(zoom);
-        view.setZoom(view.getZoom()+1);
+        view.setZoom(view.getZoom()+1);*/
+         var currentResolution = view.getResolution();
+         map.beforeRender(ol.animation.zoom({
+                resolution: currentResolution,
+                duration: 500,
+                easing: ol.easing.easeOut
+         }));            
+         var newResolution = view.constrainResolution(currentResolution, 1);
+         view.setResolution(newResolution);          
     }
 
     //Zoom -
     function zoomOut() {
-        var zoom = ol.animation.zoom({
+        /*var zoom = ol.animation.zoom({
             duration: 500,
             source: view.getCenter(),
             resolution: view.getResolution()
         });
         map.beforeRender(zoom);
-        view.setZoom(view.getZoom()-1);
+        view.setZoom(view.getZoom()-1);*/
+        var currentResolution = view.getResolution();
+         map.beforeRender(ol.animation.zoom({
+                resolution: currentResolution,
+                duration: 500,
+                easing: ol.easing.easeOut
+         }));            
+         var newResolution = view.constrainResolution(currentResolution, -1);
+         view.setResolution(newResolution);          
     }
 
     // Back to initial extent
@@ -1186,7 +1200,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         $.getScript(qsconfig)
             .done(function() {
                 // transmits config name for persistency
-                customConfig.customConfigName = qs.c;
+                customConfig['customConfigName'] = qs.c;
                 doConfiguration();
                 doMap();
                 doGUI();
@@ -1298,7 +1312,9 @@ ol.extent.getTopRight(extent).reverse().join(" "),
      */
     function doMap() {
         // map creation
-        view = new ol.View();
+        view = new ol.View({
+			minZoom:8
+			});
         map = new ol.Map({
             controls: [
                 new ol.control.ScaleLine(),
@@ -1440,8 +1456,120 @@ ol.extent.getTopRight(extent).reverse().join(" "),
 
     init();
     
+    
 
 };
 
 
 $(document).ready(SViewer);
+
+var ol3d;
+
+function _doToggle() {
+  ol3d.setEnabled(!ol3d.getEnabled());
+}
+
+
+function toggle3D() {
+  if (!ol3d) {
+    var s = window.lazyLoadCesium();
+    s.onload = function() {
+      init3D();
+      _doToggle();
+    };
+  } else {
+     _doToggle();
+  }
+}
+
+
+
+function init3D() {
+	ol3d = new olcs.OLCesium({map: map});
+	var scene = ol3d.getCesiumScene();
+  var terrainProvider = new Cesium.CesiumTerrainProvider({
+      url : '//assets.agi.com/stk-terrain/world'
+	  //url : '/cesium-terrain-builder/data/terrain-tiles'
+  });
+
+  scene.terrainProvider = terrainProvider;
+}
+
+/*var cssRotate = function(element, angle) {
+    var value = 'rotate(' + angle + 'rad)';
+    element.css({
+      '-ms-transform': value,
+      '-webkit-transform': value,
+      'transform': value
+    });
+  };
+  
+/*function rotate (element) {
+	var rotateIndicator = element.find('.ui-icon-north-c');
+};*/
+
+function resetMapToNorth(map, ol3d) {
+          var currentRotation, scene;
+          if (ol3d && ol3d.getEnabled()) {
+            scene = ol3d.getCesiumScene();
+            currentRotation = -scene.camera.heading;
+          } else {
+            currentRotation = map.getView().getRotation();
+          }
+          while (currentRotation < -Math.PI) {
+            currentRotation += 2 * Math.PI;
+          }
+          while (currentRotation > Math.PI) {
+            currentRotation -= 2 * Math.PI;
+          }
+
+          if (scene) {
+            var bottom = olcs.core.pickBottomPoint(scene);
+            if (bottom) {
+              olcs.core.setHeadingUsingBottomCenter(scene, currentRotation,
+                  bottom);
+            }
+          } else {
+            map.beforeRender(ol.animation.rotate({
+              rotation: currentRotation,
+              duration: 1000,
+              easing: ol.easing.easeOut
+            }));
+            map.getView().setRotation(0);
+          }
+        };
+
+function resetRotation() {
+  resetMapToNorth(map, ol3d);
+};
+
+function zoom (scene) {
+	scene.screenSpaceCameraController().maximumZoomDistance = 16;
+};
+
+/*function data (scene) {
+	var camera = scene.camera;
+	var angle = -camera.pitch - Cesium.Math.toRadians(50);
+};
+		
+function tilt(angle) {
+	angle = Cesium.Math.toRadians(angle);
+         var finalAngle = camera.pitch + angle;
+         if (finalAngle > 0 || finalAngle < -Cesium.Math.PI_OVER_TWO) {
+            return;
+         }
+	var pivot = olcs.core.pickBottomPoint(scene)
+	if (pivot) {
+		var transform = Cesium.Matrix4.fromTranslation(pivot);
+		olcs.core.rotateAroundAxis (
+			camera, -angle, camera.right, transform, {
+				duration: 100
+			});
+		};
+	};
+
+function angle (angle) {
+	value = angle
+};*/
+			
+			

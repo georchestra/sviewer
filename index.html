@@ -19,6 +19,9 @@
     -->
     <link rel="stylesheet" href="build/ol.css" type="text/css" />
     <script src="build/ol.js" type="text/javascript"></script>
+	<!--<script type="text/javascript" src="../ol3-cesium/ol3cesium.js"></script>
+	<script type="text/javascript" src="../ol3-cesium/Cesium/Cesium.js"></script>	-->
+
     <!-- jquery mobile -->
     <script type="text/javascript">
 //<![CDATA[
@@ -37,8 +40,10 @@ $(document).bind("mobileinit", function(){
     <script src="lib/jquery/jquery.mobile-1.4.2.min.js" type="text/javascript"></script>
     <!-- local -->
     <link rel="stylesheet" href="css/sviewer.css" type="text/css" />
+    <script type="text/javascript" src="js/3d.js"></script>
     <script src="js/sviewer.js" type="text/javascript"></script>
     <script src="etc/i18n.js" type="text/javascript"></script>
+    <!--<script src="etc/customCONFIG.DIST.js" type="text/javascript"></script>    -->
   </head>
   <body>
     <div data-role="page">
@@ -56,6 +61,8 @@ $(document).bind("mobileinit", function(){
           <a id="ziBt" href="#" accesskey="+" class="i18n ui-btn ui-icon-plus-c ui-btn-icon-notext ui-btn-b" title="zoom +">zoom +</a>
           <a id="zoBt" href="#" accesskey="-" class="i18n ui-btn ui-icon-minus-c ui-btn-icon-notext ui-btn-b" title="zoom -">zoom -</a>
           <a id="bgBt" href="#" accesskey="b" class="i18n ui-btn ui-icon-layer-c ui-btn-icon-notext ui-btn-b" title="background">background</a>
+          <a id="b3d" href="#" accesskey="d" onclick="toggle3D();" class="i18n ui-btn ui-icon-3d-c ui-btn-icon-notext ui-btn-b" title="3d">3d</a>
+		  <a id="bNo" href="#" accesskey="d" onclick="resetRotation();" class="i18n ui-btn ui-icon-north-c ui-btn-icon-notext ui-btn-b" title="nord" style="transform: rotate(angle(););">3d</a>
         </div>
 
         <div id="panelcontrols" class="sv-map-panels" data-role="controlgroup" data-type="horizontal" class="ui-btn-right" data-theme="b">

@@ -1,5 +1,5 @@
 customConfig = {
-    title: 'geOrchestra mobile',
+    title: 'Télécharger MNT Bretagne',
 
     /**
      * force default language, see etc/i18n.js
@@ -15,9 +15,9 @@ customConfig = {
     /**
      * map bounds
      */
-    initialExtent: [-12880000,-1080000,5890000,7540000],
-    maxExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
-    restrictedExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+    initialExtent: [-5,195146672175801,47,13689671800622,-0,9214335234369715,49,00550643243376],
+    maxExtent: [-5,195146672175801,47,13689671800622,-0,9214335234369715,49,00550643243376],
+    restrictedExtent: [-5,195146672175801,47,13689671800622,-0,9214335234369715,49,00550643243376],
 
     /**
      * getFeatureInfo control
@@ -31,7 +31,7 @@ customConfig = {
     openLSGeocodeUrl: "http://gpp3-wxs.ign.fr/[CLEF GEOPORTAIL]/geoportail/ols?",
 
     /**
-     * background layers (EPSG:3857)
+     * background layers (EPSG:2154)
      */
     layersBackground: [
         new ol.layer.Tile({
@@ -44,7 +44,7 @@ customConfig = {
                     'LAYERS': 'altitude',
                     'TILED': true
                 },
-                extent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+                extent: [-5,195146672175801,47,13689671800622,-0,9214335234369715,49,00550643243376],
                 attributions: [new ol.Attribution({ html: 'tiles from geOrchestra, data <a href="http://www.cgiar-csi.org/data/srtm-90m-digital-elevation-database-v4-1">(c) CGIAR-CSI</a>'})],
             })
         }),
@@ -55,18 +55,18 @@ customConfig = {
                     'LAYERS': 'truemarble',
                     'TILED': true
                 },
-                extent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+                extent: [-5,195146672175801,47,13689671800622,-0,9214335234369715,49,00550643243376],
                 attributions: [new ol.Attribution({ html: 'tiles from geOrchestra, data <a href="http://www.unearthedoutdoors.net/global_data/true_marble/">(c) Unearthed Outdoors</a>'})],
             })
         }),
         new ol.layer.Tile({
             source: new ol.source.TileWMS({
-                url: 'https://sdi.georchestra.org/geoserver/nasa/wms',
+                url: 'http://kartenn.region-bretagne.fr/geoserver-proxy/tmp/wms',
                 params: {
-                    'LAYERS': 'night_2012',
+                    'LAYERS': 'dalles_bretagne',
                     'TILED': true
                 },
-                extent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+                extent: [-5,195146672175801,47,13689671800622,-0,9214335234369715,49,00550643243376],
                 attributions: [new ol.Attribution({ html: 'tiles from geOrchestra, data <a href="http://earthobservatory.nasa.gov/Features/NightLights/page3.php">(c) NASA</a>'})],
             })
         })
