@@ -146,7 +146,7 @@ var SViewer = function() {
                             mdLayer = this;
                         }
                     });
-
+                    
                     if (mdLayer) {
                         html.push('<div class="sv-md">');
                         legendArgs = {
@@ -202,6 +202,19 @@ var SViewer = function() {
                         html.push('</div>');
 
                         $('#legend').append(html.join(''));
+                        
+                        // timeViewer : get dates if timeLayer param exist
+                        if (mdLayer.hasOwnProperty('Dimension') && mdLayer.Dimension) {
+                            $.each(mdLayer.Dimension, function(id, dimension) {
+                                console.log(dimension.values);
+                                if (dimension.name == 'time') {
+                                    timeLayerDates = dimension.values.split(',').map(function(val, index) {
+                                        return val.substr(0,10);
+                                    });
+                                    showTimeBox();
+                                }
+                            });
+                        }
                     }
                 },
                 failure: function() {
@@ -1290,6 +1303,12 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             config.searchparams = {};
             $("#addressForm label").text('Features or ' + $("#addressForm label").text());
         }
+        
+        // querystring param: add timeLayer for timeViewer
+        if (qs.timeLayer) {
+            console.log(qs.timeLayer)
+            config.layersQueryable.push(new LayerQueryable(qs.timeLayer));
+        }
     }
 
 
@@ -1360,7 +1379,6 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             view.fit(config.initialExtent, map.getSize());
             view.setRotation(0);
         }
-
 
         // marker overlay for geoloc and queries
         marker =  new ol.Overlay({
@@ -1434,14 +1452,52 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             );
         }
     }
-
+    
+    /**
+     * show timeViewer
+     */
+    // helper function to get date from index in timeLayerDates array
+    function formatTimeLayerDate(date) {
+        d = date.split('-');
+        return d[2] +'/'+d[1]+'/'+d[0]
+    }
+    // Bind timeSlider and timeInput
+    function showTimeBox() {
+        var timeLayerSource = map.getLayers().item(map.getLayers().getArray().length-1).getSource();
+        var minValue = 0;
+        var maxValue = timeLayerDates.length-1;
+        var initValue = maxValue;
+        $('#timeInput').html(formatTimeLayerDate(timeLayerDates[initValue]));
+        $("#timeSlider").attr("min", minValue);
+        $("#timeSlider").attr("max", maxValue);
+        $("#timeSlider").attr("value", initValue);
+        $("#timeSlider").slider("refresh");
+        $("#timeSlider").on('change', function() {
+            var index = $('#timeSlider').val();
+            console.log(index, timeLayerDates);
+            $('#timeInput').val(formatTimeLayerDate(timeLayerDates[index]));
+            timeLayerSource.updateParams({'TIME': timeLayerDates[index]});
+        });
+        $('#timeBox').show();
+        
+        $(document).on('submit', '#timeInputBox', function (e) {
+            e.preventDefault();
+            var inputDate = $('#timeInput').html().split('/');
+            console.log($('#timeInput').val());
+            isoDate = inputDate[2]+'-'+inputDate[1]+'-'+inputDate[0];
+            timeLayerSource.updateParams({'TIME': isoDate});
+            $("#timeSlider").val(timeLayerDates.indexOf(isoDate));
+            console.log(timeLayerDates);
+            console.log(isoDate);
+            $("#timeSlider").slider("refresh");
+            return false;
+        });        
+    }
 
     // ------ Main ------------------------------------------------------------------------------------------
 
     init();
     
-
 };
-
 
 $(document).ready(SViewer);
