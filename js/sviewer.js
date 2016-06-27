@@ -206,7 +206,6 @@ var SViewer = function() {
                         // timeViewer : get dates if timeLayer param exist
                         if (mdLayer.hasOwnProperty('Dimension') && mdLayer.Dimension) {
                             $.each(mdLayer.Dimension, function(id, dimension) {
-                                console.log(dimension.values);
                                 if (dimension.name == 'time') {
                                     timeLayerDates = dimension.values.split(',').map(function(val, index) {
                                         return val.substr(0,10);
@@ -1306,7 +1305,6 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         
         // querystring param: add timeLayer for timeViewer
         if (qs.timeLayer) {
-            console.log(qs.timeLayer)
             config.layersQueryable.push(new LayerQueryable(qs.timeLayer));
         }
     }
@@ -1474,7 +1472,6 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         $("#timeSlider").slider("refresh");
         $("#timeSlider").on('change', function() {
             var index = $('#timeSlider').val();
-            console.log(index, timeLayerDates);
             $('#timeInput').val(formatTimeLayerDate(timeLayerDates[index]));
             timeLayerSource.updateParams({'TIME': timeLayerDates[index]});
         });
@@ -1483,12 +1480,9 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         $(document).on('submit', '#timeInputBox', function (e) {
             e.preventDefault();
             var inputDate = $('#timeInput').html().split('/');
-            console.log($('#timeInput').val());
             isoDate = inputDate[2]+'-'+inputDate[1]+'-'+inputDate[0];
             timeLayerSource.updateParams({'TIME': isoDate});
             $("#timeSlider").val(timeLayerDates.indexOf(isoDate));
-            console.log(timeLayerDates);
-            console.log(isoDate);
             $("#timeSlider").slider("refresh");
             return false;
         });        
