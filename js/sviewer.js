@@ -8,23 +8,23 @@ proj4.defs([
     ["EPSG:2154", "+title=RGF-93/Lambert 93, +proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"]
 ]);
 // map projection and grids
-var projcode = 'EPSG:3857';
-var projection = ol.proj.get(projcode);
-var projectionExtent = projection.getExtent();
-var size = ol.extent.getWidth(projectionExtent) / 256;
-var resolutions = new Array(20);
-var matrixIds = new Array(20);
-for (var z = 0; z < 20; ++z) {
-    resolutions[z] = size / Math.pow(2, z);
-    matrixIds[z] =projcode + ':' + z;
-}
+//var projcode = 'EPSG:3857';
+//var projection = ol.proj.get(projcode);
+//var projectionExtent = projection.getExtent();
+//var size = ol.extent.getWidth(projectionExtent) / 256;
+//var resolutions = new Array(20);
+//var matrixIds = new Array(20);
+//for (var z = 0; z < 20; ++z) {
+//    resolutions[z] = size / Math.pow(2, z);
+//    matrixIds[z] = projcode + ':' + z;
+//}
 
 var config = {};
 var customConfig = {};
 var hardConfig = {
     title: 'geOrchestra mobile',
     geOrchestraBaseUrl: 'https://sdi.georchestra.org/',
-    projection: projection,
+    projcode: 'EPSG:3857',
     initialExtent: [-12880000,-1080000,5890000,7540000],
     maxExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
     restrictedExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
@@ -33,12 +33,19 @@ var hardConfig = {
     openLSGeocodeUrl: "http://gpp3-wxs.ign.fr/[CLEF GEOPORTAIL]/geoportail/ols?",
     layersBackground: [
         new ol.layer.Tile({
-            preload: 2,
-            source: new ol.source.MapQuest({layer: 'osm'})
+            source: new ol.source.TileWMS({
+                url: 'http://osm.geopicardie.fr/mapproxy/service',
+                params: {
+                    'LAYERS': 'bright',
+                    'VERSION': '1.3.0',
+                    'FORMAT': 'image/png'
+                },
+                extent: [-378305.81, 1212610.74, 6093283.21, 7186901.68],
+                attributions: [new ol.Attribution({ html: 'tiles from GéoPicardie, data from <a href="http://www.openstreetmap.org/">OSM</a> contributors'})],
+            })
         }),
         new ol.layer.Tile({
-            preload: 2,
-            source: new ol.source.MapQuest({layer: 'sat'})
+              source: new ol.source.OSM()
         })
     ],
     socialMedia: {
@@ -47,8 +54,6 @@ var hardConfig = {
         'Facebook': 'http://www.facebook.com/sharer/sharer.php?u='
     }
 };
-
-
 
 
 var SViewer = function() {
@@ -382,7 +387,7 @@ var SViewer = function() {
                 var vgb = $(wmc).children('General').children('BoundingBox');
                 var srs = vgb.attr('SRS');
                 var extent = [vgb.attr('minx'), vgb.attr('miny'), vgb.attr('maxx'), vgb.attr('maxy')];
-                view.fit(ol.proj.transformExtent(extent, srs, projcode), map.getSize());
+                view.fit(ol.proj.transformExtent(extent, srs, config.projcode), map.getSize());
             }
 
             // we only consider visible and queryable layers
@@ -547,7 +552,7 @@ var SViewer = function() {
                         var a = res.getElementsByTagNameNS('http://www.opengis.net/gml', 'pos')[0].textContent.split(' '),
                             lonlat = [parseFloat(a[1]), parseFloat(a[0])],
                             matchType = results.find('GeocodeMatchCode').attr('matchType'),
-                            ptResult = ol.proj.transform(lonlat, 'EPSG:4326', projcode),
+                            ptResult = ol.proj.transform(lonlat, 'EPSG:4326', config.projcode),
                             street = $(res).find("Street").text(),
                             municipality = $(res).find('[type="Municipality"]').text();
                         switch (matchType) {
@@ -695,7 +700,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             var url = this.wmslayer.getSource().getGetFeatureInfoUrl(
                 config.gficoord,
                 viewResolution,
-                projection,
+                config.projection,
                 {'INFO_FORMAT': 'text/html',
                 'FEATURE_COUNT': config.maxFeatures}
             );
@@ -1112,7 +1117,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
     
     // recenter on device position
     function showPosition(pos) {
-        var p = ol.proj.transform([pos.coords.longitude, pos.coords.latitude], 'EPSG:4326', projcode),
+        var p = ol.proj.transform([pos.coords.longitude, pos.coords.latitude], 'EPSG:4326', config.projcode),
             start = +new Date(),
             pan = ol.animation.pan({
                 duration: 1000,
@@ -1217,6 +1222,8 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         $.extend(config, hardConfig);
         $.extend(config, customConfig);
 
+        config.projection = ol.proj.get(config.projcode);
+
         // querystring param: lb (selected background)
         if (qs.lb) {
             config.lb = parseInt(qs.lb) % config.layersBackground.length;
@@ -1259,7 +1266,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             var p = [parseFloat(qs.x), parseFloat(qs.y)];
             // is this lonlat ? anyway don't use sviewer for the vendee globe
             if (Math.abs(p[0])<=180&&Math.abs(p[1])<=180&&config.z>7) {
-                p = ol.proj.transform(p, 'EPSG:4326', projcode);
+                p = ol.proj.transform(p, 'EPSG:4326', config.projcode);
             }
             config.x = p[0];
             config.y = p[1];
@@ -1298,7 +1305,11 @@ ol.extent.getTopRight(extent).reverse().join(" "),
      */
     function doMap() {
         // map creation
-        view = new ol.View();
+        view = new ol.View({
+            projection: config.projection
+        });
+        console.log(config.projection);
+        console.log(config.projcode);
         map = new ol.Map({
             controls: [
                 new ol.control.ScaleLine(),
