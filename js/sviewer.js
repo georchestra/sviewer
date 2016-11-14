@@ -22,18 +22,6 @@ var hardConfig = {
     openLSGeocodeUrl: "http://gpp3-wxs.ign.fr/[CLEF GEOPORTAIL]/geoportail/ols?",
     layersBackground: [
         new ol.layer.Tile({
-            source: new ol.source.TileWMS({
-                url: 'http://osm.geopicardie.fr/mapproxy/service',
-                params: {
-                    'LAYERS': 'bright',
-                    'VERSION': '1.3.0',
-                    'FORMAT': 'image/png'
-                },
-                extent: [-378305.81, 1212610.74, 6093283.21, 7186901.68],
-                attributions: [new ol.Attribution({ html: 'tiles from GéoPicardie, data from <a href="http://www.openstreetmap.org/">OSM</a> contributors'})],
-            })
-        }),
-        new ol.layer.Tile({
               source: new ol.source.OSM()
         })
     ],
