@@ -252,7 +252,7 @@ var SViewer = function() {
                             config.timeline.setSelection(id);
                             setTime(dateselected);
                             $('.sv-date').css({'display': 'block'});
-                            $('.sv-date').text(dateselected);
+                            $('.sv-date').text(dateselected.toLocaleString());
                         }
                     }
                 },
@@ -601,7 +601,7 @@ var SViewer = function() {
         })
         // displays selected datetime
         $('.sv-date').css({'display': 'block'});
-        $('.sv-date').text(t);
+        $('.sv-date').text(t.toLocaleString());
         // re getfeature info
         if (config.gficoord && config.gfiz && config.gfiok) {
             queryMap(config.gficoord)
