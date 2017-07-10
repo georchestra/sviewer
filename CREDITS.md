@@ -23,6 +23,10 @@ proj4js
 ====
 http://trac.osgeo.org/proj4js/ under MIT style Licence
 
+vis.js
+===
+http://visjs.org/ under MIT licence
+
 
 
 

@@ -22,9 +22,11 @@ sViewer (simple Viewer) is a very simple web map viewer based on the OpenLayers 
 * place search (OpenLS french geoportal based)
 * queryable Web Map Service overlays
 * Web Map Context loader
+* WMS dimensions support with timeline and persistency
+* attribution, metadata link, legend support
 * permalinks, social links, QR code
-* geOrchestra viewer compatibility ('send to sviewer')
-* map edit with the geOrchestra viewer
+* geOrchestra viewer compatibility ('send to')
+* rearrange map with the geOrchestra viewer
 * easy to embed in a webpage through iframe or href
 * should work on small (phone), medium (tablet) and large (desktop) displays
 * i18n support : en (hardcoded), fr, es, de, ru. Feel free to contribute using fr as template.
@@ -152,6 +154,12 @@ s {string}
 Activate search features based on text attributes layer (only first layer for the moment).
 
 
+time {string}
+------------------
+ISO8601 Datetime. If map contains one time-enabled WMS layer, sviewer will look for this datetime,
+select it on a timeline control, then update the layers to the specified date.
+
+
 multiple configurations
 =======================
 You may provide several configurations for one SViewer instance. Copy etc/customConfig.js into etc/customConfig_myconf.js
@@ -179,8 +187,8 @@ First item, highest priority
 * customisable splashscreen
 * check the genericity of the openLS helper
 * GPS geocoding, tracking, events based on feature proximity
-* CQL filters support
 * mobile OS manifest
+* getFeatureInfo according to &time= on startup
 
 Before using this project, read the LICENSE.en terms.
 

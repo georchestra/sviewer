@@ -31,10 +31,12 @@ var hardConfig = {
         'Facebook': 'http://www.facebook.com/sharer/sharer.php?u='
     }
 };
+var debug;
 
 
 var SViewer = function() {
     var map;
+    var timeline;
     var view;
     var marker;
 
@@ -57,11 +59,12 @@ var SViewer = function() {
             wmsurl_layer: '',
             sldurl: null,
             format: 'image/png',
-            opacity: 1
+            opacity: 1,
         };
         this.md = {
             title: '',
-            abstract: ''
+            abstract: '',
+            isTime: false
         };
         this.wmslayer = null;
 
@@ -79,9 +82,9 @@ var SViewer = function() {
 
             self.options.namespace = (self.options.nslayername.indexOf(":")>0) ? self.options.nslayername.split(':',2)[0]:''; // namespace
             self.options.layername = (self.options.nslayername.indexOf(':')>0) ? self.options.nslayername.split(':',2)[1]:''; // layername
-            self.options.wmsurl_global = config.geOrchestraBaseUrl + '/geoserver/wms'; // global getcap
-            self.options.wmsurl_ns = config.geOrchestraBaseUrl + '/geoserver/' + self.options.namespace + '/wms'; // virtual getcap namespace
-            self.options.wmsurl_layer = config.geOrchestraBaseUrl + '/geoserver/' + self.options.namespace + '/' + self.options.layername + '/wms'; // virtual getcap layer
+            self.options.wmsurl_global = config.geOrchestraBaseUrl + 'geoserver/wms'; // global getcap
+            self.options.wmsurl_ns = config.geOrchestraBaseUrl + 'geoserver/' + self.options.namespace + '/wms'; // virtual getcap namespace
+            self.options.wmsurl_layer = config.geOrchestraBaseUrl + 'geoserver/' + self.options.namespace + '/' + self.options.layername + '/wms'; // virtual getcap layer
         }
 
         /**
@@ -109,6 +112,18 @@ var SViewer = function() {
                 source: new ol.source.TileWMS(wms_params)
             });
         }
+
+        /**
+         * refresh layer with TIME dimension (exposed)
+         */
+        function setTime(t) {
+            if (self.md.isTime) {
+                self.wmslayer.getSource().updateParams({
+                    'TIME': t.toISOString()
+                });
+            }
+        }
+        this.setTime = setTime;
 
         /**
          * Queries the layer capabilities to display its legend and metadata
@@ -184,6 +199,61 @@ var SViewer = function() {
                         html.push('</div>');
 
                         $('#legend').append(html.join(''));
+
+                        // WMS dimensions
+                        if (mdLayer.hasOwnProperty('Dimension') && mdLayer.Dimension) {
+                            // looking for time dimension
+                            $.each(mdLayer.Dimension, function(i, d) {
+                                if (d.name === "time" && d.units === "ISO8601") {
+                                    $('.sv-timeline').css({display: "block"});
+                                    self.md.isTime = true;
+                                    $.each(d.values.split(','), function(i, val) {
+                                        config.dates.add({
+                                            start: new Date(val),
+                                            title: self.md.title + '<br />' + val
+                                        });
+                                    })
+                                }
+                            });
+                            config.dates.flush();
+                            
+                            // permalink handler
+                            // selects for the provided date in the dataset
+                            // or fall back to last date
+                            // TODO : if not exists : nearest date ? or user warning ?
+                            var ordered = config.dates.getIds({order: 'start'}),
+                                dateselected,
+                                id,
+                                firstid,
+                                lastid;
+                            if (config.time) {
+                                var dateprovided = new Date(config.time);
+                                $.each(config.dates.get(), function(i, item) {
+                                    if (item.start-dateprovided == 0) {
+                                        dateselected = item.start;
+                                        id = item.id;
+                                        firstid = ordered[Math.max(i-25, 0)];
+                                        lastid = ordered[Math.min(i+25,ordered.length-1)];
+                                    }
+                                });
+                            }
+
+                            // fall back to max date
+                            if (!id) {
+                                firstid = ordered[Math.max(ordered.length-50, 0)];
+                                lastid = ordered[ordered.length-1];
+                                id = lastid;
+                                dateselected = config.dates.get(lastid).start;
+                            }
+                            
+                            // center timeline, updates layer, displays date
+                            // TODO : getfeatureinfo update
+                            config.timeline.focus([firstid, lastid]);
+                            config.timeline.setSelection(id);
+                            setTime(dateselected);
+                            $('.sv-date').css({'display': 'block'});
+                            $('.sv-date').text(dateselected);
+                        }
                     }
                 },
                 failure: function() {
@@ -457,6 +527,12 @@ var SViewer = function() {
             if (config.layersQueryString) { linkParams.layers = config.layersQueryString; }
             if (config.title&&config.wmctitle!=config.title) { linkParams.title = config.title; }
             if (config.wmc) { linkParams.wmc = config.wmc; }
+            
+            // wms TIME
+            if (config.time) {
+                linkParams.time = config.time.toISOString();
+            }
+            
             permalinkHash = window.location.origin + window.location.pathname + "#" + $.param(linkParams);
             permalinkQuery = window.location.origin + window.location.pathname + "?" + $.param(linkParams);
 
@@ -509,7 +585,28 @@ var SViewer = function() {
             return false;
         }
     }
-
+    
+    /**
+     * updates time enabled wms layers to specified time
+     * @param {Date} TIME parameter value, ISO8601
+     */
+    function setTimeAll(t) {
+        // update layer source with time parameter
+        $.each(config.layersQueryable, function(i, layer) {
+            if (layer.md.isTime === true) {
+                layer.setTime(t);
+                // register date for permalink
+                config.time = t;
+            }
+        })
+        // displays selected datetime
+        $('.sv-date').css({'display': 'block'});
+        $('.sv-date').text(t);
+        // re getfeature info
+        if (config.gficoord && config.gfiz && config.gfiok) {
+            queryMap(config.gficoord)
+        }
+    }
 
     /**
      * Queries the OpenLS service and recenters the map
@@ -761,7 +858,6 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         config.gfiok = false;
     }
 
-
     /**
      * method: searchFeatures
      * search features whose string attributes match a pattern;
@@ -843,7 +939,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                             if (key=="name" && typeof(value==='string')) {
                                 idx+='|' + value.toLowerCase();
                             }
-                        })
+                        });
                         pseudoIndex.push({id:id, data:idx});
                     });
                     config.searchindex = pseudoIndex;
@@ -857,7 +953,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                             features.push(config.kmlLayer.getSource().getFeatureById(config.searchindex[i].id));
                             responses +=1;
                         }
-                    })
+                    });
                     featuresToList(features);
                 }
             }
@@ -1170,11 +1266,13 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 // transmits config name for persistency
                 customConfig.customConfigName = qs.c;
                 doConfiguration();
+                doTimeline();
                 doMap();
                 doGUI();
             })
             .fail(function() {
                 doConfiguration();
+                doTimeline();
                 doMap();
                 doGUI();
             });
@@ -1194,12 +1292,21 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             wmc: '',
             lb: 0,
             layersQueryable: [],
-            layersQueryString: ''
+            layersQueryString: '',
+            dates: null
         };
         $.extend(config, hardConfig);
         $.extend(config, customConfig);
-
         config.projection = ol.proj.get(config.projcode);
+
+        // dates for WMS TIME enabled datasets
+        config.dates = new vis.DataSet(options = {
+            queue: true,
+            autoResize: true
+        });
+        if (qs.time) {
+            config.time = new Date(qs.time);
+        }
 
         // querystring param: lb (selected background)
         if (qs.lb) {
@@ -1274,8 +1381,23 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             config.searchparams = {};
             $("#addressForm label").text('Features or ' + $("#addressForm label").text());
         }
+
     }
 
+    
+    /**
+     * creates the timeline
+     */
+    function doTimeline() {
+        config.timeline = new vis.Timeline(
+            $('#timeline')[0],
+            config.dates,
+            options={});
+        // on date select, refresh time enabled layers
+        config.timeline.on('select', function(properties) {
+            setTimeAll(config.dates.get(properties.items[0]).start);
+        });
+    }
 
     /**
      * creates the map
@@ -1285,8 +1407,6 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         view = new ol.View({
             projection: config.projection
         });
-        console.log(config.projection);
-        console.log(config.projcode);
         map = new ol.Map({
             controls: [
                 new ol.control.ScaleLine(),
@@ -1414,6 +1534,8 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         $(window).bind("orientationchange resize pageshow", fixContentHeight);
         fixContentHeight();
 
+
+        
         if (config.gfiok && (!(config.wmc.length>0))) {
             //~ queryMap(view.getCenter());
             setTimeout(
