@@ -30,7 +30,7 @@ sViewer (simple Viewer) is a very simple web map viewer based on the OpenLayers 
 * i18n support : en (hardcoded), fr, es, de, ru. Feel free to contribute using fr as template.
 
 
-sViewer was designed to work within the geOrchestra SDI, but it also may work with any OGC-enabled SDI. There's a user tutorial here : http://cms.geobretagne.fr/content/visualiseur-simple-g%C3%A9obretagne
+sViewer was designed to work within the geOrchestra SDI, but it also may work with any OGC-enabled SDI. There's a user tutorial here : https://cms.geobretagne.fr/content/visualiseur-simple-geobretagne
 
 sViewer design notes
 ====================
