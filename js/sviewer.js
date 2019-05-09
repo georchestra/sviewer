@@ -1004,6 +1004,112 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         }
         return false;
     }
+    
+    /**
+     * method: displayLocality
+     * Queries the api RVA (Référentiel Voies et Adresses) of Rennes Metropole to display found localities names in a list
+     */
+    function displayLocality(adressAsked) {
+        var request = 'https://api-rva.sig.rennesmetropole.fr/?key=556ead9b7893a352bcf9&version=1.0&format=json&epsg=2154&cmd=getlanes&insee=all&query=' + adressAsked;
+        $.getJSON(request, function(dataApiJson) {
+            var answer = dataApiJson.rva.answer;
+            if (answer.lanes.length > 0) {
+                if (answer.lanes.length < 100) {
+                    $('#searchInput').attr('list','adressesList');
+                    $('#searchInput').append('<datalist id="adressesList"></datalist');
+                    answer.lanes.forEach(function(lane) {
+                        $('#adressesList').append('<option value="'+ lane.name +'"></option>');
+                    });
+                }
+            }
+        });
+    }
+    
+    /**
+     * method: displayAddresses
+     * Queries the api RVA (Référentiel Voies et Adresses) of Rennes Metropole to display found places names in a list
+     */
+    function displayAddresses() { 
+        var adressAsked = $("#searchInput").val();
+        if (adressAsked.length >= 3) {
+            var request = 'https://api-rva.sig.rennesmetropole.fr/?key=556ead9b7893a352bcf9&version=1.0&format=json&epsg=2154&cmd=getfulladdresses&query='+ adressAsked;
+            $.getJSON(request, function(dataApiJson) {
+                var addresses = dataApiJson.rva.answer.addresses;
+                if (addresses.length > 0) {
+                    if (addresses.length < 100) {
+                        $('#searchInput').attr('list','adressesList');
+                        $('#searchInput').append('<datalist id="adressesList"></datalist');
+                        addresses.forEach(function(address) {
+                            $('#adressesList').append('<option value="'+ address.addr2 +'">'+ address.addr3 +'</option>');
+                        });
+                    }
+                } else {
+                    displayLocality(adressAsked);
+                }
+            });
+        }
+    }
+    
+    /**
+     * method: searchLocality
+     * Queries the api RVA (Référentiel Voies et Adresses) of Rennes Metropole to find locality
+     * @param {string} adressAsked address to find
+     */
+    function searchLocality(adressAsked) {
+        var request = 'https://api-rva.sig.rennesmetropole.fr/?key=556ead9b7893a352bcf9&version=1.0&format=json&epsg=2154&cmd=getlanes&insee=all&query=' + adressAsked;
+        $.getJSON(request, function(dataApiJson) {
+            var answer = dataApiJson.rva.answer;
+            // if several addresses was found
+            if (answer.lanes.length > 0) {
+                var lowerCornerSplit = answer.lanes[0].lowerCorner.split([' ']);
+                var upperCornerSplit = answer.lanes[0].upperCorner.split([' ']);
+                var xyCoordUp = [upperCornerSplit[0], upperCornerSplit[1]];
+                view.setCenter(proj4('EPSG:2154', 'EPSG:3857', xyCoordUp));
+                view.setZoom(18);
+            } else {
+                 searchPlace();
+            }
+        });
+    }
+    
+    /**
+     * method: searchAddress
+     * Queries the api RVA (Référentiel Voies et Adresses) of Rennes Metropole to find a place
+     */
+    function searchAddress() {
+        var adressAsked = $("#searchInput").val();
+        var request = 'https://api-rva.sig.rennesmetropole.fr/?key=556ead9b7893a352bcf9&version=1.0&format=json&epsg=2154&cmd=getfulladdresses&query='+ adressAsked;
+        var xyCoord;
+        $.getJSON(request, function(dataApiJson) {
+            var addresses = dataApiJson.rva.answer.addresses;
+            // if several addresses was found
+            if (addresses.length > 1) {
+                // if the request ask by the user starts by a number zoom in the street address
+                if (isNaN(parseInt(adressAsked.split(' ')[0])) == false) {
+                    addresses.forEach(function(address) {
+                        if (address.addr2 == adressAsked) {
+                            xyCoord = [address.x, address.y];
+                            view.setCenter(proj4('EPSG:2154', 'EPSG:3857', xyCoord));
+                            view.setZoom(20);
+                        } 
+                    });
+                // else zoom in the street
+                } else {
+                    xyCoord = [addresses[0].x, addresses[0].y];
+                    view.setCenter(proj4('EPSG:2154', 'EPSG:3857', xyCoord));
+                    view.setZoom(19);
+                }
+            // if only one adresse was found zoom in this address
+            } else if(addresses.length == 1) {
+                xyCoord = [addresses[0].x, addresses[0].y];
+                view.setCenter(proj4('EPSG:2154', 'EPSG:3857', xyCoord));
+                view.setZoom(20);
+            // if no address was found, call to the function searchPlace
+            } else {
+                searchLocality(adressAsked);
+            }
+        });
+    }
 
     // panel size and placement to fit small screens
     function panelLayout (e) {
@@ -1385,7 +1491,9 @@ ol.extent.getTopRight(extent).reverse().join(" "),
 
         // geolocation form
         $('#zpBt').click(locateMe);
-        $('#addressForm').on('submit', searchPlace);
+        //$('#addressForm').on('submit', searchPlace); //Original
+        $('#addressForm').on('submit', searchAddress); // branchement  RVA
+        $('#addressForm').on('input', displayAddresses); // branchement  RVA
 
         // set title dialog
         $('#setTitle').keyup(onTitle);
