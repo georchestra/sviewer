@@ -5,14 +5,15 @@ proj4.defs([
     ["EPSG:4326", "+title=WGS 84, +proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"],
     ["EPSG:3857", "+title=Web Spherical Mercator, +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs"],
     ["EPSG:900913", "+title=Web Spherical Mercator, +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs"],
-    ["EPSG:2154", "+title=RGF-93/Lambert 93, +proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"]
+    ["EPSG:2154", "+title=RGF-93/Lambert 93, +proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"],
+    ["EPSG:3948", "+proj=lcc +lat_1=47.25 +lat_2=48.75 +lat_0=48 +lon_0=3 +x_0=1700000 +y_0=7200000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"]
 ]);
 
 var config = {};
 var customConfig = {};
 var hardConfig = {
     title: 'geOrchestra mobile',
-    geOrchestraBaseUrl: 'https://sdi.georchestra.org/',
+    geOrchestraBaseUrl: 'https://public.sig.rennesmetropole.fr/',
     projcode: 'EPSG:3857',
     initialExtent: [-12880000,-1080000,5890000,7540000],
     maxExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
@@ -1034,17 +1035,26 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         if (adressAsked.length >= 3) {
             var request = 'https://api-rva.sig.rennesmetropole.fr/?key=556ead9b7893a352bcf9&version=1.0&format=json&epsg=2154&cmd=getfulladdresses&query='+ adressAsked;
             $.getJSON(request, function(dataApiJson) {
-                var addresses = dataApiJson.rva.answer.addresses;
-                if (addresses.length > 0) {
-                    if (addresses.length < 100) {
-                        $('#searchInput').attr('list','adressesList');
-                        $('#searchInput').append('<datalist id="adressesList"></datalist');
-                        addresses.forEach(function(address) {
-                            $('#adressesList').append('<option value="'+ address.addr2 +'">'+ address.addr3 +'</option>');
+                console.log('test', $('#adressesList').val());
+                var data = dataApiJson.rva.answer;
+                if ((data.addresses && data.addresses.length) || (data.lane && data.lane.length)) {
+                    var counter = 0;
+                    var html = '';
+                    if (data.addresses && data.addresses.length) {
+                        data.addresses.slice(0, 5).forEach(function(address) {
+                            html += '<option value="'+ address.addr2 +'">'+ address.addr3 +'</option>';
+                            counter ++
                         });
                     }
+                    if (data.lanes && data.lanes.length && counter < 5) {
+                        data.lanes.slice(0, 5 - counter).forEach(function(lane) {
+                            html +='<option value="'+ lane.name +'"></option>';
+                        });
+                    }
+
+                    $('#adressesList').html(html);
                 } else {
-                    displayLocality(adressAsked);
+                	displayLocality(adressAsked);
                 }
             });
         }
@@ -1056,7 +1066,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
      * @param {string} adressAsked address to find
      */
     function searchLocality(adressAsked) {
-        var request = 'https://api-rva.sig.rennesmetropole.fr/?key=556ead9b7893a352bcf9&version=1.0&format=json&epsg=2154&cmd=getlanes&insee=all&query=' + adressAsked;
+        var request = 'https://api-rva.sig.rennesmetropole.fr/?key=556ead9b7893a352bcf9&version=1.0&format=json&epsg=3948&cmd=getlanes&insee=all&query=' + adressAsked;
         $.getJSON(request, function(dataApiJson) {
             var answer = dataApiJson.rva.answer;
             // if several addresses was found
@@ -1064,10 +1074,10 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 var lowerCornerSplit = answer.lanes[0].lowerCorner.split([' ']);
                 var upperCornerSplit = answer.lanes[0].upperCorner.split([' ']);
                 var xyCoordUp = [upperCornerSplit[0], upperCornerSplit[1]];
-                view.setCenter(proj4('EPSG:2154', 'EPSG:3857', xyCoordUp));
+                view.setCenter(proj4('EPSG:3948', 'EPSG:3857', xyCoordUp));
                 view.setZoom(18);
             } else {
-                 searchPlace();
+                 //searchPlace();
             }
         });
     }
@@ -1078,7 +1088,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
      */
     function searchAddress() {
         var adressAsked = $("#searchInput").val();
-        var request = 'https://api-rva.sig.rennesmetropole.fr/?key=556ead9b7893a352bcf9&version=1.0&format=json&epsg=2154&cmd=getfulladdresses&query='+ adressAsked;
+        var request = 'https://api-rva.sig.rennesmetropole.fr/?key=556ead9b7893a352bcf9&version=1.0&format=json&epsg=3948&cmd=getfulladdresses&query='+ adressAsked;
         var xyCoord;
         $.getJSON(request, function(dataApiJson) {
             var addresses = dataApiJson.rva.answer.addresses;
@@ -1089,26 +1099,27 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                     addresses.forEach(function(address) {
                         if (address.addr2 == adressAsked) {
                             xyCoord = [address.x, address.y];
-                            view.setCenter(proj4('EPSG:2154', 'EPSG:3857', xyCoord));
+                            view.setCenter(proj4('EPSG:3948', 'EPSG:3857', xyCoord));
                             view.setZoom(20);
                         } 
                     });
                 // else zoom in the street
                 } else {
                     xyCoord = [addresses[0].x, addresses[0].y];
-                    view.setCenter(proj4('EPSG:2154', 'EPSG:3857', xyCoord));
+                    view.setCenter(proj4('EPSG:3948', 'EPSG:3857', xyCoord));
                     view.setZoom(19);
                 }
             // if only one adresse was found zoom in this address
             } else if(addresses.length == 1) {
                 xyCoord = [addresses[0].x, addresses[0].y];
-                view.setCenter(proj4('EPSG:2154', 'EPSG:3857', xyCoord));
+                view.setCenter(proj4('EPSG:3948', 'EPSG:3857', xyCoord));
                 view.setZoom(20);
             // if no address was found, call to the function searchPlace
             } else {
                 searchLocality(adressAsked);
             }
         });
+        return false;
     }
 
     // panel size and placement to fit small screens
@@ -1492,8 +1503,13 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         // geolocation form
         $('#zpBt').click(locateMe);
         //$('#addressForm').on('submit', searchPlace); //Original
-        $('#addressForm').on('submit', searchAddress); // branchement  RVA
-        $('#addressForm').on('input', displayAddresses); // branchement  RVA
+     // branchement  RVA ---------------------------
+        $('#searchInput').attr('list','adressesList');
+        $('#searchInput').append('<datalist id="adressesList" class="option-list"></datalist>');
+        $('#addressForm').on('submit', searchAddress);
+        $('#addressForm').on('input', displayAddresses);
+        // --------------------------------------------
+
 
         // set title dialog
         $('#setTitle').keyup(onTitle);
