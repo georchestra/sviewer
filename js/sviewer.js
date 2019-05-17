@@ -1035,14 +1035,13 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         if (adressAsked.length >= 3) {
             var request = 'https://api-rva.sig.rennesmetropole.fr/?key=556ead9b7893a352bcf9&version=1.0&format=json&epsg=2154&cmd=getfulladdresses&query='+ adressAsked;
             $.getJSON(request, function(dataApiJson) {
-                console.log('test', $('#adressesList').val());
                 var data = dataApiJson.rva.answer;
                 if ((data.addresses && data.addresses.length) || (data.lane && data.lane.length)) {
                     var counter = 0;
                     var html = '';
                     if (data.addresses && data.addresses.length) {
                         data.addresses.slice(0, 5).forEach(function(address) {
-                            html += '<option value="'+ address.addr2 +'">'+ address.addr3 +'</option>';
+                            html += '<option value="'+ address.addr3 +'">'/*+ address.addr3*/ +'</option>';
                             counter ++
                         });
                     }
@@ -1077,7 +1076,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 view.setCenter(proj4('EPSG:3948', 'EPSG:3857', xyCoordUp));
                 view.setZoom(18);
             } else {
-                 //searchPlace();
+                 searchPlace();
             }
         });
     }
@@ -1088,7 +1087,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
      */
     function searchAddress() {
         var adressAsked = $("#searchInput").val();
-        var request = 'https://api-rva.sig.rennesmetropole.fr/?key=556ead9b7893a352bcf9&version=1.0&format=json&epsg=3948&cmd=getfulladdresses&query='+ adressAsked;
+        var request = 'https://api-rva.sig.rennesmetropole.fr/?key=556ead9b7893a352bcf9&version=1.0&format=json&epsg=3948&cmd=getfulladdresses&query='+ adressAsked.split(',')[0];
         var xyCoord;
         $.getJSON(request, function(dataApiJson) {
             var addresses = dataApiJson.rva.answer.addresses;
@@ -1116,7 +1115,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 view.setZoom(20);
             // if no address was found, call to the function searchPlace
             } else {
-                searchLocality(adressAsked);
+                searchLocality(adressAsked.split(',')[0]);
             }
         });
         return false;
