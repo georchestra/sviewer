@@ -110,6 +110,9 @@ p.center {
     text-overflow: ellipsis !important;
 }
 
+.ui-controlgroup-controls  {
+	width: 100%;
+}
 
 @media screen and (max-width: 600px) {
     .ui-controlgroup-controls .ui-btn {

@@ -1005,60 +1005,77 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         }
         return false;
     }
+//-------------------------------RVA---------------------------------------------------------------------------
+    dataAutocomplete = []; // store addresses and localities names. Used to display in autocompletion
+    dataAutocompleteCoordinates = []; // store addresses and localities names and coordinates. Used to display matching address or locality on the map
     
     /**
-     * method: displayLocality
-     * Queries the api RVA (Référentiel Voies et Adresses) of Rennes Metropole to display found localities names in a list
+     * method: getAddressesAsked
+     * Queries the api RVA (Référentiel Voies et Adresses) of Rennes Metropole 
+     * to find matching addresses and localities 
      */
-    function displayLocality(adressAsked) {
-        var request = 'https://api-rva.sig.rennesmetropole.fr/?key=556ead9b7893a352bcf9&version=1.0&format=json&epsg=2154&cmd=getlanes&insee=all&query=' + adressAsked;
-        $.getJSON(request, function(dataApiJson) {
-            var answer = dataApiJson.rva.answer;
-            if (answer.lanes.length > 0) {
-                if (answer.lanes.length < 100) {
-                    $('#searchInput').attr('list','adressesList');
-                    $('#searchInput').append('<datalist id="adressesList"></datalist');
-                    answer.lanes.forEach(function(lane) {
-                        $('#adressesList').append('<option value="'+ lane.name +'"></option>');
-                    });
+    function getAddressesAsked() {
+    	dataAutocompleteCoordinates.splice(0, dataAutocompleteCoordinates.length);
+        dataAutocomplete.splice(0, dataAutocomplete.length);
+    	var adressAsked = $("#searchInput").val();
+    	var requestLanes = 'https://api-rva.sig.rennesmetropole.fr/?key=556ead9b7893a352bcf9&version=1.0&format=json&epsg=3948&cmd=getlanes&insee=all&query=' + adressAsked;
+    	var requestAddresses = 'https://api-rva.sig.rennesmetropole.fr/?key=556ead9b7893a352bcf9&version=1.0&format=json&epsg=3948&cmd=getfulladdresses&query='+ adressAsked;
+    	
+    	if (adressAsked.length > 5) {
+	    	$.getJSON(requestLanes, function(dataApiJson) {
+	    		var data = dataApiJson.rva.answer;
+	    		if ((data.lanes).length > 0) {
+	    			data.lanes.forEach(function(lane) {
+	    				if (lane.type == 'Lieu-dit') {
+	    					var localityName = lane.name4 + ' (Lieu-dit)';
+	    					dataAutocomplete.push(localityName);
+	    					var laneUpperCornerSplit = lane.upperCorner.split(' ');
+	    					var laneInformations = [localityName, laneUpperCornerSplit[0], laneUpperCornerSplit[1]];
+	    					dataAutocompleteCoordinates.push(laneInformations);
+	    				}
+	    			});
+	    		 }
+	    	});
+	    	
+	    	$.getJSON(requestAddresses, function(dataApiJson) {
+	    		var data = dataApiJson.rva.answer;
+	    		if ((data.addresses).length > 0) {
+	    			data.addresses.forEach(function(address) {
+	    				dataAutocomplete.push(address.addr3);
+	    				var addressInformations = [address.addr3, address.x, address.y];
+	    				dataAutocompleteCoordinates.push(addressInformations);
+	    			});
+	    		}
+	    	});
+    	}
+    }
+    
+    var options = {
+            minCharNumber: 3,
+            adjustWidth: false,
+            data: dataAutocomplete,
+            requestDelay: 200,
+            list: {
+                onClickEvent: function() {
+                	var addressSearch = $("#searchInput").val();
+                	dataAutocompleteCoordinates.forEach(function(data) {
+                		if (data[0] == addressSearch) {
+                			var xyCoord = [data[1], data[2]];
+                            view.setCenter(proj4('EPSG:3948', 'EPSG:3857', xyCoord));
+                            if (addressSearch.indexOf('Lieu-dit') != -1) {
+                            	view.setZoom(18);
+                            } else {
+                            	view.setZoom(20);
+                            	 marker.setPosition(proj4('EPSG:3948', 'EPSG:3857', xyCoord));
+                            }
+                		}
+                	}); 
                 }
             }
-        });
-    }
+        };
+        $("#searchInput").easyAutocomplete(options);
     
-    /**
-     * method: displayAddresses
-     * Queries the api RVA (Référentiel Voies et Adresses) of Rennes Metropole to display found places names in a list
-     */
-    function displayAddresses() { 
-        var adressAsked = $("#searchInput").val();
-        if (adressAsked.length >= 3) {
-            var request = 'https://api-rva.sig.rennesmetropole.fr/?key=556ead9b7893a352bcf9&version=1.0&format=json&epsg=2154&cmd=getfulladdresses&query='+ adressAsked;
-            $.getJSON(request, function(dataApiJson) {
-                var data = dataApiJson.rva.answer;
-                if ((data.addresses && data.addresses.length) || (data.lane && data.lane.length)) {
-                    var counter = 0;
-                    var html = '';
-                    if (data.addresses && data.addresses.length) {
-                        data.addresses.slice(0, 5).forEach(function(address) {
-                            html += '<option value="'+ address.addr3 +'">'/*+ address.addr3*/ +'</option>';
-                            counter ++
-                        });
-                    }
-                    if (data.lanes && data.lanes.length && counter < 5) {
-                        data.lanes.slice(0, 5 - counter).forEach(function(lane) {
-                            html +='<option value="'+ lane.name +'"></option>';
-                        });
-                    }
-
-                    $('#adressesList').html(html);
-                } else {
-                	displayLocality(adressAsked);
-                }
-            });
-        }
-    }
-    
+            
     /**
      * method: searchLocality
      * Queries the api RVA (Référentiel Voies et Adresses) of Rennes Metropole to find locality
@@ -1076,7 +1093,8 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 view.setCenter(proj4('EPSG:3948', 'EPSG:3857', xyCoordUp));
                 view.setZoom(18);
             } else {
-                 searchPlace();
+                 //searchPlace();
+            	messagePopup(tr("adresse non trouvée"));
             }
         });
     }
@@ -1120,7 +1138,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         });
         return false;
     }
-
+//----------------------------------------------------------------------------------------------------------------------
     // panel size and placement to fit small screens
     function panelLayout (e) {
         var panel = $(this);
@@ -1503,10 +1521,10 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         $('#zpBt').click(locateMe);
         //$('#addressForm').on('submit', searchPlace); //Original
      // branchement  RVA ---------------------------
-        $('#searchInput').attr('list','adressesList');
-        $('#searchInput').append('<datalist id="adressesList" class="option-list"></datalist>');
+        //$('#searchInput').attr('list','adressesList');
+        //$('#searchInput').append('<datalist id="adressesList" class="option-list"></datalist>');
         $('#addressForm').on('submit', searchAddress);
-        $('#addressForm').on('input', displayAddresses);
+        $('#addressForm').on('input', getAddressesAsked);
         // --------------------------------------------
 
 

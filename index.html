@@ -12,12 +12,14 @@
     <script type="text/javascript" src="lib/jquery/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="lib/qrcode.js/qrcode.min.js"></script>
     <script src="build/proj4.js"></script>
+    <script src="lib/jquery/jquery.easy-autocomplete.min.js" type="text/javascript"></script>
     <!-- OpenLayers -->
     <!--
     <link rel="stylesheet" href="build/ol.css" type="text/css" />
     <script src="build/ol-simple.js" type="text/javascript"></script>
     -->
     <link rel="stylesheet" href="build/ol.css" type="text/css" />
+    <link rel="stylesheet" href="lib/jquery/easy-autocomplete.min.css" />
     <script src="build/ol.js" type="text/javascript"></script>
     <!-- jquery mobile -->
     <script type="text/javascript">
@@ -98,9 +100,10 @@ $(document).bind("mobileinit", function(){
                 <input type="text"
                     name="searchInput"
                     id="searchInput"
-                    data-wrapper-class="controlgroup-textinput ui-btn ui-mini"
+                    data-wrapper-class="ui-mini"
                     value=""
-                    title="Address and/or city" /><button class="i18n ui-btn ui-icon-search ui-btn-icon-notext " title="Locate">Locate</button>
+                    title="Address and/or city" />
+                    <!--<button class="i18n ui-btn ui-icon-search ui-btn-icon-notext " title="Locate">Locate</button>-->
             </div>
             <button id="zpBt" class="i18n ui-btn ui-icon-navigation ui-corner-all ui-mini " title="Where am I ?">Where am I ?</button>
             <span id="locateMsg"></span>
