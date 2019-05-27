@@ -343,6 +343,7 @@ var SViewer = function() {
             config.lb = (lv+1)%n;
             config.layersBackground[config.lb].setVisible(true);
         }
+        sendInformationToParentPage();
         return config.layersBackground[config.lb];
     }
 
@@ -484,6 +485,7 @@ var SViewer = function() {
             }
             $('#permalink').prop('href',permalinkQuery);
         }
+        sendInformationToParentPage();
     }
 
 
@@ -1005,7 +1007,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         }
         return false;
     }
-//-------------------------------RVA---------------------------------------------------------------------------
+//-------------------------------Rennes métropole---------------------------------------------------------------------------
     dataAutocomplete = []; // store addresses and localities names. Used to display in autocompletion
     dataAutocompleteCoordinates = []; // store addresses and localities names and coordinates. Used to display matching address or locality on the map
     
@@ -1138,6 +1140,38 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         });
         return false;
     }
+    /**
+     * method: sendInformationToParentPage
+     * send link parms to the parent page
+     * used if the sviewer is in an iframe 
+     */
+    function sendInformationToParentPage() {
+	    var c = view.getCenter();
+	    var linkParams = {};
+	    if (config.gficoord && config.gfiz && config.gfiok) {
+	        linkParams.x = encodeURIComponent(Math.round(config.gficoord[0]));
+	        linkParams.y = encodeURIComponent(Math.round(config.gficoord[1]));
+	        linkParams.z = encodeURIComponent(config.gfiz);
+	        linkParams.q = '1';
+	    }
+	    else {
+	    	if ( c!= null) {
+		        linkParams.x = encodeURIComponent(Math.round(c[0]));
+		        linkParams.y = encodeURIComponent(Math.round(c[1]));
+		        linkParams.z = encodeURIComponent(view.getZoom());
+	    	}
+	    }
+	    linkParams.lb = encodeURIComponent(config.lb);
+	    if (config.customConfigName) { linkParams.c = config.customConfigName; }
+	    if (config.kmlUrl) { linkParams.kml = config.kmlUrl; }
+	    if (config.search) { linkParams.s = '1'; }
+	    if (config.layersQueryString) { linkParams.layers = config.layersQueryString; }
+	    if (config.title&&config.wmctitle!=config.title) { linkParams.title = config.title; }
+	    if (config.wmc) { linkParams.wmc = config.wmc; }
+	    if (typeof parent.interactWithSviewer === "function") {
+	    	parent.interactWithSviewer(linkParams);
+	    }
+    }
 //----------------------------------------------------------------------------------------------------------------------
     // panel size and placement to fit small screens
     function panelLayout (e) {
@@ -1183,6 +1217,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
     // updates title on keypress
     function onTitle(e) {
         setTitle($("#setTitle").val());
+        sendInformationToParentPage();
     }
 
     // Zoom +
@@ -1194,6 +1229,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         });
         map.beforeRender(zoom);
         view.setZoom(view.getZoom()+1);
+        sendInformationToParentPage();
     }
 
     //Zoom -
@@ -1205,6 +1241,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         });
         map.beforeRender(zoom);
         view.setZoom(view.getZoom()-1);
+        sendInformationToParentPage();
     }
 
     // Back to initial extent
@@ -1224,6 +1261,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         map.beforeRender(pan, zoom);
         view.fit(config.initialExtent, map.getSize());
         view.setRotation(0);
+        sendInformationToParentPage();
     }
     
     // recenter on device position
@@ -1509,7 +1547,9 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         });
         map.on('moveend', setPermalink);
         $('#marker').click(clearQuery);
-
+        
+        
+        //------------------------------
 
         // map buttons
         $('#ziBt').click(zoomIn);
@@ -1526,7 +1566,6 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         $('#addressForm').on('submit', searchAddress);
         $('#addressForm').on('input', getAddressesAsked);
         // --------------------------------------------
-
 
         // set title dialog
         $('#setTitle').keyup(onTitle);
@@ -1563,7 +1602,6 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             );
         }
     }
-
 
     // ------ Main ------------------------------------------------------------------------------------------
 
