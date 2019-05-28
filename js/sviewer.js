@@ -1168,8 +1168,12 @@ ol.extent.getTopRight(extent).reverse().join(" "),
 	    if (config.layersQueryString) { linkParams.layers = config.layersQueryString; }
 	    if (config.title&&config.wmctitle!=config.title) { linkParams.title = config.title; }
 	    if (config.wmc) { linkParams.wmc = config.wmc; }
-	    if (typeof parent.interactWithSviewer === "function") {
-	    	parent.interactWithSviewer(linkParams);
+	    try{
+	    	if (typeof parent.interactWithSviewer === "function") {
+	    		parent.interactWithSviewer(linkParams);
+	    	}
+	    }catch(e){
+	        // not accessible
 	    }
     }
 //----------------------------------------------------------------------------------------------------------------------
