@@ -1168,9 +1168,14 @@ ol.extent.getTopRight(extent).reverse().join(" "),
 	    if (config.layersQueryString) { linkParams.layers = config.layersQueryString; }
 	    if (config.title&&config.wmctitle!=config.title) { linkParams.title = config.title; }
 	    if (config.wmc) { linkParams.wmc = config.wmc; }
+
 	    try{
-	    	if ( (typeof parent.interactWithSviewer === "function") && (parent.location == document.location) ) {
-	    		parent.interactWithSviewer(linkParams);
+	    	if (typeof parent.interactWithSviewer === "function") {
+	    		var parentOrigin = parent.location.origin;
+	    		var documentOrigin = document.location.origin; 
+	    		if (parentOrigin == documentOrigin) {
+	    			parent.interactWithSviewer(linkParams);
+	    		}
 	    	}
 	    }catch(e){
 	        // not accessible
