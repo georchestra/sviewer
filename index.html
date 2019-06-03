@@ -13,6 +13,7 @@
     <script type="text/javascript" src="lib/qrcode.js/qrcode.min.js"></script>
     <script src="build/proj4.js"></script>
     <script src="lib/jquery/jquery.easy-autocomplete.min.js" type="text/javascript"></script>
+    <script src="lib/jquery/jquery-ui.min.js" type="text/javascript"></script>
     <!-- OpenLayers -->
     <!--
     <link rel="stylesheet" href="build/ol.css" type="text/css" />
@@ -20,6 +21,7 @@
     -->
     <link rel="stylesheet" href="build/ol.css" type="text/css" />
     <link rel="stylesheet" href="lib/jquery/easy-autocomplete.min.css" />
+    <link rel="stylesheet" href="lib/jquery/jquery-ui.min.css" />
     <script src="build/ol.js" type="text/javascript"></script>
     <!-- jquery mobile -->
     <script type="text/javascript">
@@ -102,7 +104,7 @@ $(document).bind("mobileinit", function(){
                     id="searchInput"
                     data-wrapper-class="ui-mini"
                     value=""
-                    title="Address and/or city" />
+                    title="Address and/or city" autofocus/>
                     <!--<button class="i18n ui-btn ui-icon-search ui-btn-icon-notext " title="Locate">Locate</button>-->
             </div>
             <button id="zpBt" class="i18n ui-btn ui-icon-navigation ui-corner-all ui-mini " title="Where am I ?">Where am I ?</button>

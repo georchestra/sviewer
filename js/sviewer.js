@@ -1007,7 +1007,8 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         }
         return false;
     }
-//-------------------------------Rennes métropole---------------------------------------------------------------------------
+//-------------------------------Rennes métropole---------------------------------------------------------------------------    
+    
     dataAutocomplete = []; // store addresses and localities names. Used to display in autocompletion
     dataAutocompleteCoordinates = []; // store addresses and localities names and coordinates. Used to display matching address or locality on the map
     
@@ -1020,10 +1021,12 @@ ol.extent.getTopRight(extent).reverse().join(" "),
     	dataAutocompleteCoordinates.splice(0, dataAutocompleteCoordinates.length);
         dataAutocomplete.splice(0, dataAutocomplete.length);
     	var adressAsked = $("#searchInput").val();
-    	var requestLanes = 'https://api-rva.sig.rennesmetropole.fr/?key=556ead9b7893a352bcf9&version=1.0&format=json&epsg=3948&cmd=getlanes&insee=all&query=' + adressAsked;
-    	var requestAddresses = 'https://api-rva.sig.rennesmetropole.fr/?key=556ead9b7893a352bcf9&version=1.0&format=json&epsg=3948&cmd=getfulladdresses&query='+ adressAsked;
+    	var adressAskedSplit = adressAsked.split(','); 
+    	var adressAskedLowerCase = adressAsked.toLowerCase();
+    	var requestLanes = 'https://api-rva.sig.rennesmetropole.fr/?key=556ead9b7893a352bcf9&version=1.0&format=json&epsg=3948&cmd=getlanes&insee=all&query=' + adressAskedSplit[0];
+    	var requestAddresses = 'https://api-rva.sig.rennesmetropole.fr/?key=556ead9b7893a352bcf9&version=1.0&format=json&epsg=3948&cmd=getfulladdresses&query='+ adressAskedSplit[0];
     	
-    	if (adressAsked.length > 5) {
+    	if (adressAskedSplit[0].length > 5) {
 	    	$.getJSON(requestLanes, function(dataApiJson) {
 	    		var data = dataApiJson.rva.answer;
 	    		if ((data.lanes).length > 0) {
@@ -1041,11 +1044,16 @@ ol.extent.getTopRight(extent).reverse().join(" "),
 	    	
 	    	$.getJSON(requestAddresses, function(dataApiJson) {
 	    		var data = dataApiJson.rva.answer;
-	    		if ((data.addresses).length > 0) {
+	    		if ( ((data.addresses).length > 0 )  ) {
 	    			data.addresses.forEach(function(address) {
-	    				dataAutocomplete.push(address.addr3);
-	    				var addressInformations = [address.addr3, address.x, address.y];
-	    				dataAutocompleteCoordinates.push(addressInformations);
+		    			if( ((address.addr3.toLowerCase().substring(0, adressAskedLowerCase.length)) == adressAskedLowerCase)
+		    				|| ((address.addr3.toLowerCase().includes(adressAskedLowerCase)) == true)) {
+		    				if (dataAutocomplete.indexOf(address.addr3) == -1) {
+		    					dataAutocomplete.push(address.addr3);
+			    				var addressInformations = [address.addr3, address.x, address.y];
+			    				dataAutocompleteCoordinates.push(addressInformations);
+		    				}
+	    				}
 	    			});
 	    		}
 	    	});
@@ -1056,7 +1064,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             minCharNumber: 3,
             adjustWidth: false,
             data: dataAutocomplete,
-            requestDelay: 200,
+            requestDelay: 150,
             list: {
                 onClickEvent: function() {
                 	var addressSearch = $("#searchInput").val();
@@ -1075,8 +1083,41 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 }
             }
         };
-        $("#searchInput").easyAutocomplete(options);
-    
+        //$("#searchInput").easyAutocomplete(options);
+        
+       $("#searchInput").autocomplete({
+            source: dataAutocomplete,
+            appendTo: "#addressForm",
+            delay: 200,
+            minLength: 3,
+        });
+        
+        $("#searchInput").on( "autocompleteselect", function(event, ui) {
+        	var addressSearch = ui.item.value;
+        	dataAutocompleteCoordinates.forEach(function(data) {
+        		if (data[0] == addressSearch) {
+        			var xyCoord = [data[1], data[2]];
+                    view.setCenter(proj4('EPSG:3948', 'EPSG:3857', xyCoord));
+                    if (addressSearch.indexOf('Lieu-dit') != -1) {
+                    	view.setZoom(18);
+                    } else {
+                    	view.setZoom(20);
+                    	 marker.setPosition(proj4('EPSG:3948', 'EPSG:3857', xyCoord));
+                    }
+        		}
+        	});
+        });
+        
+        $('.ui-autocomplete').css('max-height','40%');
+        $('.ui-autocomplete').css('max-width','90%');
+        $('.ui-autocomplete').css('overflow-y','auto');
+        $('.ui-autocomplete').css('overflow-x','hidden');
+ 
+        
+   /* $("#searchInput").on('autocompleteclose', function(event, ui) {
+        	$('#ui-id-1').css('display', 'block');
+        });*/
+        
             
     /**
      * method: searchLocality
@@ -1207,6 +1248,9 @@ ol.extent.getTopRight(extent).reverse().join(" "),
             }
             else {
                 $('#'+id).popup('open');
+                if (id == 'panelLocate') {
+                	 $('#searchInput').select();
+                }
             }
         });
     }
