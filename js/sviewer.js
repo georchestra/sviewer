@@ -1108,6 +1108,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         	});
         });
         
+        
         $('.ui-autocomplete').css('max-height','40%');
         $('.ui-autocomplete').css('max-width','90%');
         $('.ui-autocomplete').css('overflow-y','auto');

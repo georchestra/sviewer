@@ -110,7 +110,7 @@ p.center {
     text-overflow: ellipsis !important;
 }
 
-.ui-controlgroup-controls  {
+.ui-controlgroup-controls, #adressSearchContent  {
 	width: 100%;
 }
 
