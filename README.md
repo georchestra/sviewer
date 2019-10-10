@@ -167,6 +167,27 @@ geOrchestra integration
 * sViewer can POST the map layout to the geOrchestra advanced viewer for edit, analysis, print purposes.
 * sViewer can read WMC from the geOrchestra advanced viewer.
 
+Docker
+========
+
+You can launch sviewer in a docker container.
+
+* Start by building the image:
+
+```bash
+docker build -t sviewer .
+```
+
+When builing, it will copy the whole repo to the public folder that nginx serve (the web server in
+the container is nginx).
+
+* launch the container
+
+```
+docker run -p8080:80 -d sviewer
+```
+
+With the argument `-p8080:80` it will listen to port 8080/tcp locally.
 
 
 TODO
